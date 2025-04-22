@@ -28,5 +28,4 @@ const PropertyDataFeature = mongoose.model('PropertyDataFeature', propertyDataFe
 module.exports = {
     PropertyFeature,
     PropertyDataFeature
-}; 
-
+};
