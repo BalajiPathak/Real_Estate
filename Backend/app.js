@@ -6,11 +6,14 @@ const userRoutes = require('./routes/user');
 const propertyRoutes = require('./routes/property');
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 const homeRoutes= require('./routes/home');
 const navbarRoutes =require('./routes/navbar');
 const companyInfoRoutes =require('./routes/companyInfo');
 
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -105,6 +108,9 @@ app.use((err, req, res, next) => {
         error: err.message 
     });
 });
+
+//property routes
+app.use('/property', propertyRoutes);
 
 //property routes
 app.use('/property', propertyRoutes);

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { PropertyData } = require('../models/propertyData');
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 const {PropertyCategory} = require('../models/propertyCategory');
 const {State} = require('../models/state');
 const {StatusCategory} = require('../models/statusCategory');
@@ -11,11 +12,16 @@ const{PropertyDataFeature}= require ('../models/propertyFeature');
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 const { PropertyCategory } = require('../models/propertyCategory');
 const {State} = require('../models/state');
 const {StatusCategory} = require('../models/statusCategory');
 const {PropertyFeature} = require('../models/propertyFeature');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -29,7 +35,11 @@ const {PropertyFeature} = require('../models/propertyFeature');
       }));
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       res.render('property', { properties: all });
+=======
+      res.render('index', { properties: all });
+>>>>>>> Stashed changes
 =======
       res.render('index', { properties: all });
 >>>>>>> Stashed changes
@@ -54,6 +64,7 @@ const {PropertyFeature} = require('../models/propertyFeature');
       const states = await State.find();
       const statuses = await StatusCategory.find();
       const features = await PropertyFeature.find();
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
       res.render('property/new',{ 
@@ -151,6 +162,8 @@ const {PropertyFeature} = require('../models/propertyFeature');
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
       res.render('property/new', { categories, states, statuses, features });
     },
   
@@ -235,6 +248,10 @@ const {PropertyFeature} = require('../models/propertyFeature');
 //     await newProperty.save();
 //     res.redirect('/property');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+// };
+>>>>>>> Stashed changes
+=======
 // };
 >>>>>>> Stashed changes
 =======
