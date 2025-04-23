@@ -7,6 +7,6 @@ const navbarSchema = new mongoose.Schema({
     }
 });
 
-const Navbar = mongoose.model('Navbar', navbarSchema);
+const Navbar = mongoose.model('navbar', navbarSchema); 
 
 module.exports = Navbar;

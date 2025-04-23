@@ -1,0 +1,22 @@
+<nav class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <% if (companyInfo && companyInfo.Logo) { %>
+                        <a href="/home">
+                            <img src="<%= companyInfo.Logo %>" alt="Company Logo" class="h-12 hover:opacity-80 transition-opacity">
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    function toggleMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('hidden'); 
+    }
+</script>

@@ -55,7 +55,7 @@ const companyInfoSchema = new mongoose.Schema({
         required: true
     }
 }, {
-    timestamps: true
+    collection: 'company_info'
 });
 
 const Company_Info = mongoose.model('Company_Info', companyInfoSchema);
