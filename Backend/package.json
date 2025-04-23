@@ -18,9 +18,10 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
     "jquery-ui": "^1.13.2",
-    "slick-carousel": "^1.8.1",
     "lightbox2": "^2.11.3",
-    "mongoose": "^8.0.0"
+    "mongoose": "^8.0.0",
+    "multer": "^1.4.5-lts.2",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
