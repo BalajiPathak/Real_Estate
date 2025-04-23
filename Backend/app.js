@@ -10,7 +10,7 @@ mongoose.connect('mongodb+srv://balajipathak:pUo5vnHtW84bZTej@cluster0.himqpss.m
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));
 
-app.use( userRoutes);
+app.use(userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
