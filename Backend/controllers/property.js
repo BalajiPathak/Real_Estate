@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { PropertyData } = require('../models/propertyData');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 const {PropertyCategory} = require('../models/propertyCategory');
 const {State} = require('../models/state');
 const {StatusCategory} = require('../models/statusCategory');
@@ -8,10 +9,15 @@ const {PropertyFeature} = require('../models/propertyFeature');
 const{PropertyImages}= require('../models/propertyImage');
 const{PropertyDataFeature}= require ('../models/propertyFeature');
 =======
+=======
+>>>>>>> Stashed changes
 const { PropertyCategory } = require('../models/propertyCategory');
 const {State} = require('../models/state');
 const {StatusCategory} = require('../models/statusCategory');
 const {PropertyFeature} = require('../models/propertyFeature');
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     exports.getAllProperties= async (req, res) => {
@@ -22,7 +28,11 @@ const {PropertyFeature} = require('../models/propertyFeature');
         return { ...p, features: features.map(f => f.featureId.name), images };
       }));
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       res.render('property', { properties: all });
+=======
+      res.render('index', { properties: all });
+>>>>>>> Stashed changes
 =======
       res.render('index', { properties: all });
 >>>>>>> Stashed changes
@@ -44,6 +54,7 @@ const {PropertyFeature} = require('../models/propertyFeature');
       const states = await State.find();
       const statuses = await StatusCategory.find();
       const features = await PropertyFeature.find();
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
       res.render('property/new',{ 
         pageTitle: 'Real Estate',
@@ -138,6 +149,8 @@ const {PropertyFeature} = require('../models/propertyFeature');
     // }
  
 =======
+=======
+>>>>>>> Stashed changes
       res.render('property/new', { categories, states, statuses, features });
     },
   
@@ -221,5 +234,9 @@ const {PropertyFeature} = require('../models/propertyFeature');
 
 //     await newProperty.save();
 //     res.redirect('/property');
+<<<<<<< Updated upstream
+// };
+>>>>>>> Stashed changes
+=======
 // };
 >>>>>>> Stashed changes
