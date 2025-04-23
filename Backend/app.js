@@ -19,8 +19,8 @@ mongoose.connect('mongodb+srv://balajipathak:pUo5vnHtW84bZTej@cluster0.himqpss.m
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));
 
-// Routes
-app.use(homeRoutes); // Add this line
+
+app.use(homeRoutes); 
 app.use(userRoutes);
 app.use(navbarRoutes);
 app.use(companyInfoRoutes);
@@ -33,6 +33,7 @@ app.use((err, req, res, next) => {
         error: err.message 
     });
 });
+app.use(userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
