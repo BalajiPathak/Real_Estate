@@ -3,7 +3,6 @@ const CompanyInfo = require('../models/companyInfo');
 
 const createNavbar = async (req, res) => {
     try {
-
         const navbar = new Navbar({
             Navbar_Name: req.body.Navbar_Name
         });
@@ -25,12 +24,12 @@ const createNavbar = async (req, res) => {
 
 const getAllNavbars = async (req, res) => {
     try {
-        const navbars = await Navbar.find();
+        const navbar = await Navbar.find();  
         const companyInfo = await CompanyInfo.findOne();
         
         res.render('includes/navbar', { 
             pageTitle: 'Real Estate',
-            navbars: navbars,
+            navbar: navbar,  // Changed to match view
             companyInfo: companyInfo || {},
             isLoggedIn: false,
             path: '/'

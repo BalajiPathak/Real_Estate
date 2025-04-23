@@ -1,50 +1,46 @@
-<%- include('head.ejs') %>
-<header class="bg-white shadow-md">
-    <div class="container mx-auto px-4 py-3">
-        <div class="flex justify-between items-center">
-            <!-- Company Info -->
-            <div class="flex items-center">
-                <div class="ml-4 flex space-x-4">
-                    <% if (companyInfo) { %>
-                        <div class="text-sm">
-                            <i class="fas fa-phone"></i>
-                            <span><%= companyInfo.Phone_No %></span>
-                        </div>
-                        <div class="text-sm">
-                            <i class="fas fa-envelope"></i>
-                            <span><%= companyInfo.Email %></span>
-                        </div>
-                    <% } %>
+<%# include('head.ejs') %>
+
+<div id="preloader">
+    <div id="status">&nbsp;</div>
+</div>
+<!-- Body content -->
+
+<div class="header-connect">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 col-sm-8 col-xs-12">
+                <div class="header-half header-call">
+                    <p>
+                        <% if (companyInfo) { %>
+                            <span><i class="pe-7s-call"></i> <%= companyInfo.Phone_No %></span>
+                            <span><i class="pe-7s-mail"></i> <%= companyInfo.Email %></span>
+                        <% } %>
+                    </p>
                 </div>
             </div>
-
-            <!-- Social Links -->
-            <div class="flex space-x-4">
-                <% if (companyInfo) { %>
-                    <% if (companyInfo.facebook) { %>
-                        <a href="<%= companyInfo.facebook %>" class="text-gray-600 hover:text-rose-500">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                    <% } %>
-                    <% if (companyInfo.Instagram) { %>
-                        <a href="<%= companyInfo.Instagram %>" class="text-gray-600 hover:text-rose-500">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    <% } %>
-                    <% if (companyInfo.twitter) { %>
-                        <a href="<%= companyInfo.twitter %>" class="text-gray-600 hover:text-rose-500">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    <% } %>
-                    <% if (companyInfo.linkedIn) { %>
-                        <a href="<%= companyInfo.linkedIn %>" class="text-gray-600 hover:text-rose-500">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                    <% } %>
-                <% } %>
+            <div class="col-md-2 col-md-offset-5  col-sm-3 col-sm-offset-1  col-xs-12">
+                <div class="header-half header-social">
+                    <ul class="list-inline">
+                        <% if (companyInfo) { %>
+                            <% if (companyInfo.facebook) { %>
+                                <li><a href="<%= companyInfo.facebook %>"><i class="fa fa-facebook"></i></a></li>
+                            <% } %>
+                            <% if (companyInfo.twitter) { %>
+                                <li><a href="<%= companyInfo.twitter %>"><i class="fa fa-twitter"></i></a></li>
+                            <% } %>
+                            <% if (companyInfo.Instagram) { %>
+                                <li><a href="<%= companyInfo.Instagram %>"><i class="fa fa-instagram"></i></a></li>
+                            <% } %>
+                            <% if (companyInfo.linkedIn) { %>
+                                <li><a href="<%= companyInfo.linkedIn %>"><i class="fa fa-linkedin"></i></a></li>
+                            <% } %>
+                        <% } %>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</header>
+</div>
 
-<%- include('end.ejs') %>
+<!-- Remove this line as it causes circular reference -->
+<%# include('end.ejs') %>
