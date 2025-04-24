@@ -4,23 +4,12 @@ const multer = require('multer');
 const path = require('path');
 const userRoutes = require('./routes/user');
 const propertyRoutes = require('./routes/property');
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
 const homeRoutes= require('./routes/home');
 const navbarRoutes =require('./routes/navbar');
 const companyInfoRoutes =require('./routes/companyInfo');
 
 
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 const app = express();
 
 // Add debug logging
@@ -115,17 +104,6 @@ app.use((err, req, res, next) => {
 //property routes
 app.use('/property', propertyRoutes);
 
-//property routes
-app.use('/property', propertyRoutes);
-
-//property routes
-app.use('/property', propertyRoutes);
-
-//property routes
-app.use('/property', propertyRoutes);
-
-//property routes
-app.use('/property', propertyRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
