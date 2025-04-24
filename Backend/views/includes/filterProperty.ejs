@@ -1,0 +1,54 @@
+<form action="/property" method="GET" class="form-inline">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <input type="text" name="keyword" class="form-control" placeholder="Keyword">
+      </div>
+      <div class="col-md-4">
+        <select name="stateId" class="form-control">
+          <option value="">Select State</option>
+          <% states.forEach(state => { %>
+            <option value="<%= state._id %>"><%= state.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select name="statusId" class="form-control">
+          <option value="">Select Status</option>
+          <% statuses.forEach(status => { %>
+            <option value="<%= status._id %>"><%= status.name %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+  
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <select name="categoryId" class="form-control">
+          <option value="">Select Category</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat._id %>"><%= cat.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <input type="number" name="minPrice" class="form-control" placeholder="Min Price">
+      </div>
+      <div class="col-md-4">
+        <input type="number" name="maxPrice" class="form-control" placeholder="Max Price">
+      </div>
+    </div>
+  
+    <div class="row mb-3">
+      <% features.forEach(feature => { %>
+        <div class="col-sm-3">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="features" value="<%= feature._id %>">
+            <label class="form-check-label"><%= feature.name %></label>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+  <%- include('partials/property-filter', { categories, states, statuses, features }) %>
