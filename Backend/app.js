@@ -104,6 +104,7 @@ app.use((err, req, res, next) => {
 //property routes
 app.use('/property', propertyRoutes);
 
+// app.use('/home', propertyRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -33,6 +33,10 @@ const propertyDataSchema = new mongoose.Schema({
         ref: 'State',
         required: true
     },
+    cityId:{
+        type:String,
+        required:true
+    },
     statusId:
     {
         type: mongoose.Schema.Types.ObjectId,
