@@ -212,3 +212,49 @@ const{PropertyDataFeature}= require ('../models/propertyFeature');
 //     await newProperty.save();
 //     res.redirect('/property');
 
+// exports.getAllProperties = async (req, res) => {
+//   const { keyword, stateId, categoryId, statusId, minPrice, maxPrice, features } = req.query;
+
+//   let filter = {};
+//   if (keyword) filter.name = { $regex: keyword, $options: 'i' };
+//   if (stateId) filter.stateId = stateId;
+//   if (categoryId) filter.categoryId = categoryId;
+//   if (statusId) filter.statusId = statusId;
+//   if (minPrice || maxPrice) {
+//     filter.price = {};
+//     if (minPrice) filter.price.$gte = parseInt(minPrice);
+//     if (maxPrice) filter.price.$lte = parseInt(maxPrice);
+//   }
+
+//   const baseProperties = await PropertyData.find(filter)
+//     .populate('categoryId stateId statusId userId')
+//     .lean();
+
+//   const filtered = await Promise.all(baseProperties.map(async (p) => {
+//     const pFeatures = await PropertyDataFeature.find({ propertyId: p._id }).populate('featureId').lean();
+//     const featureIds = pFeatures.map(f => f.featureId._id.toString());
+
+//     // If feature filtering is enabled
+//     if (features) {
+//       const selectedFeatures = Array.isArray(features) ? features : [features];
+//       const hasAllFeatures = selectedFeatures.every(f => featureIds.includes(f));
+//       if (!hasAllFeatures) return null;
+//     }
+
+//     const images = await PropertyImages.find({ propertyId: p._id });
+//     return { ...p, features: pFeatures.map(f => f.featureId.name), images };
+//   }));
+
+//   const categories = await PropertyCategory.find();
+//   const states = await State.find();
+//   const statuses = await StatusCategory.find();
+//   const allFeatures = await PropertyFeature.find();
+
+//   res.render('property', {
+//     properties: filtered.filter(p => p !== null),
+//     categories,
+//     states,
+//     statuses,
+//     features: allFeatures
+//   });
+// };
