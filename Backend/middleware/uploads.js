@@ -1,16 +1,17 @@
 const multer = require('multer');
 const path = require('path');
- 
+
+// Set up storage engine
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Directory where files will be saved
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Filename with timestamp
+    }
 });
- 
-const upload = multer({ storage: storage });
- 
+
+// Initialize multer with the storage settings
+const upload = multer({ storage });
+
 module.exports = upload;

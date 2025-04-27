@@ -58,13 +58,11 @@ const propertyDataSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false
     },
     termsAndConditions: {
         type:Boolean,
         required: true
     }
 });
-
-
 module.exports = mongoose.model('PropertyData', propertyDataSchema);

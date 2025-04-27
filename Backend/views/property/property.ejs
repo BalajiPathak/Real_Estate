@@ -1,0 +1,87 @@
+<%- include('../includes/head.ejs') %>
+<body>
+
+<!-- Body content -->
+
+
+<!-- property area -->
+<div class="properties-area recent-property" style="background-color: #FFF;">
+    <div class="container">
+        <div class="row  pr0 padding-top-40 properties-page">
+            <div class="col-md-12 padding-bottom-40 large-search">
+                <div class="col-md-12  clear">
+                    <div class="col-xs-10 page-subheader sorting pl0">
+
+
+                    </div>
+
+                    <div class="col-xs-2 layout-switcher">
+                        <a class="layout-list" href="javascript:void(0);"> <i class="fa fa-th-list"></i> </a>
+                        <a class="layout-grid active" href="javascript:void(0);"> <i class="fa fa-th"></i> </a>
+                    </div><!--/ .layout-switcher-->
+                </div>
+
+                <div class="col-md-12 clear ">
+                    <div id="list-type" class="proerty-th">
+                        <% properties.forEach(property => { %>
+                        <div class="col-sm-6 col-md-3 p0">
+                            <div class="box-two proerty-item">
+                                
+                                <div class="item-thumb">
+                                    <a href="/property/<%= property._id %>" ><img src="/uploads/<%= property.image %>"></a>
+                                </div>
+
+                                <div class="item-entry overflow">
+                                    <h5><a href="/property/<%= property._id %>"><%= property.name %> </a></h5>
+                                    <div class="dot-hr"></div>
+                                    <span class="pull-left"><b> Area :</b><%= property.area %>m² </span>
+                                    <span class="proerty-price pull-right">$ <%= property.price.toLocaleString() %></span>
+                                    <p style="display: none;"><%= property.description %>...</p>
+                                    <div class="property-icon">
+                                        <img src="/assets/img/icon/bed.png">(<%= property.beds %>) |
+                                        <img src="/assets/img/icon/shawer.png">(<%= property.baths %>) |
+                                        <img src="/assets/img/icon/cars.png">(1)
+                                        
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+
+
+                        <% }) %>
+                    </div>
+                </div>
+
+                <div class="col-md-12 clear"> 
+                    <div class="pull-right">
+                        <div class="pagination">
+                            <ul>
+                                <% if (currentPage > 1) { %>
+                                    <li><a href="?page=<%= currentPage - 1 %>">Prev</a></li>
+                                <% } else { %>
+                                    <li class="disabled"><a href="#">Prev</a></li>
+                                <% } %>
+    
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="<%= currentPage === i ? 'active' : '' %>">
+                                        <a href="?page=<%= i %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+    
+                                <% if (currentPage < totalPages) { %>
+                                    <li><a href="?page=<%= currentPage + 1 %>">Next</a></li>
+                                <% } else { %>
+                                    <li class="disabled"><a href="#">Next</a></li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>                
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
