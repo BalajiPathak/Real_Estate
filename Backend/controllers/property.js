@@ -94,43 +94,62 @@ exports.getAllProperties = async (req, res) => {
 
 exports.getPropertyById = async (req, res) => {
   try {
+    // Fetch the property details and populate necessary fields
     const property = await PropertyData.findById(req.params.id)
-      .populate('categoryId stateId statusId userId featureId')  // Populate related fields
-      
-      .lean();
+      .populate('categoryId stateId statusId userId')  // Populate categoryId, stateId, etc.
+      .lean();  // Returns plain JavaScript object
 
     if (!property) {
       return res.status(404).send('Property not found');
     }
 
-    const features = property.propertyDataFeatures || [];  // If no features, use empty array
-    const featureNames = features.map(f => f.featureId.name); // Extract feature names from featureId
-
+    // Manually fetch the related feature data using the feature IDs stored in PropertyDataFeature
+    const propertyFeatures = await PropertyDataFeature.find({ propertyId: property._id })
+      .populate('featureId');
+console.log('dsfsf',propertyFeatures);
+    // Extract feature names from the populated featureId
+    const featureNames = propertyFeatures.map(f => f.featureId.name);
+console.log(featureNames);
+    // Fetch images related to the property
     const images = await PropertyImages.find({ propertyId: property._id }).lean();
+
+    // Fetch videos related to the property
     const videos = await PropertyVideo.find({ propertyId: property._id }).lean();
 
+    // Fetch other similar properties based on the same category
     const properties = await PropertyData.find({
       categoryId: property.categoryId,
-      _id: { $ne: property._id },
-    }).limit(4).lean();
+      _id: { $ne: property._id },  // Exclude the current property
+    }).limit(4)
+      .populate('categoryId stateId statusId userId')  // Populate similar properties as well
+      .lean();
 
+    // Fetch features of the related properties
+    for (let prop of properties) {
+      const relatedPropertyFeatures = await PropertyDataFeature.find({ propertyId: prop._id })
+        .populate('featureId')  // Populate featureId to get feature details
+        .lean();
+      
+      // Add the features to the related property object
+      prop.features = relatedPropertyFeatures.map(f => f.featureId.name);
+    }
+
+    // Render the property details page
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
       isLoggedIn: false,
       path: '/property/property-details',
       property,
-      features: featureNames,  // Pass only the feature names to the view
+      features: featureNames,  // Pass the list of feature names
       images,
       videos,
-      properties,
+      properties,  // Pass the related properties with their features
     });
   } catch (error) {
     console.error('Error fetching property details:', error);
     res.status(500).send('Server Error');
   }
 };
-
-
 
 exports.renderSubmitForm = async (req, res) => {
   const PropertyCategory = mongoose.model('PropertyCategory');
@@ -173,21 +192,18 @@ exports.submitProperty = async (req, res) => {
       userId,
       termsAndConditions,
       videoLink, // Get the video link from form data
+      featureIds // Get the selected feature IDs from form data (assuming they are sent in an array)
     } = req.body;
 
+    // Handle images
     const mainImage = req.files['mainImage']?.[0]?.filename || 'default.jpg';
     const galleryImages = req.files['galleryImages']?.map((file) => file.filename) || [];
-
-    console.log('Main Image:', mainImage); // Check the file name for the main image
-    console.log('Gallery Images:', galleryImages); // Check the gallery images array
 
     // Ensure videoLink is a string (use the first valid value from the array if necessary)
     let videoLinkString = null;
     if (videoLink && Array.isArray(videoLink)) {
-      // Take the first non-empty value from the array
       videoLinkString = videoLink.find(link => link.trim() !== '') || null;
     } else {
-      // If it's already a single string, use it directly
       videoLinkString = videoLink?.trim() || null;
     }
 
@@ -246,6 +262,18 @@ exports.submitProperty = async (req, res) => {
       });
       await videoDoc.save();
       console.log('Video saved to PropertyVideos');
+    }
+
+    // Store selected features in PropertyDataFeature collection (Many-to-Many)
+    if (featureIds && featureIds.length > 0) {
+      for (let featureId of featureIds) {
+        const propertyFeature = new PropertyDataFeature({
+          propertyId,
+          featureId,
+        });
+        await propertyFeature.save();
+      }
+      console.log('Features saved to PropertyDataFeature');
     }
 
     // Redirect to property listing after successful save

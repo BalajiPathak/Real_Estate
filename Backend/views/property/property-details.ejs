@@ -91,9 +91,13 @@
 
                         <h4 class="s-property-title">Features</h4>                
                         <ul>
-                          <% features.forEach(f => { %>  <!-- Loop through features array -->
-                            <li><%= f %></li>  <!-- Display each feature name -->
-                          <% }) %>
+                          <% if (features && features.length > 0) { %>
+                            <% features.forEach(f => { %>  <!-- Loop through the features array -->
+                              <li><%= f %></li>  <!-- Display each feature name -->
+                            <% }) %>
+                          <% } else { %>
+                            <li>No features available</li>  <!-- Display message if no features -->
+                          <% } %>
                         </ul>
 
                       </div>

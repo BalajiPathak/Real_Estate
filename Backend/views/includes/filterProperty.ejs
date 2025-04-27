@@ -12,7 +12,7 @@
         <div class="col-md-4">
           <select name="cityId" class="selectpicker" data-live-search="true" data-live-search-style="begins" title="Select your city">
             <% cities.forEach(city => { %>
-              <option value="<%= city._id %>" <%= city._id == cityId ? 'selected' : '' %>><%= city.name %></option>
+              <option value="<%= city._id %>" ><%= city.name %></option>
             <% }); %>
           </select>
         </div>
@@ -21,9 +21,9 @@
         <div class="col-md-4">
           <select name="status" class="selectpicker show-tick form-control">
             <option value="">- Status -</option>
-            <option value="Rent" <%= status == 'Rent' ? 'selected' : '' %>>Rent</option>
-            <option value="Buy" <%= status == 'Buy' ? 'selected' : '' %>>Buy</option>
-            <option value="Used" <%= status == 'Used' ? 'selected' : '' %>>Used</option>
+            <option value="Rent" >Rent</option>
+            <option value="Buy" >Buy</option>
+            <option value="Used" >Used</option>
           </select>
         </div>
       </div>
