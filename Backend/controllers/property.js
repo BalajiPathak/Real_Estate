@@ -16,7 +16,7 @@ const FilterProperty = require('../models/filterProperty'); // Import the Filter
 exports.getAllProperties = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 6;
+    const limit = 12;
     const skip = (page - 1) * limit;
 
     // Fetch dynamic data for filter options
