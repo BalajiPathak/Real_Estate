@@ -18,17 +18,17 @@
                           </div> 
 
                           <ul id="fullWidth-gallery" class="gallery list-unstyled cS-hidden">
-                              <li data-thumb="assets/img/property-1/property1.jpg"> 
-                                  <img src="assets/img/property-1/property1.jpg" />
+                              <li data-thumb="/assets/img/property-1/property1.jpg"> 
+                                  <img src="/assets/img/property-1/property1.jpg" />
                               </li>
-                              <li data-thumb="assets/img/property-1/property2.jpg"> 
-                                  <img src="assets/img/property-1/property3.jpg" />
+                              <li data-thumb="/assets/img/property-1/property2.jpg"> 
+                                  <img src="/assets/img/property-1/property3.jpg" />
                               </li>
-                              <li data-thumb="assets/img/property-1/property3.jpg"> 
-                                  <img src="assets/img/property-1/property3.jpg" />
+                              <li data-thumb="/assets/img/property-1/property3.jpg"> 
+                                  <img src="/assets/img/property-1/property3.jpg" />
                               </li>
-                              <li data-thumb="assets/img/property-1/property4.jpg"> 
-                                  <img src="assets/img/property-1/property4.jpg" />
+                              <li data-thumb="/assets/img/property-1/property4.jpg"> 
+                                  <img src="/assets/img/property-1/property4.jpg" />
                               </li>                                         
                           </ul>
                       </div>
@@ -90,14 +90,14 @@
                       <div class="section property-features">      
 
                         <h4 class="s-property-title">Features</h4>                
-                        <ul>
-                          <% if (features && features.length > 0) { %>
-                            <% features.forEach(f => { %>  <!-- Loop through the features array -->
-                              <li><%= f %></li>  <!-- Display each feature name -->
-                            <% }) %>
-                          <% } else { %>
-                            <li>No features available</li>  <!-- Display message if no features -->
-                          <% } %>
+                        <ul> 
+                          <% if (features && features.length > 0) { %> 
+                            <% features.forEach(f => { %>
+                              <li><%= f %></li>
+                            <% }) %> 
+                          <% } else { %> 
+                            <li>No features available</li>
+                          <% } %> 
                         </ul>
 
                       </div>
@@ -121,13 +121,13 @@
                           <h4 class="s-property-title">Share width your friends </h4> 
                           <div class="roperty-social">
                               <ul> 
-                                  <li><a title="Share this on dribbble " href="#"><img src="assets/img/social_big/dribbble_grey.png"></a></li>                                         
-                                  <li><a title="Share this on facebok " href="#"><img src="assets/img/social_big/facebook_grey.png"></a></li> 
-                                  <li><a title="Share this on delicious " href="#"><img src="assets/img/social_big/delicious_grey.png"></a></li> 
-                                  <li><a title="Share this on tumblr " href="#"><img src="assets/img/social_big/tumblr_grey.png"></a></li> 
-                                  <li><a title="Share this on digg " href="#"><img src="assets/img/social_big/digg_grey.png"></a></li> 
-                                  <li><a title="Share this on twitter " href="#"><img src="assets/img/social_big/twitter_grey.png"></a></li> 
-                                  <li><a title="Share this on linkedin " href="#"><img src="assets/img/social_big/linkedin_grey.png"></a></li>                                        
+                                  <li><a title="Share this on dribbble " href="#"><img src="/assets/img/social_big/dribbble_grey.png"></a></li>                                         
+                                  <li><a title="Share this on facebok " href="#"><img src="/assets/img/social_big/facebook_grey.png"></a></li> 
+                                  <li><a title="Share this on delicious " href="#"><img src="/assets/img/social_big/delicious_grey.png"></a></li> 
+                                  <li><a title="Share this on tumblr " href="#"><img src="/assets/img/social_big/tumblr_grey.png"></a></li> 
+                                  <li><a title="Share this on digg " href="#"><img src="/assets/img/social_big/digg_grey.png"></a></li> 
+                                  <li><a title="Share this on twitter " href="#"><img src="/assets/img/social_big/twitter_grey.png"></a></li> 
+                                  <li><a title="Share this on linkedin " href="#"><img src="/assets/img/social_big/linkedin_grey.png"></a></li>                                        
                               </ul>
                           </div>
                       </div>
@@ -172,7 +172,7 @@
 
                                         <div class="col-xs-4 col-sm-4 col-md-4 p-b-15">
                                       <span class="property-info-icon icon-tag">                                                                                      
-                                          <img src="assets/img/icon/sale-orange.png">
+                                          <img src="/assets/img/icon/sale-orange.png">
                                       </span>
                                       <span class="property-info-entry">
                                           <span class="property-info-label">Status</span>
@@ -182,7 +182,7 @@
 
                                   <div class="col-xs-4 col-sm-4 col-md-4 p-b-15">
                                       <span class="property-info icon-area">
-                                          <img src="assets/img/icon/room-orange.png">
+                                          <img src="/assets/img/icon/room-orange.png">
                                       </span>
                                       <span class="property-info-entry">
                                           <span class="property-info-label">Area</span>
@@ -192,7 +192,7 @@
 
                                   <div class="col-xs-4 col-sm-4 col-md-4 p-b-15">
                                       <span class="property-info-icon icon-bed">
-                                          <img src="assets/img/icon/bed-orange.png">
+                                          <img src="/assets/img/icon/bed-orange.png">
                                       </span>
                                       <span class="property-info-entry">
                                           <span class="property-info-label">Bedrooms</span>
@@ -202,7 +202,7 @@
 
                                   <div class="col-xs-4 col-sm-4 col-md-4 p-b-15">
                                       <span class="property-info-icon icon-bath">
-                                          <img src="assets/img/icon/cars-orange.png">
+                                          <img src="/assets/img/icon/cars-orange.png">
                                       </span>
                                       <span class="property-info-entry">
                                           <span class="property-info-label">Bathrooms</span>
@@ -211,7 +211,7 @@
                                   </div>
                                   <div class="col-xs-4 col-sm-4 col-md-4 p-b-15">
                                       <span class="property-info-icon icon-bath">
-                                          <img src="assets/img/icon/os-orange.png">
+                                          <img src="/assets/img/icon/os-orange.png">
                                       </span>
                                       <span class="property-info-entry">
                                           <span class="property-info-label">Bathrooms</span>
@@ -221,7 +221,7 @@
 
                                   <div class="col-xs-4 col-sm-4 col-md-4 p-b-15">
                                       <span class="property-info-icon icon-garage">
-                                          <img src="assets/img/icon/room-orange.png">
+                                          <img src="/assets/img/icon/room-orange.png">
                                       </span>
                                       <span class="property-info-entry">
                                           <span class="property-info-label">Garages</span>
@@ -247,7 +247,7 @@
                               <div class="clear">
                                   <div class="col-xs-4 col-sm-4 dealer-face">
                                       <a href="">
-                                          <img src="assets/img/client-face1.png" class="img-circle">
+                                          <img src="/assets/img/client-face1.png" class="img-circle">
                                       </a>
                                   </div>
                                   <div class="col-xs-8 col-sm-8 ">
@@ -295,7 +295,7 @@
                           <h3 class="panel-title">Ads her  </h3>
                       </div>
                       <div class="panel-body recent-property-widget">
-                          <img src="assets/img/ads.jpg">
+                          <img src="/assets/img/ads.jpg">
                       </div>
                   </div> 
 

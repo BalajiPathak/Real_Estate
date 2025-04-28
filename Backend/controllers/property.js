@@ -23,7 +23,7 @@ exports.getAllProperties = async (req, res) => {
     const cities = await City.find();
     const propertyFeatures = await PropertyFeature.find();
     const filterProperties = await FilterProperty.find(); // Get all filter properties for sliders
-
+   
     const filter = {};
 
     // Apply filters if they exist

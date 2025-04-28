@@ -1,74 +1,95 @@
-<%- include('head.ejs') %>
-<div class="col-md-12 padding-bottom-40 large-search">
-  <div class="search-form wow pulse">
-    <form action="/property" method="GET" class="form-inline">
-      <div class="col-md-12">
-        <!-- Keyword Search Input -->
-        <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="Key word" name="keyword" value="<%= keyword %>">
-        </div>
-        
-        <!-- City Select Dropdown -->
-        <div class="col-md-4">
-          <select name="cityId" class="selectpicker" data-live-search="true" data-live-search-style="begins" title="Select your city">
-            <% cities.forEach(city => { %>
-              <option value="<%= city._id %>" ><%= city.name %></option>
-            <% }); %>
-          </select>
-        </div>
+<%- include('../includes/head.ejs') %>
+<form method="GET" action="/property" class="form-inline">
+  <div class="sidebar-widget advanced-search">
+      <h3 class="sidebar-title">Search Properties</h3>
 
-        <!-- Status Select Dropdown -->
-        <div class="col-md-4">
-          <select name="status" class="selectpicker show-tick form-control">
-            <option value="">- Status -</option>
-            <option value="Rent" >Rent</option>
-            <option value="Buy" >Buy</option>
-            <option value="Used" >Used</option>
-          </select>
-        </div>
+      <!-- Keyword Search -->
+      <div class="form-group">
+          <input 
+              type="text" 
+              name="keyword" 
+              class="form-control" 
+              placeholder="Search by keyword"
+              value="<%= typeof keyword !== 'undefined' ? keyword : '' %>"
+          />
       </div>
 
-      <div class="col-md-12">
-        <div class="search-row">
-          <% filterProperties.forEach(filter => { %>
-            <div class="col-sm-3">
-              <label for="<%= filter.filterCriteria %>"><%= filter.filterCriteria %> :</label>
-              
-              <!-- Price & Area Slider Inputs -->
-              <% if (filter.filterCriteria === 'Price' || filter.filterCriteria === 'Area') { %>
-                <input type="text" class="span2" value="<%= (filter.filterCriteria === 'Price') ? priceRange : (filter.filterCriteria === 'Area') ? areaRange : '' %>" 
-                       data-slider-min="<%= filter.minRange %>" data-slider-max="<%= filter.maxRange %>" data-slider-step="5" 
-                       data-slider-value="[<%= (filter.filterCriteria === 'Price') ? priceRange.split(',')[0] : (filter.filterCriteria === 'Area') ? areaRange.split(',')[0] : filter.minRange %>, 
-                                           <%= (filter.filterCriteria === 'Price') ? priceRange.split(',')[1] : (filter.filterCriteria === 'Area') ? areaRange.split(',')[1] : filter.maxRange %>]" 
-                       id="<%= filter.filterCriteria %>-range" name="<%= filter.filterCriteria.toLowerCase() + 'Range' %>"><br />
-                <b class="pull-left color"><%= filter.minRange %></b>
-                <b class="pull-right color"><%= filter.maxRange %></b>
-              <% } else { %>
-                <!-- Bed, Bath, and other simple filters -->
-                <input type="text" class="form-control" name="<%= filter.filterCriteria.toLowerCase() %>" 
-                       value="<%= filter.filterCriteria === 'Price' ? priceRange : (filter.filterCriteria === 'Area' ? areaRange : (filter.filterCriteria === 'Beds' ? minBeds : (filter.filterCriteria === 'Baths' ? minBaths : '')))%>" />
+      <!-- City Dropdown -->
+      <div class="form-group">
+          <select class="form-control" name="cityId">
+              <option value="">City</option>
+              <% if (cities && cities.length > 0) { %>
+                  <% cities.forEach(city => { %>
+                      <option value="<%= city.id %>" 
+                          <%= cityId == city.id ? 'selected' : '' %> >
+                          <%= city.name %>
+                      </option>
+                  <% }) %>
               <% } %>
-            </div>
-          <% }); %>
-        </div>
-
-        <div class="search-row">
-          <!-- Dynamic Property Features Checkboxes -->
-          <% propertyFeatures.forEach(feature => { %>
-            <div class="col-sm-3">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="features" value="<%= feature.name %>" 
-                    <%= features.includes(feature.name) ? 'checked' : '' %>> <%= feature.name %> (<%= feature.count %>)
-                </label>
-              </div>
-            </div>
-          <% }); %>
-        </div>
+          </select>
       </div>
-      
+
+      <!-- Status Dropdown -->
+      <div class="form-group">
+          <select class="form-control" name="status">
+              <option value="">Property Status</option>
+              <% if (status && status.length > 0) { %>
+                  <% status.forEach(status => { %>
+                      <option value="<%= status._id %>" 
+                          <%= status == 'status' ? 'selected' : '' %>> 
+                          <%= status.name %>
+                      </option>
+                  <% }) %>
+              <% } %>
+          </select>
+      </div>
+
+      <!-- Price Range Slider -->
+      <div class="form-group">
+          <label>Price Range ($)</label>
+          <input id="price-range" class="form-control" type="text" data-slider-min="<%= priceRange.minPrice %>" data-slider-max="<%= priceRange.maxPrice %>" data-slider-step="1000" data-slider-value="[5000,600000]" />
+          <input type="hidden" name="priceRange" id="priceRangeInput" value="<%= typeof priceRange !== 'undefined' ? priceRange : '' %>"/>
+      </div>
+
+      <!-- Area Range Slider -->
+      <div class="form-group">
+          <label>Area Range (sq ft)</label>
+          <input id="property-geo" class="form-control" type="text" data-slider-min="<%= areaRange.minArea %>" data-slider-max="<%= areaRange.maxArea %>" data-slider-step="10" data-slider-value="[50,5000]" />
+          <input type="hidden" name="areaRange" id="areaRangeInput" value="<%= typeof areaRange !== 'undefined' ? areaRange : '' %>"/>
+      </div>
+
+      <!-- Min Baths Slider -->
+      <div class="form-group">
+          <label>Min Baths</label>
+          <input id="min-baths" class="form-control" type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2" />
+          <input type="hidden" name="minBaths" id="minBathsInput" value="<%= typeof minBaths !== 'undefined' ? minBaths : '' %>"/>
+      </div>
+
+      <!-- Min Beds Slider -->
+      <div class="form-group">
+          <label>Min Beds</label>
+          <input id="min-bed" class="form-control" type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2" />
+          <input type="hidden" name="minBeds" id="minBedsInput" value="<%= typeof minBeds !== 'undefined' ? minBeds : '' %>"/>
+      </div>
+
+      <!-- Features (checkboxes) -->
+      <div class="form-group">
+          <label>Features</label><br/>
+          <% const selectedFeatures = Array.isArray(features) ? features : []; %>
+          <% if (propertyFeatures && propertyFeatures.length > 0) { %>
+              <% propertyFeatures.forEach(feature => { %>
+                  <label>
+                      <input type="checkbox" name="features" value="<%= feature.name %>" 
+                      <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %>> 
+                      <%= feature.name %>
+                  </label><br/>
+              <% }) %>
+          <% } %>
+      </div>
+
       <!-- Submit Button -->
-      <button type="submit">Apply Filters</button>
-    </form>
+      <div class="col-md-12 text-center mt-3">
+          <button type="submit" class="btn btn-primary w-100">Search</button>
+      </div>
   </div>
-</div>
+</form>
