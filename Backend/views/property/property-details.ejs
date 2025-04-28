@@ -4,37 +4,7 @@
   <div class="container">   
 
       <div class="clearfix padding-top-40" >
-          <div class="col-md-12 single-property-content">
-              <div class="row">
-                  <div class="light-slide-item full-width-sld">            
-                      <div class="clearfix">
-                          <div class="favorite-and-print">
-                              <a class="add-to-fav" href="#login-modal" data-toggle="modal">
-                                  <i class="fa fa-star-o"></i>
-                              </a>
-                              <a class="printer-icon " href="javascript:window.print()">
-                                  <i class="fa fa-print"></i> 
-                              </a>
-                          </div> 
-
-                          <ul id="fullWidth-gallery" class="gallery list-unstyled cS-hidden">
-                              <li data-thumb="/assets/img/property-1/property1.jpg"> 
-                                  <img src="/assets/img/property-1/property1.jpg" />
-                              </li>
-                              <li data-thumb="/assets/img/property-1/property2.jpg"> 
-                                  <img src="/assets/img/property-1/property3.jpg" />
-                              </li>
-                              <li data-thumb="/assets/img/property-1/property3.jpg"> 
-                                  <img src="/assets/img/property-1/property3.jpg" />
-                              </li>
-                              <li data-thumb="/assets/img/property-1/property4.jpg"> 
-                                  <img src="/assets/img/property-1/property4.jpg" />
-                              </li>                                         
-                          </ul>
-                      </div>
-                  </div>
-              </div>
-          </div>
+          
           
           <div class="col-md-8" style="background-color: rgb(251, 251, 251);">
               <div class="">
@@ -136,9 +106,9 @@
               </div>
               
               <div class="similar-post-section padding-top-40"> 
-                
+                <% properties.forEach(property => { %>
                   <div id="prop-smlr-slide_0"> 
-                    <% properties.forEach(property => { %>
+                   
                       <div class="box-two proerty-item">
                           <div class="item-thumb">
                               <a href="/property/<%= property._id %>" ><img src="/uploads/<%= property.image %>"></a>
@@ -150,10 +120,11 @@
                               <span class="proerty-price pull-right">$ <%= property.price.toLocaleString() %></span> 
                           </div>
                       </div> 
-                      <% }) %>
+                   
                       
                   </div>
-                  
+                  <% }) %>
+                      
               </div>
               
           </div>
