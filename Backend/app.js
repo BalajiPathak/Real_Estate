@@ -63,7 +63,6 @@ app.use(session({
 
 // Add this middleware to make user data available globally
 
->>>>>>> Stashed changes
 app.use((req, res, next) => {
     res.locals.isLoggedIn = !!req.session.user;
     res.locals.currentUser = req.session.user;
