@@ -5,16 +5,24 @@ const blogCommentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    Blog_Id: {
+    BlogId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'blog',
         required: true
     },
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
+    name:{
+        type:String,
+        required:true
+    },
+    Img:{
+        type:String,
+        requires:true
+    },
+    Date: {
+        type: Date,
+        default: Date.now,
         required: true
-    }
+    },
 }, {
     timestamps: true
 });

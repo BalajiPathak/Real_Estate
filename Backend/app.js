@@ -17,6 +17,7 @@ const authConfig = require('./config/auth.config');
 const User =require('./models/user');
 // Add these imports at the top
 const propertyRoutes = require('./routes/property');
+const blogRoutes=require('./routes/blog');
 const multer = require('multer');
 
 
@@ -62,6 +63,7 @@ app.use(session({
 }));
 
 // Add this middleware to make user data available globally
+
 app.use((req, res, next) => {
     res.locals.isLoggedIn = !!req.session.user;
     res.locals.currentUser = req.session.user;
@@ -108,6 +110,18 @@ app.use('/assets', express.static(path.join(__dirname, 'assets'), {
         }
     }
 }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => cb(null, 'uploads/'),
+//     filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+//   });
+//   const upload = multer({ storage });
+
+
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // Specific package routes
@@ -148,8 +162,9 @@ app.use(navbarRoutes);
 app.use(companyInfoRoutes);
 app.use(authRoutes);
 app.use(propertyRoutes)
+ app.use(blogRoutes);
 app.use(errorHandler.handle404);
-
+1
 app.use(errorHandler.handle500);
 
 const authenticateToken = (req, res, next) => {
@@ -267,7 +282,6 @@ passport.use(new FacebookStrategy({
         return done(error, null);
     }
 }));
-
 app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
@@ -281,7 +295,8 @@ app.use(authenticateToken);
 // require('./models/statusCategory');
 // require('./models/propertyData');
 
-const PORT =3006;
+// const PORT =3006;
+const PORT = process.env.PORT || 3006;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
