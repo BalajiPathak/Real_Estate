@@ -8,89 +8,128 @@ const { PropertyFeature } = require('../models/propertyFeature');
 const PropertyImages = require('../models/propertyImage');
 const { PropertyDataFeature } = require('../models/propertyFeature');
 const City = require('../models/city');
-const PropertyVideo = require('../models/propertyVideo');  // Import PropertyVideo model
+const PropertyVideo = require('../models/propertyVideo');  
 
 const FilterProperty = require('../models/filterProperty'); // Import the FilterProperty model
 const StatusCategory = require('../models/statusCategory');
 
 
 exports.getAllProperties = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 12;
-    const skip = (page - 1) * limit;
+try {
  
-    // Fetch dynamic data for filter options
-    const cities = await City.find();
-    const propertyFeatures = await PropertyFeature.find();
-    const filterProperties = await FilterProperty.find();
-    const statusCategory = await StatusCategory.find();
+ const page = parseInt(req.query.page) || 1;
+ const limit = 12;
+ const skip = (page - 1) * limit;
+ // Fetch dynamic data for filter options
  
-    // Initialize filter object
-    const filter = {};
+const cities = await City.find();
+ const propertyFeatures = await PropertyFeature.find();
+ const filterProperties = await FilterProperty.find();
+ const statusCategory = await StatusCategory.find();
+ const filter = {};
+ // Apply other filters if they exist
  
-    // Apply filters if they exist
-    if (req.query.keyword) {
-      filter.name = { $regex: req.query.keyword, $options: 'i' }; // Case-insensitive match
-    }
-    if (req.query.cityId) {
-      filter.cityId = req.query.cityId;
-    }
-    if (req.query.statusId) {
-      filter.statusId = req.query.statusId;
-    }
-    if (req.query.priceRange) {
-      const [minPrice, maxPrice] = req.query.priceRange.split(',');
-      filter.price = { $gte: minPrice, $lte: maxPrice };
-    }
-    if (req.query.areaRange) {
-      const [minArea, maxArea] = req.query.areaRange.split(',');
-      filter.area = { $gte: minArea, $lte: maxArea };
-    }
-    if (req.query.minBaths) {
-      filter.baths = { $gte: parseInt(req.query.minBaths) }; // Ensure it's a number
-    }
-    if (req.query.minBeds) {
-      filter.beds = { $gte: parseInt(req.query.minBeds) }; // Ensure it's a number
-    }
-    if (req.query.features && req.query.features.length > 0) {
-      filter.features = { $in: req.query.features }; // Match properties with selected features
-    }
+if (req.query.keyword) {
+ filter.name = { $regex: req.query.keyword, $options: 'i' }; // Case-insensitive match
+}
+ if (req.query.cityId) {
+ filter.cityId = req.query.cityId;
+ }
  
-    // Get the total count of properties matching the filter
-    const totalProperties = await PropertyData.countDocuments(filter);
-    const totalPages = Math.ceil(totalProperties / limit);
+if (req.query.statusId) {
  
-    // Fetch properties with the applied filters
-    const properties = await PropertyData.find(filter)
-      .skip(skip)
-      .limit(limit);
+  filter.statusId = req.query.statusId;
  
-    // Pass the filter properties for sliders to the view
-    res.render('property/property', {
-      pageTitle: 'Real Estate',
-      properties,
-      cities,
-      propertyFeatures,
-      filterProperties,
-      currentPage: page,
-      totalPages,
-      statusCategory,
-      keyword: req.query.keyword || '',
-      cityId: req.query.cityId || '',
-      statusId: req.query.statusId || '',
-      priceRange: req.query.priceRange || '',
-      areaRange: req.query.areaRange || '',
-      minBaths: req.query.minBaths || '',
-      minBeds: req.query.minBeds || '',
-      features: req.query.features || [], // Pass selected features to the view
-    });
-  } catch (error) {
-    console.error('Error fetching properties:', error);
-    res.status(500).send('Server Error');
   }
-};
  
+if (req.query.priceRange) {
+const [minPrice, maxPrice] = req.query.priceRange.split(',');
+ filter.price = { $gte: minPrice, $lte: maxPrice };
+ }
+ 
+ if (req.query.areaRange) {
+ const [minArea, maxArea] = req.query.areaRange.split(',');
+ filter.area = { $gte: minArea, $lte: maxArea };
+ }
+if (req.query.minBaths) {
+filter.baths = { $gte: parseInt(req.query.minBaths) };
+}
+ 
+ if (req.query.minBeds) {
+ filter.beds = { $gte: parseInt(req.query.minBeds) };
+ }
+ 
+ 
+ // NEW: Filter by features (by feature name)
+ if (req.query.features && req.query.features.length > 0) {
+ // 1. Find matching feature IDs by name
+ const selectedFeatures = await PropertyFeature.find({ name: { $in: req.query.features } });
+ const selectedFeatureIds = selectedFeatures.map(f => f._id);
+ 
+ 
+ // 2. Find matching property IDs
+const propertyFeatureMappings = await PropertyDataFeature.find({ featureId: { $in: selectedFeatureIds } });
+ const propertyIds = propertyFeatureMappings.map(pf => pf.propertyId);
+ 
+ 
+// 3. Apply propertyIds to main filter
+filter._id = { $in: propertyIds };
+}
+ 
+ 
+ 
+// Get the total count of properties matching the filter
+ 
+ const totalProperties = await PropertyData.countDocuments(filter);
+const totalPages = Math.ceil(totalProperties / limit);
+ 
+ 
+ 
+// Fetch properties with the applied filters
+const properties = await PropertyData.find(filter)
+ 
+ .skip(skip)
+ 
+.limit(limit);
+ 
+ 
+ 
+ // Pass the filter properties for sliders to the view
+res.render('property/property', {
+pageTitle: 'Real Estate',
+ properties,
+ 
+cities,
+ propertyFeatures,
+ 
+filterProperties,
+ 
+currentPage: page,
+totalPages,
+statusCategory,
+keyword: req.query.keyword || '',
+ cityId: req.query.cityId || '',
+ 
+ statusId: req.query.statusId || '',
+ 
+priceRange: req.query.priceRange || '',
+areaRange: req.query.areaRange || '',
+minBaths: req.query.minBaths || '',
+minBeds: req.query.minBeds || '',
+ 
+ features: req.query.features || [], // Pass selected features to the view
+});
+ 
+ 
+ 
+} catch (error) {
+ 
+ console.error('Error fetching properties:', error);
+ 
+  res.status(500).send('Server Error');
+ }
+ 
+ };
 
 exports.getPropertyById = async (req, res) => {
   try {

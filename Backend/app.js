@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const userRoutes = require('./routes/user');
 const propertyRoutes = require('./routes/property');
-
+const blogRoutes= require('./routes/blog');
 const homeRoutes= require('./routes/home');
 const navbarRoutes =require('./routes/navbar');
 const companyInfoRoutes =require('./routes/companyInfo');
@@ -103,6 +103,9 @@ app.use((err, req, res, next) => {
 
 //property routes
 app.use('/property', propertyRoutes);
+
+//blog routes
+app.use('/blog', blogRoutes);
 
 // app.use('/home', propertyRoutes);
 
