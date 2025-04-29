@@ -12,6 +12,9 @@ const PropertyVideo = require('../models/propertyVideo');
 
 const FilterProperty = require('../models/filterProperty'); // Import the FilterProperty model
 const StatusCategory = require('../models/statusCategory');
+const crypto = require('crypto');
+const CompanyInfo = require('../models/companyInfo');
+const Navbar = require('../models/navbar')
 
 
 exports.getAllProperties = async (req, res) => {
@@ -26,6 +29,9 @@ const cities = await City.find();
  const propertyFeatures = await PropertyFeature.find();
  const filterProperties = await FilterProperty.find();
  const statusCategory = await StatusCategory.find();
+  const companyInfo = await CompanyInfo.findOne();  
+         const navbar = await Navbar.find();  
+ 
  const filter = {};
  // Apply other filters if they exist
  
@@ -118,6 +124,8 @@ priceRange: req.query.priceRange || '',
 areaRange: req.query.areaRange || '',
 minBaths: req.query.minBaths || '',
 minBeds: req.query.minBeds || '',
+companyInfo:companyInfo||[],
+navbar:navbar ||[],
  
  features: req.query.features || [], // Pass selected features to the view
 });
