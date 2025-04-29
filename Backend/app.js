@@ -2,7 +2,6 @@ const express = require('express');
 // Add flash import
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
-const multer = require('multer');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -12,17 +11,73 @@ const companyInfoRoutes = require('./routes/companyInfo');
 const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
 const errorHandler = require('./middleware/errorHandler');
-const expressSession = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const authConfig = require('./config/auth.config');
 const User =require('./models/user');
-// Add this at the top with other imports
+// Add these imports at the top
+const propertyRoutes = require('./routes/property');
+const multer = require('multer');
+
+
+const app = express();          
+// Add after other middleware configurations
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+// Create uploads directory if it doesn't exist
+const fs = require('fs');
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Create multer instance
+const upload = multer({ storage: storage });
+
+// Make uploads directory accessible
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Export upload for use in routes
+module.exports = upload;
+// Add after other app.use() statements
+// Move this before any route declarations
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false, // set to true if using https
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Add this middleware to make user data available globally
+app.use((req, res, next) => {
+    res.locals.isLoggedIn = !!req.session.user;
+    res.locals.currentUser = req.session.user;
+    next();
+});
+
+// Your routes should come after these middlewares
+app.use('/', propertyRoutes);
+
+// Add this to handle file uploads
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 const crypto = require('crypto');
 // Add Facebook Strategy import
 const FacebookStrategy = require('passport-facebook').Strategy;
 
-const app = express();
+
 
 app.use(cookieParser());
 app.use(session({
@@ -34,38 +89,9 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
-const userRoutes = require('./routes/user');
-const propertyRoutes = require('./routes/property');
-const blogRoutes= require('./routes/blog');
-const homeRoutes= require('./routes/home');
-const navbarRoutes =require('./routes/navbar');
-const companyInfoRoutes =require('./routes/companyInfo');
 
-
-
-// Add debug logging
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    next();
-});
-
-// View engine setup
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// Static files middleware with proper MIME types
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-  });
-  const upload = multer({ storage });
-
-
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use(flash());
+// Add flash middleware after session middleware
+app.use(flash());               
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -121,7 +147,7 @@ app.use(homeRoutes);
 app.use(navbarRoutes);
 app.use(companyInfoRoutes);
 app.use(authRoutes);
-
+app.use(propertyRoutes)
 app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
@@ -152,6 +178,7 @@ app.use(passport.session());
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
+
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);
@@ -248,14 +275,13 @@ app.use(errorHandler.handle500);
 
 app.use(authenticateToken);
 
+// Register models
+// require('./models/propertyCategory');
+// require('./models/state');
+// require('./models/statusCategory');
+// require('./models/propertyData');
+
 const PORT =3006;
-app.use('/property', propertyRoutes);
-
-//blog routes
-app.use('/blog', blogRoutes);
-
-// app.use('/home', propertyRoutes);
-
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

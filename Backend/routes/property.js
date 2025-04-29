@@ -1,17 +1,17 @@
 const express = require('express');
-
-const upload= require('../middleware/uploads');
 const router = express.Router();
 const propertyController = require('../controllers/property');
- 
-router.get('/', propertyController.getAllProperties);
-router.get('/new', propertyController.renderSubmitForm);
+const upload = require('../middleware/uploads');
 
-router.post('/', upload.fields([
+// Match the lowercase route from navbar
+router.get('/properties', propertyController.getAllProperties);
+router.get('/property/new', propertyController.renderSubmitForm);
+router.post('/property', upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'galleryImages', maxCount: 10 }
-  ]), propertyController.submitProperty);
-router.get('/:id', propertyController.getPropertyById);
+]), propertyController.submitProperty);
+router.get('/property/:id', propertyController.getPropertyById);
+
 module.exports = router;
  
 

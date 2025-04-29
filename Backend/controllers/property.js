@@ -97,6 +97,8 @@ const properties = await PropertyData.find(filter)
  // Pass the filter properties for sliders to the view
 res.render('property/property', {
 pageTitle: 'Real Estate',
+
+isLoggedIn:req.isLoggedIn || false,
  properties,
  
 cities,
@@ -176,7 +178,7 @@ console.log(featureNames);
     // Render the property details page
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
-      isLoggedIn: false,
+      isLoggedIn: req.isLoggedIn,
       path: '/property/property-details',
       property,
       features: featureNames,  // Pass the list of feature names
@@ -203,7 +205,7 @@ exports.renderSubmitForm = async (req, res) => {
 
   res.render('property/new', {
     pageTitle: 'Real Estate',
-    isLoggedIn: false,
+    isLoggedIn:req.isLoggedIn  ,
     path: '/property/new',
     categories,
     states,
@@ -213,68 +215,48 @@ exports.renderSubmitForm = async (req, res) => {
   });
 };
 
-exports.submitProperty = async (req, res) => {
-  console.log(req.body); // Log the form data to check
-  try {
-      const {
-          name, price, phone, description, categoryId, stateId, statusId, cityId, beds, baths, area, userId, termsAndConditions, videoLink, featureIds
-      } = req.body;
+exports.submitProperty = async (req, res, next) => {
+    try {
+        if (!req.session || !req.session.user || !req.session.user._id) {
+            return res.status(401).json({ error: 'Please login to submit a property' });
+        }
 
-      // Handle images
-      const mainImage = req.files['mainImage']?.[0]?.filename || 'default.jpg';
-      const galleryImages = req.files['galleryImages']?.map((file) => file.filename) || [];
+        // Convert termsAndConditions from "on" to true
+        const propertyData = new PropertyData({
+            ...req.body,
+            userId: req.session.user._id,
+            image: req.files && req.files.mainImage ? req.files.mainImage[0].filename : null,
+            termsAndConditions: req.body.termsAndConditions === 'on' ? true : false
+        });
 
-      // Ensure videoLink is a string
-      let videoLinkString = null;
-      if (videoLink && Array.isArray(videoLink)) {
-          videoLinkString = videoLink.find(link => link.trim() !== '') || null;
-      } else {
-          videoLinkString = videoLink?.trim() || null;
-      }
+        const savedProperty = await propertyData.save();
 
-      // Create a new property document
-      const newProperty = new PropertyData({
-          name, price, phone, description, categoryId, stateId, statusId, cityId, beds, baths, area, userId, termsAndConditions: termsAndConditions === 'on',
-          image: mainImage, galleryImages, videoLink: videoLinkString,
-      });
+        // Handle gallery images if any
+        if (req.files && req.files.galleryImages) {
+            const galleryImages = req.files.galleryImages.map(file => ({
+                image: file.filename,
+                propertyId: savedProperty._id
+            }));
+            await PropertyImages.insertMany(galleryImages);
+        }
 
-      // Save the property to the database
-      await newProperty.save();
-      console.log('Property saved:', newProperty);
+        // Handle video links
+        if (req.body.videoLink && Array.isArray(req.body.videoLink)) {
+            const videoLinks = req.body.videoLink
+                .filter(link => link && link.trim() !== '') // Filter out empty links
+                .map(link => ({
+                    video: link,
+                    propertyId: savedProperty._id
+                }));
+            
+            if (videoLinks.length > 0) {
+                await PropertyVideo.insertMany(videoLinks);
+            }
+        }
 
-      // Now store the image data in PropertyImages collection
-      const propertyId = newProperty._id;
-      const mainImageDoc = new PropertyImages({ propertyId, image: mainImage, isMainImage: true });
-      await mainImageDoc.save();
-
-      // Save gallery images
-      for (let image of galleryImages) {
-          const galleryImageDoc = new PropertyImages({ propertyId, image, isMainImage: false });
-          await galleryImageDoc.save();
-      }
-
-      // Save video link if provided
-      if (videoLinkString) {
-          const videoDoc = new PropertyVideo({ propertyId, video: videoLinkString });
-          await videoDoc.save();
-      }
-
-      // Store selected features in PropertyDataFeature collection (Many-to-Many)
-      if (featureIds && featureIds.length > 0) {
-          for (let featureId of featureIds) {
-              const propertyFeature = new PropertyDataFeature({ propertyId, featureId });
-              await propertyFeature.save();
-          }
-      }
-
-      // Pass the success message to the view
-      res.render('property/welcome', {
-          pageTitle: 'Property Submitted',
-          successMessage: 'Your property has been successfully submitted!',
-      });
-
-  } catch (error) {
-      console.error('Error saving property:', error);
-      res.status(500).send('Error saving property');
-  }
+        res.redirect('/property/' + savedProperty._id);
+    } catch (error) {
+        console.warn('Error saving property:', error);
+        res.status(500).json({ error: error.message });
+    }
 };

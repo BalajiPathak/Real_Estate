@@ -33,10 +33,6 @@ const propertyDataSchema = new mongoose.Schema({
         ref: 'State',
         required: true
     },
-    cityId:{
-        type:String,
-        required:true
-    },
     statusId:
     {
         type: mongoose.Schema.Types.ObjectId,
@@ -58,11 +54,13 @@ const propertyDataSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: false
+        required: true
     },
     termsAndConditions: {
         type:Boolean,
         required: true
     }
 });
+
+
 module.exports = mongoose.model('PropertyData', propertyDataSchema);

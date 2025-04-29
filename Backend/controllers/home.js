@@ -2,13 +2,22 @@ const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
 const Banner = require('../models/banner');
 const BannerDetails = require('../models/bannerDetails');
+const PropertyData = require('../models/propertyData');
+const PropertyCategory = require('../models/propertyCategory');
+const State = require('../models/state');
+const StatusCategory = require('../models/statusCategory');
 
 const getHome = async (req, res) => {
     try {
-        const [companyInfo, navbar, banners] = await Promise.all([
+        const [companyInfo, navbar, banners, featuredProperties] = await Promise.all([
             CompanyInfo.findOne(),
             Navbar.find(),
-            Banner.find().populate('banner_detail_id')  // Changed from findOne to find()
+            Banner.find().populate('banner_detail_id'),
+            PropertyData.find({ beds: { $gt: 5 } })
+                .populate('categoryId')
+                .populate('stateId')
+                .populate('statusId')
+                .limit(8)
         ]);
 
         const isLoggedIn = req.session.isLoggedIn || false;
@@ -17,8 +26,9 @@ const getHome = async (req, res) => {
             pageTitle: 'Real Estate',
             companyInfo: companyInfo || {},
             navbar: navbar || [],
-            banners: banners || [],  // Changed from banner to banners
-            banner: banners[0] || {}, // Add this for single banner reference
+            banners: banners || [],
+            banner: banners[0] || {},
+            featuredProperties: featuredProperties || [],
             errorMessage: null,
             validationErrors: [],
             isLoggedIn: isLoggedIn
