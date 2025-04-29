@@ -1,0 +1,23 @@
+<div class="slider-area">
+    <div class="slider">
+        <div id="bg-slider" class="owl-carousel owl-theme">
+            <% if (banners && banners.length > 0) { %>
+                <% banners.forEach(banner => { %>
+                    <div class="item">
+                        <img src="<%= banner.Banner_Img %>" alt="Banner Image">
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+    <div class="slider-content">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12">
+                <% if (banner && banner.banner_detail_id) { %>
+                    <h2><%= banner.banner_detail_id.Title %></h2>
+                    <p><%= banner.banner_detail_id.Tag_line %></p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

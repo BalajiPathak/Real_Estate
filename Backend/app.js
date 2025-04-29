@@ -1,48 +1,57 @@
 const express = require('express');
+// Add flash import
+const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const path = require('path');
-const userRoutes = require('./routes/user');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const jwt = require('jsonwebtoken');
 const navbarRoutes = require('./routes/navbar');
 const companyInfoRoutes = require('./routes/companyInfo');
 const homeRoutes = require('./routes/home');
+const authRoutes = require('./routes/auth');
+const errorHandler = require('./middleware/errorHandler');
+const expressSession = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const authConfig = require('./config/auth.config');
+const User =require('./models/user');
+// Add this at the top with other imports
+const crypto = require('crypto');
+// Add Facebook Strategy import
+const FacebookStrategy = require('passport-facebook').Strategy;
 
 const app = express();
 
-// Add debug logging
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    next();
-});
-
-// View engine setup
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// Static files middleware with proper MIME types
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Configure static middleware for assets
-app.use('/assets', express.static(path.join(__dirname, 'assets'), {
-    setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        } else if (filePath.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
-        } else if (filePath.endsWith('.woff')) {
-            res.setHeader('Content-Type', 'application/font-woff');
-        } else if (filePath.endsWith('.woff2')) {
-            res.setHeader('Content-Type', 'application/font-woff2');
-        } else if (filePath.endsWith('.ttf')) {
-            res.setHeader('Content-Type', 'font/ttf');
-        } else if (filePath.endsWith('.eot')) {
-            res.setHeader('Content-Type', 'application/vnd.ms-fontobject');
-        } else if (filePath.endsWith('.svg')) {
-            res.setHeader('Content-Type', 'image/svg+xml');
-        }
+app.use(cookieParser());
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
 
-// Node modules static routes
+// Add flash middleware after session middleware
+app.use(flash());
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // Specific package routes
@@ -69,27 +78,148 @@ app.use('/font-awesome', express.static(path.join(__dirname, 'node_modules/font-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB connection
-mongoose.connect('mongodb+srv://balajipathak:pUo5vnHtW84bZTej@cluster0.himqpss.mongodb.net/realEstate')
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.error('MongoDB connection error:', err));
 
-// Routes
+mongoose.connect('mongodb+srv://balajipathak:pUo5vnHtW84bZTej@cluster0.himqpss.mongodb.net/realEstate', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch((err) => console.error('MongoDB connection error:', err));
+
 app.use(homeRoutes); 
-app.use(userRoutes);  // Removed duplicate userRoutes
+
 app.use(navbarRoutes);
 app.use(companyInfoRoutes);
+app.use(authRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ 
-        message: 'Something went wrong!', 
-        error: err.message 
+app.use(errorHandler.handle404);
+
+app.use(errorHandler.handle500);
+
+const authenticateToken = (req, res, next) => {
+    const token = req.cookies.jwt;
+    
+    if (!token) {
+        return next();
+    }
+
+    jwt.verify(token, 'your-jwt-secret', (err, user) => {
+        if (err) {
+            return next();
+        }
+        req.user = user;
+        next();
     });
+};
+
+app.use(authenticateToken);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport configuration
+passport.serializeUser((user, done) => {
+    done(null, user.id);
 });
 
-const PORT = process.env.PORT || 3000;
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
+// Google OAuth strategy
+passport.use(new GoogleStrategy({
+    clientID: authConfig.google.clientID,
+    clientSecret: authConfig.google.clientSecret,
+    callbackURL: authConfig.google.callbackURL
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        let user = await User.findOne({ Email: profile.emails[0].value });
+        
+        if (!user) {
+            user = new User({
+                First_Name: profile.name.givenName,
+                Last_Name: profile.name.familyName,
+                Email: profile.emails[0].value,
+                Password: crypto.randomBytes(16).toString('hex'),
+                googleId: profile.id,
+                auth_provider: 'google',
+                is_verified: true // Google users are already verified
+            });
+            await user.save();
+        } else if (!user.googleId) {
+            // If user exists but doesn't have googleId (registered via email)
+            user.googleId = profile.id;
+            user.auth_provider = 'google';
+            await user.save();
+        }
+        return done(null, user);
+    } catch (error) {
+        return done(error, null);
+    }
+}));
+
+// After Google Strategy, add Facebook Strategy
+passport.use(new FacebookStrategy({
+    clientID: authConfig.facebook.clientID,
+    clientSecret: authConfig.facebook.clientSecret,
+    callbackURL: authConfig.facebook.callbackURL,
+    profileFields: authConfig.facebook.profileFields
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        // First check if user exists with Facebook ID
+        let user = await User.findOne({ facebookId: profile.id });
+        
+        // If no user found with Facebook ID, check email
+        if (!user && profile.emails && profile.emails[0]) {
+            user = await User.findOne({ Email: profile.emails[0].value });
+            
+            if (user) {
+                // If user exists with email but has Google auth
+                if (user.googleId) {
+                    return done(null, false, { 
+                        message: 'This email is already registered with Google. Please use Google Sign In.'
+                    });
+                }
+                
+                // Update existing user with Facebook ID
+                user.facebookId = profile.id;
+                user.auth_provider = 'facebook';
+                await user.save();
+            } else {
+                // Create new user if doesn't exist
+                user = new User({
+                    First_Name: profile.name.givenName || profile.displayName.split(' ')[0],
+                    Last_Name: profile.name.familyName || profile.displayName.split(' ')[1] || '',
+                    Email: profile.emails[0].value,
+                    Password: crypto.randomBytes(16).toString('hex'),
+                    facebookId: profile.id,
+                    auth_provider: 'facebook',
+                    is_verified: true
+                });
+                await user.save();
+            }
+        }
+        
+        return done(null, user);
+    } catch (error) {
+        return done(error, null);
+    }
+}));
+
+app.use(errorHandler.handle404);
+
+app.use(errorHandler.handle500);
+
+
+app.use(authenticateToken);
+
+const PORT =3006;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

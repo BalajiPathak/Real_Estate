@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 
+// Drop existing indexes when connecting
+mongoose.connection.once('open', async () => {
+    try {
+        // Drop all indexes
+        await mongoose.connection.db.collection('users').dropIndexes();
+    } catch (err) {
+        console.log('No indexes to drop');
+    }
+});
+
 const userSchema = new mongoose.Schema({
     First_Name: {
         type: String,
@@ -11,7 +21,6 @@ const userSchema = new mongoose.Schema({
     },
     Password: {
         type: String,
-        unique: true,
         required: true
     },
     Email: {
@@ -20,33 +29,46 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     Facebook: {
-        type: String
+        type: String,
+        default: null
     },
     Twitter: {
-        type: String
+        type: String,
+        default: null
     },
     Website: {
-        type: String
+        type: String,
+        default: null
     },
     Public_email: {
-        type: String
+        type: String,
+        default: null
     },
     Phone: {
-        type: String
+        type: String,
+        default: null
     },
     FAX: {
-        type: String
+        type: String,
+        default: null
     },
     user_image: {
-        type: String
+        type: String,
+        default: null
     },
     user_type_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userType',
-        required: true
+        required: false,
+        default: null
+    },
+    googleId: {
+        type: String,
+        default: null
     },
     auth_provider: {
         type: String,
+        enum: ['local', 'google', 'facebook'],
         default: 'local'
     },
     is_verified: {
@@ -56,9 +78,14 @@ const userSchema = new mongoose.Schema({
     is_blocked: {
         type: Boolean,
         default: false
-    }
+    },
+    resetToken: String,
+    resetTokenExpiration: Date
+}, {
+    timestamps: true
 });
 
-const user = mongoose.model('user', userSchema);
+// Create only the necessary indexes
+userSchema.index({ Email: 1 }, { unique: true });
 
-module.exports = user;
+module.exports = mongoose.model('User', userSchema);

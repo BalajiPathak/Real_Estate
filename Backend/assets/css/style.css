@@ -1235,7 +1235,7 @@ Asside widgets CSS
     border-color: transparent;
 }
 .panel {
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
     background-color: #FFF;
     border: transparent;
     border-radius: 0px;

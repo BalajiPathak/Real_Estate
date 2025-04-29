@@ -1,13 +1,11 @@
 <%- include('includes/head.ejs') %>
 <body>
     <%- include('includes/header.ejs') %>
-    <hr>
-    <%- include('includes/navbar.ejs') %>
     
-    <main>
-        <h1>Welcome to Real Estate</h1>
-    </main>
-
+    <%- include('includes/navbar.ejs', { isLoggedIn: isLoggedIn }) %>
+    
+    <%- include('includes/banner.ejs') %>
+    
     <!-- Add your footer scripts here -->
     <script src="/assets/js/main.js"></script>
     <%- include('includes/end.ejs') %>

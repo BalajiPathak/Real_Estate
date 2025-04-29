@@ -1,56 +1,50 @@
-<nav class="bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-            <!-- Logo Section -->
-            <div class="flex-shrink-0">
-                <% if (companyInfo && companyInfo.Logo) { %>
-                    <a href="/home">
-                        <img src="<%= companyInfo.Logo %>" alt="Company Logo" class="h-12 hover:opacity-80 transition-opacity">
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navigation">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <% if (companyInfo && companyInfo.Logo) { %>
+                <a class="navbar-brand" href="/home">
+                    <img src="<%= companyInfo.Logo %>" alt="Company Logo">
+                </a>
+            <% } %>
+        </div>
+        <div class="collapse navbar-collapse yamm" id="navigation">
+            <div class="button navbar-right">
+                <% if (!isLoggedIn) { %>
+                    <a href="/login"> 
+                        <button class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.45s">Login</button>
+                    </a>
+                    <a href="/signup"> 
+                        <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">Signin</button>
+                    </a>
+                <% } else { %>
+                    <form action="/logout" method="post" style="display: inline;">
+                        <button type="submit" class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.45s">Logout</button>
+                    </form>
+                    <a href="/submit-property"> 
+                        <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">Submit Your Property</button>
                     </a>
                 <% } %>
             </div>
-
-            <!-- Desktop Menu -->
-            <div class="hidden md:block flex-grow">
-                <div class="flex justify-end items-center  space-x-4">
-                    <% if (navbar && navbar.length > 0) { %>
-                        <% navbar.forEach(function(nav) { %>
-                            <a href="#" class="text-gray-400 text-2xl hover:text-gray-200 px-3 py-2 rounded-md font-normal">
+            <ul class="main-nav nav navbar-nav navbar-right">
+                <% if (navbar && navbar.length > 0) { %>
+                    <% navbar.forEach(function(nav) { %>
+                        <li class="dropdown ymm-sw" data-wow-delay="0.1s">
+                            <a href="/<%= nav.Navbar_Name.toLowerCase() %>" data-hover="dropdown">
                                 <%= nav.Navbar_Name %>
                             </a>
-                        <% }); %>
-                    <% } %>
-                </div>
-            </div>
-
-            <!-- Mobile menu button -->
-            <div class="md:hidden">
-                <button onclick="toggleMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-rose-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black-500">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path class="menu-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="hidden md:hidden">
-        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <% if (navbar && navbar.length > 0) { %>
-                <% navbar.forEach(function(nav) { %>
-                    <a href="#" class="text-gray-600 hover:text-rose-500 block px-3 py-2 rounded-md text-base font-medium">
-                        <%= nav.Navbar_Name %>
-                    </a>
-                <% }); %>
-            <% } %>
+                        </li>
+                    <% }); %>
+                <% } else { %>
+                    <li><a href="#">No items available</a></li>
+                <% } %>
+            </ul>
         </div>
     </div>
 </nav>
-
-<script>
-    function toggleMenu() {
-        const mobileMenu = document.getElementById('mobileMenu');
-        mobileMenu.classList.toggle('hidden');
-    }
-</script>

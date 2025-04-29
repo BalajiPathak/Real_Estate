@@ -12,7 +12,7 @@ const bannerSchema = new mongoose.Schema({
     },
     banner_detail_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'bannerDetails',
+        ref: 'banner_details',  // Updated to match the model name
         required: true
     }
 });

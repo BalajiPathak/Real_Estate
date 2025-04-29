@@ -7,7 +7,7 @@
 
 <div class="header-connect">
     <div class="container">
-        <div class="row">
+        <div class="row mobile-header">
             <div class="col-md-5 col-sm-8 col-xs-12">
                 <div class="header-half header-call">
                     <p>
@@ -18,9 +18,9 @@
                     </p>
                 </div>
             </div>
-            <div class="col-md-2 col-md-offset-5  col-sm-3 col-sm-offset-1  col-xs-12">
+            <div class="col-md-2 col-md-offset-5 col-sm-3 col-sm-offset-1 col-xs-12">
                 <div class="header-half header-social">
-                    <ul class="list-inline">
+                    <ul class="list-inline social-icons">
                         <% if (companyInfo) { %>
                             <% if (companyInfo.facebook) { %>
                                 <li><a href="<%= companyInfo.facebook %>"><i class="fa fa-facebook"></i></a></li>
@@ -41,6 +41,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- Remove this line as it causes circular reference -->
 <%# include('end.ejs') %>

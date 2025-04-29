@@ -11,6 +11,6 @@ const bannerDetailsSchema = new mongoose.Schema({
     }
 });
 
-const Banner_Details = mongoose.model('Banner_Details', bannerDetailsSchema);
+const BannerDetails = mongoose.model('banner_details', bannerDetailsSchema);
 
-module.exports = Banner_Details;
+module.exports = BannerDetails;
