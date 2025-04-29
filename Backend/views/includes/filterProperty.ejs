@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Search Filters</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css" rel="stylesheet" />
+  <style>
+    .color { color: #333; }
+    .pull-left { float: left; }
+    .pull-right { float: right; }
+    .btn-warning { background-color: #ffcc00; color: #fff; }
+    .slider-selection{background-image: linear-gradient(to bottom, #f1e31a 0, #fdfa1f 100%);}
+    .slider-handle {background-image: linear-gradient(to bottom, #f1ba23 0, #f1ba23 100%);}
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+  <div class="col-md-12 padding-bottom-40 large-search">
+    <div class="search-form wow pulse">
+      <form action="/property" method="GET" class="form-inline">
+        <div class="col-md-12">
+          <div class="col-md-4">
+            <input type="text" name="keyword" class="form-control" placeholder="Search by keyword" value="<%= typeof keyword !== 'undefined' ? keyword : '' %>" />
+          </div>
+          <div class="col-md-4">
+            <select class="form-control" name="cityId">
+              <option value="">City</option>
+              <% if (cities && cities.length > 0) { %>
+                <% cities.forEach(city => { %>
+                  <option value="<%= city.id %>" <%= cityId == city.id ? 'selected' : '' %>><%= city.name %></option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select class="form-control" name="statusId">
+              <option value="">Property Status</option>
+              <% if (statusCategory && statusCategory.length > 0) { %>
+                <% statusCategory.forEach(status => { %>
+                    <option value="<%= status.id %>" <%= status.Id == status.id ? 'selected' : '' %>><%= status.name %></option>
+              <!-- <option <%= statusId === 'Rent' ? 'selected' : '' %>>Rent</option>
+              <option <%= statusId === 'Buy' ? 'selected' : '' %>>Buy</option> -->
+              <% }) %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <div class="search-row" style="margin-top: 20px;">
+           
+            <!-- Price Range -->
+            <div class="col-sm-3">
+              <label>Price range ($):</label>
+              <input type="text" id="price-range" class="span2" />
+              <br />
+              <b class="pull-left color">300000$</b>
+              <b class="pull-right color">10000000$</b>
+              <input type="hidden" name="priceRange" id="priceRangeInput" value="<%= typeof priceRange !== 'undefined' ? priceRange : '' %>" />
+            </div>
+
+            <!-- Min Baths -->
+            <div class="col-sm-3">
+              <label>Baths:</label>
+              <input type="text" id="min-baths" class="span2" />
+              <br />
+              <b class="pull-left color">1</b>
+              <b class="pull-right color">120</b>
+              <input type="hidden" name="minBaths" id="minBathsInput" value="<%= typeof minBaths !== 'undefined' ? minBaths : '' %>" />
+            </div>
+
+            <!-- Min Beds -->
+            <div class="col-sm-3">
+              <label>Beds:</label>
+              <input type="text" id="min-bed" class="span2" />
+              <br />
+              <b class="pull-left color">1</b>
+              <b class="pull-right color">120</b>
+              <input type="hidden" name="minBeds" id="minBedsInput" value="<%= typeof minBeds !== 'undefined' ? minBeds : '' %>" />
+            </div>
+
+            <!-- Area Range -->
+            <div class="col-sm-3">
+              <label>Area range (sqft):</label>
+              <input type="text" id="area-range" class="span2" />
+              <br />
+              <b class="pull-left color">100 sqft</b>
+              <b class="pull-right color">10000 sqft</b>
+              <input type="hidden" name="areaRange" id="areaRangeInput" value="<%= typeof areaRange !== 'undefined' ? areaRange : '' %>" />
+            </div>
+
+          </div>
+
+          <!-- Features Section -->
+          <div class="search-row" style="margin-top: 20px;">
+            <div class="col-sm-12">
+              <% const selectedFeatures = Array.isArray(features) ? features : []; %>
+              <% if (propertyFeatures && propertyFeatures.length > 0) { %>
+                <% propertyFeatures.forEach(feature => { %>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="features" value="<%= feature.name %>" <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> />
+                      <%= feature.name %>
+                    </label>
+                  </div>
+                <% }) %>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Yellow Button -->
+          <div class="col-md-12" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-warning">Apply Filters</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Slider JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Price Range
+      var priceSlider = new Slider('#price-range', {
+        min: 0,
+        max: 50000000,
+        step: 1000,
+        value: [3000000, 50000000],
+        tooltip_split: true,
+        range: true
+      });
+
+      priceSlider.on('slide', function(value) {
+        document.getElementById('priceRangeInput').value = value[0] + ',' + value[1];
+      });
+
+      // Min Baths
+      var bathsSlider = new Slider('#min-baths', {
+        min: 0,
+        max: 120,
+        step: 1,
+        value: [1, 120],
+        tooltip_split: true,
+        range: true
+      });
+
+      bathsSlider.on('slide', function(value) {
+        document.getElementById('minBathsInput').value = value;
+      });
+
+      // Min Beds
+      var bedsSlider = new Slider('#min-bed', {
+        min: 0,
+        max: 120,
+        step: 1,
+        value: [1, 120],
+        tooltip_split: true,
+        range: true
+      });
+
+      bedsSlider.on('slide', function(value) {
+        document.getElementById('minBedsInput').value = value;
+      });
+
+      // Area Range
+      var areaSlider = new Slider('#area-range', {
+        min: 100,
+        max: 10000,
+        step: 50,
+        value: [100, 10000],
+        tooltip_split: true,
+        range: true
+      });
+
+      areaSlider.on('slide', function(value) {
+        document.getElementById('areaRangeInput').value = value[0] + ',' + value[1];
+      });
+
+      // Automatically submit the form on slider change
+      document.querySelectorAll('.slider').forEach(function(slider) {
+        slider.addEventListener('slideStop', function() {
+          document.querySelector('form').submit();
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
+

@@ -13,8 +13,11 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "bootstrap": "^3.3.7",
+
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
+
+
     "ejs": "^3.1.9",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
@@ -22,6 +25,7 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
     "jquery-ui": "^1.13.2",
+
     "jsonwebtoken": "^9.0.2",
     "lightbox2": "^2.11.3",
     "mongoose": "^8.0.0",
@@ -30,6 +34,9 @@
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
+
+    "lightslider": "^1.1.5",
+    "multer": "^1.4.5-lts.2",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {

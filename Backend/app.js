@@ -2,6 +2,7 @@ const express = require('express');
 // Add flash import
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -33,8 +34,37 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
+const userRoutes = require('./routes/user');
+const propertyRoutes = require('./routes/property');
+const blogRoutes= require('./routes/blog');
+const homeRoutes= require('./routes/home');
+const navbarRoutes =require('./routes/navbar');
+const companyInfoRoutes =require('./routes/companyInfo');
 
-// Add flash middleware after session middleware
+
+
+// Add debug logging
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Static files middleware with proper MIME types
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+  });
+  const upload = multer({ storage });
+
+
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(flash());
 
 // Initialize Passport
@@ -122,7 +152,6 @@ app.use(passport.session());
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
-
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);
@@ -220,6 +249,13 @@ app.use(errorHandler.handle500);
 app.use(authenticateToken);
 
 const PORT =3006;
+app.use('/property', propertyRoutes);
+
+//blog routes
+app.use('/blog', blogRoutes);
+
+// app.use('/home', propertyRoutes);
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
