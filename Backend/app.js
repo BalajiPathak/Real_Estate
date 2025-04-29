@@ -32,9 +32,6 @@ const storage = multer.diskStorage({
     }
 });
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 // Create uploads directory if it doesn't exist
 const fs = require('fs');
 if (!fs.existsSync('uploads')) {
@@ -65,13 +62,6 @@ app.use(session({
 }));
 
 // Add this middleware to make user data available globally
-=======
-
->>>>>>> Stashed changes
-=======
-
->>>>>>> Stashed changes
-=======
 
 >>>>>>> Stashed changes
 app.use((req, res, next) => {
@@ -113,7 +103,6 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-<<<<<<< Updated upstream
 app.use('/assets', express.static(path.join(__dirname, 'assets'), {
     setHeaders: (res, path) => {
         if (path.endsWith('.js')) {
@@ -121,7 +110,6 @@ app.use('/assets', express.static(path.join(__dirname, 'assets'), {
         }
     }
 }));
-=======
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const storage = multer.diskStorage({
@@ -134,13 +122,6 @@ const storage = multer.diskStorage({
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // Specific package routes
@@ -304,6 +285,7 @@ passport.use(new FacebookStrategy({
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
@@ -318,6 +300,9 @@ app.use(authenticateToken);
 // require('./models/propertyData');
 
 const PORT =3006;
+=======
+const PORT = process.env.PORT || 3006;
+>>>>>>> Stashed changes
 =======
 const PORT = process.env.PORT || 3006;
 >>>>>>> Stashed changes
