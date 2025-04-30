@@ -10,11 +10,12 @@ exports.getUserProfile = async (req, res) => {
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
         const blogs = await Blog.find();
+        
         if (!req.session.isLoggedIn) {
-            return res.redirect('/login'); // Ensure the user is logged in
+            return res.redirect('/login');
         }
 
-        // Fetch the user profile based on logged in user session
+        // Fetch the user profile based on logged-in session
         const user = await User.findById(req.session.userId);
 
         if (!user) {
@@ -22,10 +23,9 @@ exports.getUserProfile = async (req, res) => {
                 pageTitle: 'Real Estate',
                 path: 'userprofile/userprofile',
                 errorMessage: 'User not found',
-                user: {} // Empty object to avoid errors in EJS
+                user: {}
             });
         }
-
 
         res.render('userprofile/userprofile', {
             pageTitle: 'Real Estate',
@@ -37,7 +37,7 @@ exports.getUserProfile = async (req, res) => {
             isLoggedIn: req.session.isLoggedIn
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error in getUserProfile:', err);
         res.status(500).render('userprofile/userprofile', {
             pageTitle: 'Real Estate',
             path: 'user/userprofile',
@@ -49,13 +49,28 @@ exports.getUserProfile = async (req, res) => {
 
 exports.postUserProfile = async (req, res) => {
     try {
+        console.log('Form Data:', req.body);  // Log form data
+        console.log('File Upload:', req.file);  // Log file data
+
+        // Check if user is logged in
         if (!req.session.isLoggedIn) {
-            return res.redirect('/login'); // Ensure the user is logged in
+            return res.redirect('/login');
         }
 
-        const { First_Name, Last_Name,Email, Password, confirmPassword, Facebook, Twitter,Website,  Public_email, Phone, FAX } = req.body;
-        const user_image = req.files['userImage']?.[0]?.filename || 'default.jpg';
-        // Check if passwords match
+        const { First_Name, Last_Name, Email, Password, confirmPassword, Facebook, Twitter, Website, Public_email, Phone, FAX } = req.body;
+        console.log('Session User ID:', req.session.userId);
+        // Fetch existing user
+        const existingUser = await User.findById(req.session.userId);
+        if (!existingUser) {
+            return res.status(404).render('userprofile/userprofile', {
+                pageTitle: 'Real Estate',
+                path: 'userprofile/userprofile',
+                errorMessage: 'User not found',
+                user: req.body
+            });
+        }
+
+        // Check password match
         if (Password !== confirmPassword) {
             return res.status(422).render('userprofile/userprofile', {
                 pageTitle: 'Real Estate',
@@ -65,14 +80,17 @@ exports.postUserProfile = async (req, res) => {
             });
         }
 
-        // Hash the new password if provided
-        let hashedPassword = req.user.Password;
-        if (Password) {
+        // Handle image upload
+        let user_image = req.file ? req.file.filename : existingUser.user_image;
+
+        // Hash password if changed
+        let hashedPassword = existingUser.Password;
+        if (Password && Password !== existingUser.Password) {
             hashedPassword = await bcrypt.hash(Password, 12);
         }
 
-        // Update the user profile in the database
-        const newUser= await User.findByIdAndUpdate(req.session.userId, {
+        // Log before updating the user
+        console.log('Updating User:', {
             First_Name,
             Last_Name,
             Email,
@@ -85,11 +103,32 @@ exports.postUserProfile = async (req, res) => {
             FAX,
             user_image
         });
-        await newUser.save();
-        // Redirect back to the profile page with updated data
-        res.redirect('userprofile/userprofile');
+
+        // Update user data
+        const updatedUser = await User.findByIdAndUpdate(
+            req.session.userId,
+            {
+                First_Name,
+                Last_Name,
+                Email,
+                Password: hashedPassword,
+                Facebook,
+                Twitter,
+                Website,
+                Public_email,
+                Phone,
+                FAX,
+                user_image
+            },
+            { new: true }
+        );
+
+        // Log after the update
+        console.log('Updated User:', updatedUser);
+
+        res.redirect('/userprofile');
     } catch (err) {
-        console.error(err);
+        console.error('Error updating user profile:', err);
         res.status(500).render('userprofile/userprofile', {
             pageTitle: 'Real Estate',
             path: 'userprofile/userprofile',

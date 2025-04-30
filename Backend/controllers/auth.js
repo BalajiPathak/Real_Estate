@@ -239,7 +239,7 @@ exports.postLogin = async (req, res) => {
         });
 
         req.session.isLoggedIn = true;
-        req.session.user = user;
+        req.session.userId = user._id;
 
         res.redirect('/home');
     } catch (err) {
