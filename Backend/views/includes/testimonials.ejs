@@ -1,51 +1,51 @@
 <div class="testimonial-area recent-property" style="background-color: #FCFCFC; padding-bottom: 15px;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
-                        <!-- /.feature title -->
-                        <h2>Our Customers Said  </h2> 
-                    </div>
-                </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
+                <!-- /.feature title -->
+                <h2>Our Customers Said  </h2> 
+            </div>
+        </div>
 
-                <div class="row">
-                    <div class="row testimonial">
-                        <div class="col-md-12">
-                            <div id="testimonial-slider">
-                                <% if (testimonials && testimonials.length > 0) { %>
-                                    <% testimonials.forEach(function(testimonial) { %>
-                                        <div class="item">
-                                            <div class="client-text">                                
-                                                <p><%= testimonial.testimonialText %></p>
-                                                <h4><strong><%= testimonial.clientName %>, </strong><i><%= testimonial.designation %></i></h4>
-                                            </div>
-                                            <div class="client-face wow fadeInRight" data-wow-delay=".9s"> 
-                                                <img src="<%= testimonial.clientImage %>" alt="">
-                                            </div>
-                                        </div>
-                                    <% }); %>
-                                <% } else { %>
-                                    <div class="item">
-                                        <div class="client-text">                                
-                                            <p>Nulla quis dapibus nisl. Suspendisse llam sed arcu ultried arcu ultricies !</p>
-                                            <h4><strong>Ohidul Islam, </strong><i>Web Designer</i></h4>
-                                        </div>
-                                        <div class="client-face wow fadeInRight" data-wow-delay=".9s"> 
-                                            <img src="assets/img/client-face1.png" alt="">
-                                        </div>
+        <div class="row">
+            <div class="row testimonial">
+                <div class="col-md-12">
+                    <div id="testimonial-slider">
+                        <% if (testimonials && testimonials.length > 0) { %>
+                            <% testimonials.forEach(function(testimonial) { %>
+                                <div class="item">
+                                    <div class="client-text">                                
+                                        <p><%= testimonial.testimonialText %></p>
+                                        <h4><strong><%= testimonial.clientName %>, </strong><i><%= testimonial.designation %></i></h4>
                                     </div>
-                                    <div class="item">
-                                        <div class="client-text">                                
-                                            <p>Nulla quis dapibus nisl. Suspendisse llam sed arcu ultried arcu ultricies !</p>
-                                            <h4><strong>Ohidul Islam, </strong><i>Web Designer</i></h4>
-                                        </div>
-                                        <div class="client-face">
-                                            <img src="assets/img/client-face2.png" alt="">
-                                        </div>
+                                    <div class="client-face wow fadeInRight" data-wow-delay=".9s"> 
+                                        <img src="<%= testimonial.clientImage %>" alt="">
                                     </div>
-                                <% } %>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="item">
+                                <div class="client-text">                                
+                                    <p>Nulla quis dapibus nisl. Suspendisse llam sed arcu ultried arcu ultricies !</p>
+                                    <h4><strong>Ohidul Islam, </strong><i>Web Designer</i></h4>
+                                </div>
+                                <div class="client-face wow fadeInRight" data-wow-delay=".9s"> 
+                                    <img src="assets/img/client-face1.png" alt="">
+                                </div>
                             </div>
-                        </div>
+                            <div class="item">
+                                <div class="client-text">                                
+                                    <p>Nulla quis dapibus nisl. Suspendisse llam sed arcu ultried arcu ultricies !</p>
+                                    <h4><strong>Ohidul Islam, </strong><i>Web Designer</i></h4>
+                                </div>
+                                <div class="client-face">
+                                    <img src="assets/img/client-face2.png" alt="">
+                                </div>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>

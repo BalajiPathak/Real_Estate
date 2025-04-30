@@ -1,6 +1,6 @@
-$(window).load(function () { 
-    $('#status').fadeOut(); 
-    $('#preloader').delay(350).fadeOut('slow');
+$(window).load(function () { // makes sure the whole site is loaded
+    $('#status').fadeOut(); // will first fade out the loading animation
+    $('#preloader').delay(350).fadeOut('slow'); // will fade out the white DIV that covers the website.
     $('body').delay(350).css({'overflow': 'visible'});
 })
 $(document).ready(function () {
@@ -9,7 +9,7 @@ $(document).ready(function () {
     $('input').iCheck({
         checkboxClass: 'icheckbox_square-yellow',
         radioClass: 'iradio_square-yellow',
-        increaseArea: '20%' 
+        increaseArea: '20%' // optional
     });
 
 
@@ -34,7 +34,7 @@ $(document).ready(function () {
 });
 $(document).ready(function () {
     $("#bg-slider").owlCarousel({
-        navigation: false, 
+        navigation: false, // Show next and prev buttons
         slideSpeed: 100,
         autoPlay: 5000,
         paginationSpeed: 100,
@@ -49,7 +49,7 @@ $(document).ready(function () {
                 // itemsMobile : false 
     });
     $("#prop-smlr-slide_0").owlCarousel({
-        navigation: false, 
+        navigation: false, // Show next and prev buttons
         slideSpeed: 100,
         pagination: true,
         paginationSpeed: 100,
@@ -57,7 +57,7 @@ $(document).ready(function () {
 
     });
     $("#testimonial-slider").owlCarousel({
-        navigation: false,
+        navigation: false, // Show next and prev buttons
         slideSpeed: 100,
         pagination: true,
         paginationSpeed: 100,
@@ -72,6 +72,8 @@ $(document).ready(function () {
     var RGBChange = function () {
         $('#RGB').css('background', '#FDC600')
     };
+
+    // Advanced search toggle
     var $SearchToggle = $('.search-form .search-toggle');
     $SearchToggle.hide();
 
@@ -90,21 +92,23 @@ $(document).ready(function () {
             var curval1 = parseInt($('#counter1').text().replace(' ', ''));
             var curval2 = parseInt($('#counter2').text());
             var curval3 = parseInt($('#counter3').text());
+            
+            // Get target values from data attributes
             var target0 = parseInt($('#counter').data('target'));
             var target1 = parseInt($('#counter1').data('target'));
             var target2 = parseInt($('#counter2').data('target'));
             var target3 = parseInt($('#counter3').data('target'));
 
-            if (curval < target0) {  
+            if (curval < target0) {
                 $('#counter').text(curval + 1);
             }
-            if (curval1 < target1) {  
+            if (curval1 < target1) {
                 $('#counter1').text(sdf_FTS((curval1 + 1), 0, ' '));
             }
-            if (curval2 < target2) {  
+            if (curval2 < target2) {
                 $('#counter2').text(curval2 + 1);
             }
-            if (curval3 < target3) { 
+            if (curval3 < target3) {
                 $('#counter3').text(curval3 + 1);
             }
         }, 2);
@@ -128,3 +132,5 @@ $(document).ready(function () {
 // Initializing WOW.JS
 
 new WOW().init();
+
+

@@ -10,52 +10,6 @@ const Testimonial = require('../models/testimonial');
 const { PropertyDataFeature, PropertyFeature } = require('../models/propertyFeature');  // Update this line
 const City = require('../models/city');
 const PropertyVideo = require('../models/propertyVideo');
-const getHome = async (req, res) => {
-    try {
-        const [companyInfo, navbar, banners, featuredProperties, testimonials, cities, propertyFeatures, statusCategory] = await Promise.all([
-            CompanyInfo.findOne().lean(),
-            Navbar.find(),
-            Banner.find().populate('banner_detail_id'),
-            PropertyData.find({ beds: { $gt: 5 } })
-                .populate('categoryId')
-                .populate('stateId')
-                .populate('statusId')
-                .limit(8),
-            Testimonial.find({ isActive: true }).sort({ createdAt: -1 }),
-            City.find(),
-            PropertyFeature.find(),
-            StatusCategory.find()
-        ]);
-
-        const isLoggedIn = req.session.isLoggedIn || false;
-        
-        res.render('index', {
-            pageTitle: 'Real Estate',
-            companyInfo: companyInfo || {},
-            navbar: navbar || [],
-            banners: banners || [],
-            banner: banners[0] || {},
-            featuredProperties: featuredProperties || [],
-            testimonials: testimonials || [],
-            cities: cities || [],
-            propertyFeatures: propertyFeatures || [],
-            statusCategory: statusCategory || [],
-            cityId: '',
-            statusId: '',
-            features: [],
-            errorMessage: null,
-            validationErrors: [],
-            isLoggedIn: isLoggedIn
-        });
-    } catch (error) {
-        console.error('Error in home controller:', error);
-        res.status(500).render('error', {
-            pageTitle: 'Error',
-            error: error.message,
-            isLoggedIn: false
-        });
-    }
-};
 
 const createBannerDetails = async (req, res) => {
     try {
@@ -178,7 +132,7 @@ exports.getHome = async (req, res) => {
             CompanyInfo.findOne(),
             Navbar.find(),
             Banner.find().populate('banner_detail_id'),
-            PropertyData.find({ beds: { $gt: 5 } })
+            PropertyData.find({ beds: { $gt: 8 } })
                 .populate('categoryId')
                 .populate('stateId')
                 .populate('statusId')
