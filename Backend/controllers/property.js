@@ -30,7 +30,7 @@ const cities = await City.find();
  const filterProperties = await FilterProperty.find();
  const statusCategory = await StatusCategory.find();
   const companyInfo = await CompanyInfo.findOne();  
-         const navbar = await Navbar.find();  
+   const navbar = await Navbar.find();  
  
  const filter = {};
  // Apply other filters if they exist
@@ -143,6 +143,8 @@ navbar:navbar ||[],
 
 exports.getPropertyById = async (req, res) => {
   try {
+    const companyInfo = await CompanyInfo.findOne();  
+    const navbar = await Navbar.find();  
     // Fetch the property details and populate necessary fields
     const property = await PropertyData.findById(req.params.id)
       .populate('categoryId stateId statusId userId')  // Populate categoryId, stateId, etc.
@@ -192,7 +194,9 @@ console.log(featureNames);
       features: featureNames,  // Pass the list of feature names
       images,
       videos,
-      properties,  // Pass the related properties with their features
+      properties, 
+      companyInfo:companyInfo||[],
+navbar:navbar ||[], // Pass the related properties with their features
     });
   } catch (error) {
     console.error('Error fetching property details:', error);
@@ -210,6 +214,8 @@ exports.renderSubmitForm = async (req, res) => {
   const statuses = await StatusCategory.find();
   const features = await PropertyFeature.find();
   const cities = await City.find().populate('stateId');
+  const companyInfo = await CompanyInfo.findOne();  
+  const navbar = await Navbar.find();  
 
   res.render('property/new', {
     pageTitle: 'Real Estate',
@@ -220,6 +226,8 @@ exports.renderSubmitForm = async (req, res) => {
     statuses,
     features,
     cities,
+    companyInfo:companyInfo||[],
+navbar:navbar ||[],
   });
 };
 
