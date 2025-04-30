@@ -1,0 +1,62 @@
+<%- include('../includes/head.ejs') %>
+
+
+<div class="page-head"> 
+    <div class="container">
+        <div class="row">
+            <div class="page-head-content">
+                <h1 class="page-title">FAQ PAge</h1>               
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End page header -->
+
+
+<!-- property area -->
+<div class="content-area recent-property" style="background-color: #FCFCFC; padding-bottom: 55px;">
+    <div class="container">    
+
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
+                <!-- /.feature title -->
+                <h2>Our terms </h2>
+                <br>
+            </div>
+        </div>
+
+        <div class="row row-feat"> 
+            <div class="col-md-12">
+
+                <div class="col-sm-12 feat-list">
+                    <% faqs.forEach(faq => { %>
+                    <div class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                 <h4 class="panel-title fqa-title" data-toggle="collapse" data-target="#<%=faq.FaqId %>" >
+                                    <%= faq.Title %>
+                                 </h4> 
+                            </div>
+                            <div id="<%= faq.FaqId %>" class="panel-collapse collapse fqa-body">
+                                <div class="panel-body">
+                                    <ol>
+                                        <li><%= faq.Description %></li>
+                                                                               
+                                    </ol> 
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                    
+                    
+                    
+                </div>
+                
+              
+
+            </div>
+        </div>
+        
+    </div>
+</div>

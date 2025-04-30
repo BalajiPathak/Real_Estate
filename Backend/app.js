@@ -17,6 +17,11 @@ const authConfig = require('./config/auth.config');
 const User =require('./models/user');
 // Add these imports at the top
 const propertyRoutes = require('./routes/property');
+<<<<<<< Updated upstream
+=======
+const blogRoutes=require('./routes/blog');
+const faqsRoutes= require('./routes/faqs');
+>>>>>>> Stashed changes
 const multer = require('multer');
 
 
@@ -148,6 +153,11 @@ app.use(navbarRoutes);
 app.use(companyInfoRoutes);
 app.use(authRoutes);
 app.use(propertyRoutes)
+<<<<<<< Updated upstream
+=======
+app.use(blogRoutes);
+app.use(faqsRoutes);
+>>>>>>> Stashed changes
 app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
