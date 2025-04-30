@@ -1,0 +1,62 @@
+<div class="count-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
+                <h2>You can trust Us </h2> 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-xs-12 percent-blocks m-main" data-waypoint-scroll="true">
+                <div class="row">
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="count-item">
+                            <div class="count-item-circle">
+                                <span class="pe-7s-users"></span>
+                            </div>
+                            <div class="chart" data-percent="<%= companyInfo.HAPPY_CUSTOMER %>">
+                                <h2 class="percent" id="counter" data-target="<%= companyInfo.HAPPY_CUSTOMER %>">0</h2>
+                                <h5>HAPPY CUSTOMER </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="count-item">
+                            <div class="count-item-circle">
+                                <span class="pe-7s-home"></span>
+                            </div>
+                            <div class="chart" data-percent="<%= companyInfo.Properties_in_stock %>">
+                                <h2 class="percent" id="counter1" data-target="<%= companyInfo.Properties_in_stock %>"> 0</h2>
+                                <h5>Properties in stock</h5>
+                            </div>
+                        </div> 
+                    </div> 
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="count-item">
+                            <div class="count-item-circle">
+                                <span class="pe-7s-flag"></span>
+                            </div>
+                            <div class="chart" data-percent="<%= companyInfo.City_registered %>">
+                                <h2 class="percent" id="counter2" data-target="<%= companyInfo.City_registered %>">0</h2>
+                                <h5>City registered </h5>
+                            </div>
+                        </div> 
+                    </div> 
+                    <div class="col-sm-3 col-xs-6">
+                        <div class="count-item">
+                            <div class="count-item-circle">
+                                <span class="pe-7s-graph2"></span>
+                            </div>
+                            <div class="chart" data-percent="<%= companyInfo.DEALER_BRANCHES %>">
+                                <h2 class="percent" id="counter3" data-target="<%= companyInfo.DEALER_BRANCHES %>">0</h2>
+                                <h5>DEALER BRANCHES</h5>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add the counter script -->
+<!-- <script src="/assets/js/counter.js"></script> -->
