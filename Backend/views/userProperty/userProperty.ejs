@@ -1,0 +1,132 @@
+<%- include('../includes/head.ejs') %>
+<body>
+    <%- include('../includes/header.ejs') %>
+    <%- include('../includes/navbar.ejs', { isLoggedIn: isLoggedIn }) %>
+
+    <div class="page-head"> 
+        <div class="container">
+            <div class="row">
+                <div class="page-head-content">
+                    <h1 class="page-title">List Layout With Sidebar</h1>               
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-area recent-property" style="background-color: #FFF;">
+        <div class="container">   
+            <div class="row">
+                <div class="col-md-9 pr-30 padding-top-40 properties-page user-properties">
+                    <div class="section"> 
+                        <div class="page-subheader sorting pl0 pr-10">
+                            <ul class="sort-by-list pull-left">
+                                <li class="active">
+                                    <a href="javascript:void(0);" class="order_by_date" data-orderby="property_date" data-order="ASC">
+                                        Property Date <i class="fa fa-sort-amount-asc"></i>					
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="javascript:void(0);" class="order_by_price" data-orderby="property_price" data-order="DESC">
+                                        Property Price <i class="fa fa-sort-numeric-desc"></i>						
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="items-per-page pull-right">
+                                <label for="items_per_page"><b>Property per page :</b></label>
+                                <div class="sel">
+                                    <select id="items_per_page" name="per_page">
+                                        <option value="3">3</option>
+                                        <option value="6">6</option>
+                                        <option value="9">9</option>
+                                        <option selected="selected" value="12">12</option>
+                                        <option value="15">15</option>
+                                        <option value="30">30</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section"> 
+                        <div id="list-type" class="proerty-th-list">
+                            <% if (properties && properties.length > 0) { %>
+                                <% properties.forEach(property => { %>
+                                    <div class="col-md-4 p0">
+                                        <div class="box-two proerty-item">
+                                            <div class="item-thumb">
+                                                <a href="/property/<%= property._id %>">
+                                                    <img src="/uploads/<%= property.image %>" alt="Property Image">
+                                                </a>
+                                            </div>
+                                            <div class="item-entry overflow">
+                                                <h5><a href="/property/<%= property._id %>"><%= property.title %></a></h5>
+                                                <div class="dot-hr"></div>
+                                                <span class="pull-left"><b>Area :</b> <%= property.area %>m² </span>
+                                                <span class="proerty-price pull-right">$ <%= property.price %></span>
+                                                <p style="display: none;"><%= property.description %></p>
+                                                <div class="property-icon">
+                                                    <img src="/assets/img/icon/bed.png">(<%= property.beds %>)|
+                                                    <img src="/assets/img/icon/shawer.png">(<%= property.baths %>)|
+                                                    <img src="/assets/img/icon/cars.png">(<%= property.garage || 2 %>)
+                                                    
+                                                    <div class="dealer-action pull-right">                                        
+                                                        <a href="/property/edit/<%= property._id %>" class="button">Edit</a>
+                                                        <form action="/property/delete/<%= property._id %>" method="POST" style="display: inline;">
+                                                            <button type="submit" class="button " onclick="return confirm('Are you sure?')">Delete</button>
+                                                        </form>
+                                                        <a href="/property/<%= property._id %>" class="button">View</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="col-md-12 text-center">
+                                    <h3>No properties found</h3>
+                                    <a href="/property/new" class="btn btn-primary">Add Your First Property</a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <div class="section"> 
+                        <div class="pull-right">
+                            <div class="pagination">
+                                <ul>
+                                    <li><a href="#">Prev</a></li>
+                                    <li><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">Next</a></li>
+                                </ul>
+                            </div>
+                        </div>                
+                    </div>
+                </div>
+
+                <div class="col-md-3 p0 padding-top-40">
+                    <div class="blog-asside-right">
+                        <div class="panel panel-default sidebar-menu wow fadeInRight animated">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Welcome <%= user.First_Name %></h3>
+                            </div>
+                            <div class="panel-body search-widget">
+                            </div>
+                        </div>
+                        <div class="panel panel-default sidebar-menu wow fadeInRight animated">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Recommended</h3>
+                            </div>
+                            <div class="panel-body recent-property-widget">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../includes/end.ejs') %>

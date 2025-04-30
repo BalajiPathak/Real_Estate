@@ -132,7 +132,7 @@ exports.getHome = async (req, res) => {
             CompanyInfo.findOne(),
             Navbar.find(),
             Banner.find().populate('banner_detail_id'),
-            PropertyData.find({ beds: { $gt: 8 } })
+            PropertyData.find({ beds: { $gt: 6 } })
                 .populate('categoryId')
                 .populate('stateId')
                 .populate('statusId')

@@ -6,6 +6,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
+const isAuth = require('./middleware/is-auth')
 const navbarRoutes = require('./routes/navbar');
 const companyInfoRoutes = require('./routes/companyInfo');
 const homeRoutes = require('./routes/home');
@@ -17,6 +18,7 @@ const authConfig = require('./config/auth.config');
 const User =require('./models/user');
 // Add these imports at the top
 const propertyRoutes = require('./routes/property');
+const userPropertyRoutes = require('./routes/userProperty');
 
 
 const blogRoutes=require('./routes/blog');
@@ -156,6 +158,7 @@ app.use(propertyRoutes)
 
 app.use(blogRoutes);
 app.use(faqsRoutes);
+app.use(isAuth,userPropertyRoutes);
 
 app.use(errorHandler.handle404);
 
