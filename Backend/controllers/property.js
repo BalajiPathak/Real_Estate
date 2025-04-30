@@ -15,7 +15,7 @@ const StatusCategory = require('../models/statusCategory');
 const crypto = require('crypto');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar')
-
+const Blog = require('../models/blog');
 
 exports.getAllProperties = async (req, res) => {
 try {
@@ -31,6 +31,7 @@ const cities = await City.find();
  const statusCategory = await StatusCategory.find();
   const companyInfo = await CompanyInfo.findOne();  
    const navbar = await Navbar.find();  
+   const blogs = await Blog.find();
  
  const filter = {};
  // Apply other filters if they exist
@@ -126,7 +127,7 @@ minBaths: req.query.minBaths || '',
 minBeds: req.query.minBeds || '',
 companyInfo:companyInfo||[],
 navbar:navbar ||[],
- 
+blogs:blogs ||[],
  features: req.query.features || [], // Pass selected features to the view
 });
  
@@ -145,6 +146,8 @@ exports.getPropertyById = async (req, res) => {
   try {
     const companyInfo = await CompanyInfo.findOne();  
     const navbar = await Navbar.find();  
+    const blogs = await Blog.find();
+ 
     // Fetch the property details and populate necessary fields
     const property = await PropertyData.findById(req.params.id)
       .populate('categoryId stateId statusId userId')  // Populate categoryId, stateId, etc.
@@ -196,7 +199,8 @@ console.log(featureNames);
       videos,
       properties, 
       companyInfo:companyInfo||[],
-navbar:navbar ||[], // Pass the related properties with their features
+navbar:navbar ||[],
+blogs:blogs ||[], // Pass the related properties with their features
     });
   } catch (error) {
     console.error('Error fetching property details:', error);
@@ -216,7 +220,8 @@ exports.renderSubmitForm = async (req, res) => {
   const cities = await City.find().populate('stateId');
   const companyInfo = await CompanyInfo.findOne();  
   const navbar = await Navbar.find();  
-
+  const blogs = await Blog.find();
+ 
   res.render('property/new', {
     pageTitle: 'Real Estate',
     isLoggedIn:req.isLoggedIn  ,
@@ -228,6 +233,7 @@ exports.renderSubmitForm = async (req, res) => {
     cities,
     companyInfo:companyInfo||[],
 navbar:navbar ||[],
+blogs:blogs ||[],
   });
 };
 

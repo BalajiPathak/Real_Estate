@@ -123,60 +123,6 @@
             </div>
         </div>
     </div>
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Price Range
-            var priceSlider = new Slider('#price-range', {
-                min: 0,
-                max: 50000000,
-                step: 1000,
-                value: [3000000, 50000000],
-                tooltip_split: true,
-                range: true
-            });
-            priceSlider.on('slide', function(value) {
-                document.getElementById('priceRangeInput').value = value[0] + ',' + value[1];
-            });
-        
-            // Min Baths
-            var bathsSlider = new Slider('#min-baths', {
-                min: 0,
-                max: 120,
-                step: 1,
-                value: [1, 120],
-                tooltip_split: true,
-                range: true
-            });
-            bathsSlider.on('slide', function(value) {
-                document.getElementById('minBathsInput').value = value;
-            });
-        
-            // Min Beds
-            var bedsSlider = new Slider('#min-bed', {
-                min: 0,
-                max: 120,
-                step: 1,
-                value: [1, 120],
-                tooltip_split: true,
-                range: true
-            });
-            bedsSlider.on('slide', function(value) {
-                document.getElementById('minBedsInput').value = value;
-            });
-        
-            // Area Range
-            var areaSlider = new Slider('#area-range', {
-                min: 100,
-                max: 10000,
-                step: 50,
-                value: [100, 10000],
-                tooltip_split: true,
-                range: true
-            });
-            areaSlider.on('slide', function(value) {
-                document.getElementById('areaRangeInput').value = value[0] + ',' + value[1];
-            });
-        });
-        </script>
-         -->
+    <%- include('../includes/footer.ejs') %>
 </body>
+
