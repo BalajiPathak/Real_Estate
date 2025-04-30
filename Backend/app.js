@@ -23,7 +23,7 @@ const userPropertyRoutes = require('./routes/userProperty');
 
 const blogRoutes=require('./routes/blog');
 const faqsRoutes= require('./routes/faqs');
-
+const userprofileRoutes= require('./routes/userprofile');
 const multer = require('multer');
 
 
@@ -158,7 +158,11 @@ app.use(propertyRoutes)
 
 app.use(blogRoutes);
 app.use(faqsRoutes);
+<<<<<<< Updated upstream
 app.use(isAuth,userPropertyRoutes);
+=======
+app.use(userprofileRoutes);
+>>>>>>> Stashed changes
 
 app.use(errorHandler.handle404);
 

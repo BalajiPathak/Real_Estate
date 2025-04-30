@@ -199,8 +199,8 @@ console.log(featureNames);
       videos,
       properties, 
       companyInfo:companyInfo||[],
-navbar:navbar ||[],
-blogs:blogs ||[], // Pass the related properties with their features
+      navbar:navbar ||[],
+      blogs:blogs ||[], // Pass the related properties with their features
     });
   } catch (error) {
     console.error('Error fetching property details:', error);
