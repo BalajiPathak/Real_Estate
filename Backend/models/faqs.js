@@ -8,6 +8,10 @@ const faqsSchema = new mongoose.Schema({
     Description: {
         type: String,
         required: true
+    },
+    FaqId:{
+        type: String,
+        required: true
     }
 });
 
