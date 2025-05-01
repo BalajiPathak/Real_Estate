@@ -7,15 +7,14 @@ const Blog = require('../models/blog');
 
 exports.getUserProfile = async (req, res) => {
     try {
+        if (!req.session.isLoggedIn) {
+            return res.redirect('/login');  
+        }
+
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
         const blogs = await Blog.find();
         
-        if (!req.session.isLoggedIn) {
-            return res.redirect('/login');
-        }
-
-        // Fetch the user profile based on logged-in session
         const user = await User.findById(req.session.userId);
 
         if (!user) {
@@ -23,7 +22,11 @@ exports.getUserProfile = async (req, res) => {
                 pageTitle: 'Real Estate',
                 path: 'userprofile/userprofile',
                 errorMessage: 'User not found',
-                user: {}
+                user: {},
+                companyInfo: companyInfo || {},
+                navbar: navbar || [],
+                blogs: blogs || [],
+                isLoggedIn: req.session.isLoggedIn
             });
         }
 
@@ -31,7 +34,7 @@ exports.getUserProfile = async (req, res) => {
             pageTitle: 'Real Estate',
             path: 'userprofile/userprofile',
             user,
-            companyInfo: companyInfo || [],
+            companyInfo: companyInfo || {}, 
             navbar: navbar || [],
             blogs: blogs || [],
             isLoggedIn: req.session.isLoggedIn
@@ -49,17 +52,14 @@ exports.getUserProfile = async (req, res) => {
 
 exports.postUserProfile = async (req, res) => {
     try {
-        console.log('Form Data:', req.body);  // Log form data
-        console.log('File Upload:', req.file);  // Log file data
-
-        // Check if user is logged in
+        console.log('Form Data:', req.body); 
+        console.log('File Upload:', req.file);  
         if (!req.session.isLoggedIn) {
             return res.redirect('/login');
         }
 
         const { First_Name, Last_Name, Email, Password, confirmPassword, Facebook, Twitter, Website, Public_email, Phone, FAX } = req.body;
         console.log('Session User ID:', req.session.userId);
-        // Fetch existing user
         const existingUser = await User.findById(req.session.userId);
         if (!existingUser) {
             return res.status(404).render('userprofile/userprofile', {
@@ -69,8 +69,6 @@ exports.postUserProfile = async (req, res) => {
                 user: req.body
             });
         }
-
-        // Check password match
         if (Password !== confirmPassword) {
             return res.status(422).render('userprofile/userprofile', {
                 pageTitle: 'Real Estate',
