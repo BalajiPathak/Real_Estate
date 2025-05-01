@@ -71,7 +71,7 @@
                                 </div>
 
                                 <div class="item-entry overflow">
-                                    <h5><a href="/property/<%= property._id %>"><%= property.name %> </a></h5>
+                                    <h5><a href="/property/<%= property._id %>"><%= property.name.slice(0, 10) %>... </a></h5>
                                     <div class="dot-hr"></div>
                                     <span class="pull-left"><b> Area :</b><%= property.area %>m² </span>
                                     <span class="proerty-price pull-right">$ <%= property.price.toLocaleString() %></span>
@@ -79,7 +79,7 @@
                                     <div class="property-icon">
                                         <img src="/assets/img/icon/bed.png">(<%= property.beds %>) |
                                         <img src="/assets/img/icon/shawer.png">(<%= property.baths %>) |
-                                        <img src="/assets/img/icon/cars.png">(1)
+                                       
                                         
                                     </div>
                                 </div>
