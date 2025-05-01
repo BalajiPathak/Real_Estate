@@ -175,7 +175,7 @@ exports.postLogin = async (req, res) => {
         const errors = validationResult(req);
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
-        const blogs = await Blog.find();  // Add blogs
+        const blogs = await Blog.find({});  // Add blogs
         // Format validation (email format and password length)
         if (!errors.isEmpty()) {
             return res.status(422).render('auth/login', {
