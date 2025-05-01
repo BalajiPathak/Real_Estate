@@ -27,9 +27,9 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter
 });
-router.get('/myproperties', isAuth, userPropertyController.getUserProperties);
-router.get('/property/edit/:id', isAuth, userPropertyController.getEditProperty);
-router.post('/property/edit/:id', isAuth, upload.single('image'), userPropertyController.postEditProperty);
-router.post('/property/delete/:id', isAuth, userPropertyController.deleteProperty);
+router.get('/myproperties', userPropertyController.getUserProperties);
+router.get('/property/edit/:id', userPropertyController.getEditProperty);
+router.post('/property/edit/:id', upload.single('image'), userPropertyController.postEditProperty);
+router.post('/property/delete/:id', userPropertyController.deleteProperty);
 
 module.exports = router;

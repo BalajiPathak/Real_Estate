@@ -159,7 +159,7 @@ app.use(propertyRoutes)
 app.use(blogRoutes);
 app.use(faqsRoutes);
 app.use(userProfileRoutes);
-app.use(isAuth,userPropertyRoutes);
+app.use(userPropertyRoutes);
 
 app.use(errorHandler.handle404);
 
