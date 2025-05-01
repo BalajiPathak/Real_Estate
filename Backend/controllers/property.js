@@ -105,7 +105,7 @@ const properties = await PropertyData.find(filter)
 res.render('property/property', {
 pageTitle: 'Real Estate',
 
-isLoggedIn:req.isLoggedIn || false,
+isLoggedIn: req.session.isLoggedIn || false,  // Updated
  properties,
  
 cities,
@@ -191,7 +191,7 @@ console.log(featureNames);
     // Render the property details page
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
-      isLoggedIn: req.isLoggedIn,
+      isLoggedIn: req.session.isLoggedIn || false,  // Updated
       path: '/property/property-details',
       property,
       features: featureNames,  // Pass the list of feature names
@@ -224,7 +224,7 @@ exports.renderSubmitForm = async (req, res) => {
  
   res.render('property/new', {
     pageTitle: 'Real Estate',
-    isLoggedIn:req.isLoggedIn  ,
+    isLoggedIn: req.session.isLoggedIn || false,  
     path: '/property/new',
     categories,
     states,

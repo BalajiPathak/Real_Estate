@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 // Add flash import
 const flash = require('connect-flash');
@@ -146,8 +147,6 @@ mongoose.connect('mongodb+srv://balajipathak:pUo5vnHtW84bZTej@cluster0.himqpss.m
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.error('MongoDB connection error:', err));
 
 app.use(homeRoutes); 
 
