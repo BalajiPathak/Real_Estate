@@ -21,7 +21,7 @@ const User =require('./models/user');
 const propertyRoutes = require('./routes/property');
 const userPropertyRoutes = require('./routes/userProperty');
 const userProfileRoutes= require('./routes/userprofile');
-
+const changePasswword= require('./routes/changePassword');
 
 const blogRoutes=require('./routes/blog');
 const faqsRoutes= require('./routes/faqs');
@@ -160,6 +160,7 @@ app.use(blogRoutes);
 app.use(faqsRoutes);
 app.use(userProfileRoutes);
 app.use(userPropertyRoutes);
+app.use(changePasswword);
 
 app.use(errorHandler.handle404);
 
