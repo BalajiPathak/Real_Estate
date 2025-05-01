@@ -13,13 +13,13 @@ const transporter = nodemailer.createTransport(sendgridTransport({
         api_key: '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'
     }
 }));
-
+ 
 exports.getLogin = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
         const navbar = await Navbar.find();  
         const blogs = await Blog.find();  
-
+ 
         res.render('auth/login', {
             pageTitle: 'Login',
             path: '/login',
@@ -48,13 +48,13 @@ exports.getLogin = async (req, res) => {
         });
     }
 };
-
+ 
 exports.getSignup = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
         const navbar = await Navbar.find();  
         const blogs = await Blog.find();    
-
+ 
         res.render('auth/signup', {
             pageTitle: 'Signup',
             path: '/signup',
@@ -87,7 +87,7 @@ exports.getSignup = async (req, res) => {
         });
     }
 };
-
+ 
 exports.postSignup = async (req, res) => {
     try {
         const { First_Name, Last_Name, Email, Password } = req.body;
@@ -95,7 +95,7 @@ exports.postSignup = async (req, res) => {
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
         const blogs = await Blog.find();  // Add blogs
-
+ 
         // Check if email already exists first
         const existingUser = await User.findOne({ Email });
         if (existingUser) {
@@ -116,7 +116,7 @@ exports.postSignup = async (req, res) => {
                 isLoggedIn: req.session.isLoggedIn
             });
         }
-
+ 
         // Rest of validation
         if (!errors.isEmpty()) {
             return res.status(422).render('auth/signup', {
@@ -135,7 +135,7 @@ exports.postSignup = async (req, res) => {
                 isLoggedIn: req.session.isLoggedIn
             });
         }
-
+ 
         if (!First_Name || !Last_Name || !Email || !Password) {
             return res.status(400).render('auth/signup', {
                 pageTitle: 'Signup',
@@ -143,10 +143,10 @@ exports.postSignup = async (req, res) => {
                 errorMessage: errors.array()[0].msg,
             });
         }
-
+ 
         // Hash password
         const hashedPassword = await bcrypt.hash(Password, 12);
-
+ 
         // Create new user
         const user = new User({
             First_Name,
@@ -154,10 +154,10 @@ exports.postSignup = async (req, res) => {
             Email,
             Password: hashedPassword
         });
-
+ 
         await user.save();
         res.redirect('/login');
-
+ 
     } catch (err) {
         console.error('Signup error:', err);
         res.status(500).render('auth/signup', {
@@ -167,15 +167,15 @@ exports.postSignup = async (req, res) => {
         });
     }
 };
-
-
+ 
+ 
 exports.postLogin = async (req, res) => {
     try {
         const { Email, Password } = req.body;
         const errors = validationResult(req);
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
-        const blogs = await Blog.find({});  // Add blogs
+        const blogs = await Blog.find();  // Add blogs
         // Format validation (email format and password length)
         if (!errors.isEmpty()) {
             return res.status(422).render('auth/login', {
@@ -183,7 +183,7 @@ exports.postLogin = async (req, res) => {
                 path: '/login',
                 errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(),
-                
+               
                 oldInput: {
                     Email: Email,
                     Password: Password
@@ -194,9 +194,9 @@ exports.postLogin = async (req, res) => {
                 isLoggedIn: false
             });
         }
-
+ 
         const user = await User.findOne({ Email });
-        
+       
         // User not found
         if (!user) {
             return res.status(401).render('auth/login', {
@@ -210,12 +210,13 @@ exports.postLogin = async (req, res) => {
                 },
                 companyInfo: companyInfo,
                 navbar: navbar,
+                blogs: blogs || [],
                 isLoggedIn: false
             });
         }
-
+ 
         const isValidPassword = await bcrypt.compare(Password, user.Password);
-        
+       
         // Password mismatch
         if (!isValidPassword) {
             return res.status(401).render('auth/login', {
@@ -229,26 +230,27 @@ exports.postLogin = async (req, res) => {
                 },
                 companyInfo: companyInfo,
                 navbar: navbar,
+                blogs: blogs || [],
                 isLoggedIn: false
             });
         }
-
+ 
         // Success case continues...
         const token = jwt.sign(
             { userId: user._id, email: user.Email },
             'your-jwt-secret',
             { expiresIn: '24h' }
         );
-
+ 
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000
         });
-
+ 
         req.session.isLoggedIn = true;
         req.session.userId = user._id;
-
+ 
         res.redirect('/home');
     } catch (err) {
         console.error('Login error:', err);
@@ -259,24 +261,24 @@ exports.postLogin = async (req, res) => {
         });
     }
 };
-
+ 
 // Add this to your existing middleware or create a new one
-
-
+ 
+ 
 exports.postLogout = (req, res) => {
-
+ 
     req.session.destroy(err => {
         if (err) {
             console.error('Logout error:', err);
             return res.status(500).json({ message: 'Logout failed' });
         }
-
+ 
         res.clearCookie('jwt');
-
+ 
         res.redirect('/home');
     });
 };
-
+ 
 exports.getReset = async(req, res) => {
     const companyInfo = await CompanyInfo.findOne();  
         const navbar = await Navbar.find();  
@@ -288,7 +290,7 @@ exports.getReset = async(req, res) => {
             Navbar:Navbar
     });
 };
-
+ 
 exports.postReset = async (req, res) => {
     try {
         if (!req.body.Email) {
@@ -298,7 +300,7 @@ exports.postReset = async (req, res) => {
                 errorMessage: 'Please provide an email address.'
             });
         }
-
+ 
         const buffer = await new Promise((resolve, reject) => {
             crypto.randomBytes(32, (err, buffer) => {
                 if (err) {
@@ -308,10 +310,10 @@ exports.postReset = async (req, res) => {
                 }
             });
         });
-
+ 
         const token = buffer.toString('hex');
         const user = await User.findOne({ Email: req.body.Email });
-
+ 
         if (!user) {
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
@@ -319,11 +321,11 @@ exports.postReset = async (req, res) => {
                 errorMessage: 'No account with that email found.'
             });
         }
-
+ 
         user.resetToken = token;
         user.resetTokenExpiration = Date.now() + 3600000; // 1 hour
         await user.save();
-
+ 
         try {
             await transporter.sendMail({
                 to: req.body.Email,
@@ -334,7 +336,7 @@ exports.postReset = async (req, res) => {
                     <p>Click this <a href="http://localhost:3006/reset/${token}">link</a> to set a new password.</p>
                 `
             });
-            
+           
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
                 path: '/reset',
@@ -345,7 +347,7 @@ exports.postReset = async (req, res) => {
             user.resetToken = undefined;
             user.resetTokenExpiration = undefined;
             await user.save();
-            
+           
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
                 path: '/reset',
@@ -361,7 +363,7 @@ exports.postReset = async (req, res) => {
         });
     }
 };
-
+ 
 exports.getNewPassword = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
@@ -371,11 +373,11 @@ exports.getNewPassword = async (req, res) => {
             resetToken: token,
             resetTokenExpiration: { $gt: Date.now() }
         });
-
+ 
         if (!user) {
             return res.redirect('/login');
         }
-
+ 
         res.render('auth/new-password', {
             pageTitle: 'New Password',
             path: '/new-password',
@@ -385,13 +387,13 @@ exports.getNewPassword = async (req, res) => {
             CompanyInfo: CompanyInfo,
             Navbar:Navbar
         });
-
+ 
     } catch (err) {
         console.error('Get new password error:', err);
         res.redirect('/login');
     }
 };
-
+ 
 exports.postNewPassword = async (req, res) => {
     try {
         const { Password, userId, resetToken } = req.body;
@@ -400,21 +402,22 @@ exports.postNewPassword = async (req, res) => {
             resetToken: resetToken,
             resetTokenExpiration: { $gt: Date.now() }
         });
-
+ 
         if (!user) {
             return res.redirect('/login');
         }
-
+ 
         const hashedPassword = await bcrypt.hash(Password, 12);
         user.Password = hashedPassword;
         user.resetToken = undefined;
         user.resetTokenExpiration = undefined;
         await user.save();
-
+ 
         res.redirect('/login');
-
+ 
     } catch (err) {
         console.error('Post new password error:', err);
         res.redirect('/reset');
     }
 };
+ 
