@@ -2,6 +2,8 @@ const Navbar = require('../models/navbar');
 const CompanyInfo = require('../models/companyInfo');
 const ContactForm = require('../models/contactForm');
 const { validationResult } = require('express-validator');
+const Blog = require('../models/blog');
+
 
 const createNavbar = async (req, res) => {
     try {
@@ -49,7 +51,7 @@ const getContact = async (req, res) => {
     try {
         const navbar = await Navbar.find();
         const companyInfo = await CompanyInfo.findOne();
-        
+        const blog = await Blog.find({});
         res.render('contact', {
             navbar: navbar,          
             companyInfo: companyInfo,
@@ -57,6 +59,7 @@ const getContact = async (req, res) => {
             pageTitle: 'Contact Us',
             errorMessage: null,
             validationErrors: [], 
+            blogs:blog,
             oldInput: {
                 First_Name: '',
                 Last_Name: '',

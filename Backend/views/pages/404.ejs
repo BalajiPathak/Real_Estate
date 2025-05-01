@@ -2,25 +2,15 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/navbar.ejs') %>
 <body class="bg-gray-100">
-    <div class="page-head"> 
-        <div class="container">
-            <div class="row">
-                <div class="page-head-content">
-                    <h1 class="page-title">404 - Page Not Found</h1>               
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="content-area error-page" style="background-color: #FCFCFC; padding-bottom: 55px;">
         <div class="container">
             <div class="row">
                 <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
-                    <h2>The page you are looking for does not exist</h2>
-                    <p>Please check the URL or return to the homepage</p>
-                    <a href="/home" class="btn btn-default">Go Home</a>
+                    <h2 class="error-title">404</h2>
+                    <p>Sorry, the page you requested may have been moved or deleted</p>
+                    <a href="/home" class="btn btn-default">Home</a>                        
                 </div>
-            </div>
+            </div> 
         </div>
-    </div>
+    </div> 
 <%- include('../includes/end.ejs') %>

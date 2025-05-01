@@ -125,7 +125,7 @@ exports.getAllProperties = async (req, res) => {
     // 👇 Render updated view
     res.render('property/property', {
       pageTitle: 'Real Estate',
-      isLoggedIn: req.isLoggedIn || false,
+      isLoggedIn: req.session && req.session.isLoggedIn || false,  // Fixed this line
       properties,
       cities,
       propertyFeatures,
@@ -158,11 +158,9 @@ exports.getPropertyById = async (req, res) => {
     const companyInfo = await CompanyInfo.findOne();  
     const navbar = await Navbar.find();  
     const blogs = await Blog.find();
- 
-    // Fetch the property details and populate necessary fields
     const property = await PropertyData.findById(req.params.id)
-      .populate('categoryId stateId statusId userId')  // Populate categoryId, stateId, etc.
-      .lean();  // Returns plain JavaScript object
+      .populate('categoryId stateId statusId userId')
+      .lean();  
 
     if (!property) {
       return res.status(404).send('Property not found');
@@ -202,7 +200,7 @@ console.log(featureNames);
     // Render the property details page
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
-      isLoggedIn: req.session.isLoggedIn || false,  // Updated
+      isLoggedIn: req.session && req.session.isLoggedIn || false,
       path: '/property/property-details',
       property,
       features: featureNames,  // Pass the list of feature names
@@ -235,7 +233,7 @@ exports.renderSubmitForm = async (req, res) => {
  
   res.render('property/new', {
     pageTitle: 'Real Estate',
-    isLoggedIn: req.session.isLoggedIn || false,  
+    isLoggedIn: req.session && req.session.isLoggedIn || false,  
     path: '/property/new',
     categories,
     states,

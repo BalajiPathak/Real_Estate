@@ -6,6 +6,9 @@ const State = require('../models/state');
 const Category = require('../models/propertyCategory');
 const Status = require('../models/statusCategory');
 const statusCategory = require('../models/statusCategory');
+const Blog = require('../models/blog');
+
+
 const propertyCategory = require('../models/propertyCategory');
 const { PropertyFeature } = require('../models/propertyFeature'); // Correct import using destructuring
 const FilterProperty = require('../models/filterProperty'); // Add FilterProperty import
@@ -32,7 +35,7 @@ exports.getUserProperties = async (req, res) => {
             categories,
             statuses,
             propertyFeatures,
-            filterProperties
+            filterProperties, blogs
         ] = await Promise.all([
             Property.find({ userId: userId }).populate('categoryId stateId statusId'),
             CompanyInfo.findOne(),
@@ -42,7 +45,9 @@ exports.getUserProperties = async (req, res) => {
             propertyCategory.find({}),
             statusCategory.find({}),
             PropertyFeature.find({}),
-            FilterProperty.find({})
+            FilterProperty.find({}),
+            Blog.find(),
+            
         ]);
 
         res.render('userProperty/userProperty', {
@@ -55,13 +60,13 @@ exports.getUserProperties = async (req, res) => {
             isLoggedIn: req.isAuthenticated() || !!req.session.user,
             currentPath: '/myproperties',
             uploadsPath: '/uploads/',
-            // Filter-related data
             cities: cities,
             states: states,
             propertyCategory: categories,
             statusCategory: statuses,
             propertyFeatures: propertyFeatures,
             filterProperties: filterProperties,
+            blogs:blogs,
             // Current filter values
             keyword: req.query.keyword || '',
             cityId: req.query.cityId || '',
@@ -101,9 +106,7 @@ exports.getUserProperties = async (req, res) => {
     }
 };
 
-// Add these methods to your existing userProperty.js controller
 
-// Get edit property page
 exports.getEditProperty = async (req, res) => {
     try {
         const propertyId = req.params.id;
@@ -115,7 +118,8 @@ exports.getEditProperty = async (req, res) => {
             states,
             categories,
             statuses,
-            propertyFeatures
+            propertyFeatures,
+            blogs
         ] = await Promise.all([
             Property.findById(propertyId),
             CompanyInfo.findOne(),
@@ -124,7 +128,8 @@ exports.getEditProperty = async (req, res) => {
             State.find({}),
             propertyCategory.find({}),
             statusCategory.find({}),
-            PropertyFeature.find({})
+            PropertyFeature.find({}),
+            Blog.find()
         ]);
 
         if (!property) {
@@ -150,6 +155,7 @@ exports.getEditProperty = async (req, res) => {
             statuses: statuses,
             propertyFeatures: propertyFeatures,
             features: propertyFeatures,
+            blogs:blogs,
             propertyFeatureIds: propertyFeatureIds, // Add this line
             // Pass IDs directly from property
             cityId: property.cityId || '',
