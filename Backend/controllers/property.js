@@ -88,7 +88,6 @@ exports.getAllProperties = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    // 👇 Add filter summary logic
     const selectedFilters = [];
 
     if (req.query.keyword) selectedFilters.push(`Keyword: "${req.query.keyword}"`);
@@ -105,7 +104,7 @@ exports.getAllProperties = async (req, res) => {
 
     if (req.query.priceRange) {
       const [min, max] = req.query.priceRange.split(',');
-      selectedFilters.push(`Price: ₹${min} to ₹${max}`);
+      selectedFilters.push(`Price: $${min} to $${max}`);
     }
 
     if (req.query.areaRange) {
@@ -122,7 +121,7 @@ exports.getAllProperties = async (req, res) => {
       selectedFilters.push(`Features: ${featuresArray.join(', ')}`);
     }
 
-    // 👇 Render updated view
+  
     res.render('property/property', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.isLoggedIn || false,
@@ -139,6 +138,7 @@ exports.getAllProperties = async (req, res) => {
       priceRange: req.query.priceRange || '',
       areaRange: req.query.areaRange || '',
       minBaths: req.query.minBaths || '',
+      maxBaths:req.query.min || '',
       minBeds: req.query.minBeds || '',
       companyInfo: companyInfo || [],
       navbar: navbar || [],
@@ -173,16 +173,15 @@ exports.getPropertyById = async (req, res) => {
     const propertyFeatures = await PropertyDataFeature.find({ propertyId: property._id })
       .populate('featureId');
 console.log('dsfsf',propertyFeatures);
-    // Extract feature names from the populated featureId
+   
     const featureNames = propertyFeatures.map(f => f.featureId.name);
 console.log(featureNames);
-    // Fetch images related to the property
+    
     const images = await PropertyImages.find({ propertyId: property._id }).lean();
 
-    // Fetch videos related to the property
     const videos = await PropertyVideo.find({ propertyId: property._id }).lean();
 
-    // Fetch other similar properties based on the same category
+    
     const properties = await PropertyData.find({
       categoryId: property.categoryId,
       _id: { $ne: property._id },  // Exclude the current property
@@ -190,7 +189,7 @@ console.log(featureNames);
       .populate('categoryId stateId statusId userId')  // Populate similar properties as well
       .lean();
 
-    // Fetch features of the related properties
+   
     for (let prop of properties) {
       const relatedPropertyFeatures = await PropertyDataFeature.find({ propertyId: prop._id })
         .populate('featureId')  // Populate featureId to get feature details
@@ -206,13 +205,13 @@ console.log(featureNames);
       isLoggedIn: req.isLoggedIn,
       path: '/property/property-details',
       property,
-      features: featureNames,  // Pass the list of feature names
+      features: featureNames,  
       images,
       videos,
       properties, 
       companyInfo:companyInfo||[],
       navbar:navbar ||[],
-      blogs:blogs ||[], // Pass the related properties with their features
+      blogs:blogs ||[], 
     });
   } catch (error) {
     console.error('Error fetching property details:', error);

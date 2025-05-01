@@ -1,4 +1,7 @@
 <%- include('../includes/head.ejs') %>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
 
 
 <div class="content-area user-profiel" style="background-color: #FCFCFC;">
@@ -15,8 +18,8 @@
               <div class="col-sm-3 col-sm-offset-1">
                 <div class="picture-container">
                   <div class="picture">
-                    <img src="<%= user.user_image || '/assets/img/avatar.png' %>" class="picture-src" id="wizardPicturePreview" title=""/>
-                    <input type="file" id="wizard-picture" name="userImage" onchange="previewImage(event)">
+                    <img src="/uploads/<%= user.user_image %>" class="picture-src" id="wizardPicturePreview" title=""/>
+                    <input type="file" id="wizard-picture" name="user_Image" onchange="previewImage(event)">
                   </div>
                   <h6>Choose Picture</h6>
                 </div>
@@ -84,11 +87,16 @@
            
             <div class="col-sm-5 col-sm-offset-1">
               <br>
-              <input type="submit" class="btn btn-finish btn-primary" name="finish" value="Finish">
+              <input type="submit" class="btn btn-finish "  style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;"  name="finish" value="Finish">
             </div>
           </form>
         </div>
       </div><!-- end row -->
     </div>
   </div>
+
+
+<%- include('../includes/footer.ejs') %>
+
+<%- include('../includes/end.ejs') %>
  

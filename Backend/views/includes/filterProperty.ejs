@@ -65,6 +65,7 @@
               <b class="pull-left color">1</b>
               <b class="pull-right color">120</b>
               <input type="hidden" name="minBaths" id="minBathsInput" value="<%= typeof minBaths !== 'undefined' ? minBaths : '' %>" />
+              <input type="hidden" name="maxBaths" id="maxBathsInput" value="<%= typeof maxBaths !== 'undefined' ? maxBaths : '' %>" />
             </div>
 
             <!-- Min Beds -->
@@ -115,13 +116,13 @@
     </div>
   </div>
 </div>
-<!-- Display Selected Filters Summary (Optional) -->
+
 <% if (selectedFilters && selectedFilters.length > 0) { %>
-    <div class="alert alert-info">
+    <div class="alert alert-warning">
         <strong>You selected:</strong>
         <ul>
             <% selectedFilters.forEach(function(filter) { %>
-                <li><%= filter %></li>
+                <li style="color:#523c02;"><%= filter %></li>
             <% }); %>
         </ul>
     </div>
