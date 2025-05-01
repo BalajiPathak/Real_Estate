@@ -29,10 +29,12 @@
     "multer": "^1.4.5-lts.2",
     "nodemailer": "^6.10.1",
     "nodemailer-sendgrid-transport": "^0.2.0",
+    "nodemon": "^2.0.22",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "slick-carousel": "^1.8.1"
+
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
