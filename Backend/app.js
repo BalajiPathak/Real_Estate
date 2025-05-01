@@ -24,7 +24,7 @@ const userPropertyRoutes = require('./routes/userProperty');
 
 const blogRoutes=require('./routes/blog');
 const faqsRoutes= require('./routes/faqs');
-
+const userprofileRoutes= require('./routes/userprofile');
 const multer = require('multer');
 
 
@@ -157,6 +157,7 @@ app.use(propertyRoutes)
 
 app.use(blogRoutes);
 app.use(faqsRoutes);
+app.use(userprofileRoutes);
 app.use(isAuth,userPropertyRoutes);
 
 app.use(errorHandler.handle404);

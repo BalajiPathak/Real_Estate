@@ -18,93 +18,142 @@ const Navbar = require('../models/navbar')
 const Blog = require('../models/blog');
 
 exports.getAllProperties = async (req, res) => {
-try {
- 
- const page = parseInt(req.query.page) || 1;
- const limit = 12;
- const skip = (page - 1) * limit;
- // Fetch dynamic data for filter options
- 
-const cities = await City.find();
- const propertyFeatures = await PropertyFeature.find();
- const filterProperties = await FilterProperty.find();
- const statusCategory = await StatusCategory.find();
-  const companyInfo = await CompanyInfo.findOne();  
-   const navbar = await Navbar.find();  
-   const blogs = await Blog.find();
- 
- const filter = {};
- // Apply other filters if they exist
- 
-if (req.query.keyword) {
- filter.name = { $regex: req.query.keyword, $options: 'i' }; // Case-insensitive match
-}
- if (req.query.cityId) {
- filter.cityId = req.query.cityId;
- }
- 
-if (req.query.statusId) {
- 
-  filter.statusId = req.query.statusId;
- 
-  }
- 
-if (req.query.priceRange) {
-const [minPrice, maxPrice] = req.query.priceRange.split(',');
- filter.price = { $gte: minPrice, $lte: maxPrice };
- }
- 
- if (req.query.areaRange) {
- const [minArea, maxArea] = req.query.areaRange.split(',');
- filter.area = { $gte: minArea, $lte: maxArea };
- }
-if (req.query.minBaths) {
-filter.baths = { $gte: parseInt(req.query.minBaths) };
-}
- 
- if (req.query.minBeds) {
- filter.beds = { $gte: parseInt(req.query.minBeds) };
- }
- 
- 
- // NEW: Filter by features (by feature name)
- if (req.query.features && req.query.features.length > 0) {
- // 1. Find matching feature IDs by name
- const selectedFeatures = await PropertyFeature.find({ name: { $in: req.query.features } });
- const selectedFeatureIds = selectedFeatures.map(f => f._id);
- 
- 
- // 2. Find matching property IDs
-const propertyFeatureMappings = await PropertyDataFeature.find({ featureId: { $in: selectedFeatureIds } });
- const propertyIds = propertyFeatureMappings.map(pf => pf.propertyId);
- 
- 
-// 3. Apply propertyIds to main filter
-filter._id = { $in: propertyIds };
-}
- 
- 
- 
-// Get the total count of properties matching the filter
- 
- const totalProperties = await PropertyData.countDocuments(filter);
-const totalPages = Math.ceil(totalProperties / limit);
- 
- 
- 
-// Fetch properties with the applied filters
-const properties = await PropertyData.find(filter)
- 
- .skip(skip)
- 
-.limit(limit);
- 
- 
- 
- // Pass the filter properties for sliders to the view
-res.render('property/property', {
-pageTitle: 'Real Estate',
+  try {
+    console.log('Features in query:', req.query.features); // Log to inspect features
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = 12;
+    const skip = (page - 1) * limit;
+
+    // Fetch dynamic data for filter options
+    const cities = await City.find();
+    const propertyFeatures = await PropertyFeature.find();
+    const filterProperties = await FilterProperty.find();
+    const statusCategory = await StatusCategory.find();
+    const companyInfo = await CompanyInfo.findOne();  
+    const navbar = await Navbar.find();  
+    const blogs = await Blog.find();
+
+    const filter = {};
+    if (req.query.keyword) {
+      filter.name = { $regex: req.query.keyword, $options: 'i' };
+    }
+    if (req.query.cityId) {
+      filter.cityId = req.query.cityId;
+    }
+    if (req.query.statusId) {
+      filter.statusId = req.query.statusId;
+    }
+    if (req.query.priceRange) {
+      const [minPrice, maxPrice] = req.query.priceRange.split(',');
+      filter.price = { $gte: minPrice, $lte: maxPrice };
+    }
+    if (req.query.areaRange) {
+      const [minArea, maxArea] = req.query.areaRange.split(',');
+      filter.area = { $gte: minArea, $lte: maxArea };
+    }
+    if (req.query.minBaths) {
+      filter.baths = { $gte: parseInt(req.query.minBaths) };
+    }
+    if (req.query.minBeds) {
+      filter.beds = { $gte: parseInt(req.query.minBeds) };
+    }
+
+    // Feature filter
+    if (req.query.features) {
+      // Log the features to inspect the format
+      console.log('Features before processing:', req.query.features);
+
+      // Convert features to an array if it's not already
+      const features = Array.isArray(req.query.features) ? req.query.features : req.query.features.split(',');
+
+      console.log('Features after processing:', features); // Check the processed features array
+
+      if (features.length > 0) {
+        const selectedFeatures = await PropertyFeature.find({ name: { $in: features } });
+        const selectedFeatureIds = selectedFeatures.map(f => f._id);
+
+        const propertyFeatureMappings = await PropertyDataFeature.find({ featureId: { $in: selectedFeatureIds } });
+        const propertyIds = propertyFeatureMappings.map(pf => pf.propertyId);
+
+        filter._id = { $in: propertyIds };
+      }
+    }
+
+    // Count and paginate results
+    const totalProperties = await PropertyData.countDocuments(filter);
+    const totalPages = Math.ceil(totalProperties / limit);
+
+    const properties = await PropertyData.find(filter)
+      .skip(skip)
+      .limit(limit);
+
+    // 👇 Add filter summary logic
+    const selectedFilters = [];
+
+    if (req.query.keyword) selectedFilters.push(`Keyword: "${req.query.keyword}"`);
+
+    if (req.query.cityId) {
+      const selectedCity = cities.find(c => c._id.toString() === req.query.cityId);
+      if (selectedCity) selectedFilters.push(`City: ${selectedCity.name}`);
+    }
+
+    if (req.query.statusId) {
+      const selectedStatus = statusCategory.find(s => s._id.toString() === req.query.statusId);
+      if (selectedStatus) selectedFilters.push(`Status: ${selectedStatus.name}`);
+    }
+
+    if (req.query.priceRange) {
+      const [min, max] = req.query.priceRange.split(',');
+      selectedFilters.push(`Price: ₹${min} to ₹${max}`);
+    }
+
+    if (req.query.areaRange) {
+      const [min, max] = req.query.areaRange.split(',');
+      selectedFilters.push(`Area: ${min} to ${max} sq ft`);
+    }
+
+    if (req.query.minBeds) selectedFilters.push(`Min Beds: ${req.query.minBeds}`);
+    if (req.query.minBaths) selectedFilters.push(`Min Baths: ${req.query.minBaths}`);
+
+    if (req.query.features && req.query.features.length > 0) {
+      // Handle features as array or string
+      const featuresArray = Array.isArray(req.query.features) ? req.query.features : req.query.features.split(',');
+      selectedFilters.push(`Features: ${featuresArray.join(', ')}`);
+    }
+
+    // 👇 Render updated view
+    res.render('property/property', {
+      pageTitle: 'Real Estate',
+      isLoggedIn: req.isLoggedIn || false,
+      properties,
+      cities,
+      propertyFeatures,
+      filterProperties,
+      currentPage: page,
+      totalPages,
+      statusCategory,
+      keyword: req.query.keyword || '',
+      cityId: req.query.cityId || '',
+      statusId: req.query.statusId || '',
+      priceRange: req.query.priceRange || '',
+      areaRange: req.query.areaRange || '',
+      minBaths: req.query.minBaths || '',
+      minBeds: req.query.minBeds || '',
+      companyInfo: companyInfo || [],
+      navbar: navbar || [],
+      blogs: blogs || [],
+      features: req.query.features || [],
+      selectedFilters, // Pass selected filters to the view       
+    });
+
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+<<<<<<< HEAD
 isLoggedIn: req.session.isLoggedIn || false,  // Updated
  properties,
  
@@ -141,6 +190,8 @@ blogs:blogs ||[],
  }
  
  };
+=======
+>>>>>>> 6b81e8fd5084dfeea800fe18623383b96d90aa3b
 
 exports.getPropertyById = async (req, res) => {
   try {
@@ -199,8 +250,8 @@ console.log(featureNames);
       videos,
       properties, 
       companyInfo:companyInfo||[],
-navbar:navbar ||[],
-blogs:blogs ||[], // Pass the related properties with their features
+      navbar:navbar ||[],
+      blogs:blogs ||[], // Pass the related properties with their features
     });
   } catch (error) {
     console.error('Error fetching property details:', error);

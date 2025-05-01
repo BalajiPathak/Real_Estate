@@ -115,7 +115,17 @@
     </div>
   </div>
 </div>
-
+<!-- Display Selected Filters Summary (Optional) -->
+<% if (selectedFilters && selectedFilters.length > 0) { %>
+    <div class="alert alert-info">
+        <strong>You selected:</strong>
+        <ul>
+            <% selectedFilters.forEach(function(filter) { %>
+                <li><%= filter %></li>
+            <% }); %>
+        </ul>
+    </div>
+<% } %>
 <!-- Slider JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
