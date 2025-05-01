@@ -20,6 +20,7 @@ const User =require('./models/user');
 // Add these imports at the top
 const propertyRoutes = require('./routes/property');
 const userPropertyRoutes = require('./routes/userProperty');
+const userProfileRoutes= require('./routes/userprofile');
 
 
 const blogRoutes=require('./routes/blog');
@@ -157,6 +158,7 @@ app.use(propertyRoutes)
 
 app.use(blogRoutes);
 app.use(faqsRoutes);
+app.use(userProfileRoutes);
 app.use(isAuth,userPropertyRoutes);
 
 app.use(errorHandler.handle404);
