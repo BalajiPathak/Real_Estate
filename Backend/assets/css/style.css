@@ -141,6 +141,8 @@ input[type="radio"] {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     padding: 0;
+    margin-top:5px;
+    margin-left:2px !important;
 }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -322,6 +324,7 @@ input[type="search"]::-webkit-search-decoration {
 }
 .search-row{
     padding-top:15px;
+    
 }
 
 .form-inline .form-control, .form-inline .form-control {
@@ -3043,4 +3046,8 @@ padding: 10px;
 }
 #map {
     height: 300px;
+}
+
+.helllllo{
+    margin-bottom: 15px;
 }

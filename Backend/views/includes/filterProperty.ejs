@@ -9,6 +9,7 @@
     .btn-warning { background-color: #ffcc00; color: #fff; }
     .slider-selection{background-image: linear-gradient(to bottom, #f1e31a 0, #fdfa1f 100%);}
     .slider-handle {background-image: linear-gradient(to bottom, #f1ba23 0, #f1ba23 100%);}
+    .helo{margin-top:15px;}
   </style>
 
 
@@ -16,12 +17,12 @@
   <div class="col-md-12 padding-bottom-40 large-search">
     <div class="search-form wow pulse">
       <form action="/properties" method="GET" class="form-inline">
-        <div class="col-md-12">
-          <div class="col-md-4">
-            <input type="text" name="keyword" class="form-control" placeholder="Search by keyword" value="<%= typeof keyword !== 'undefined' ? keyword : '' %>" />
+        <div class="col-md-12 ">
+          <div class="col-md-4 helllllo">
+            <input type="text"  name="keyword" class="form-control mb-4" placeholder="Search by keyword" value="<%= typeof keyword !== 'undefined' ? keyword : '' %>" />
           </div>
-          <div class="col-md-4">
-            <select class="form-control" name="cityId">
+          <div class="col-md-4 helllllo">
+            <select class="form-control " name="cityId" style="margin-bottom: 15px;">
               <option value="">City</option>
               <% if (cities && cities.length > 0) { %>
                 <% cities.forEach(city => { %>
@@ -30,8 +31,8 @@
               <% } %>
             </select>
           </div>
-          <div class="col-md-4">
-            <select class="form-control" name="statusId">
+          <div class="col-md-4 helllllo">
+            <select class="form-control" name="statusId" style="margin-bottom: 15px;">
               <option value="">Property Status</option>
               <% if (statusCategory && statusCategory.length > 0) { %>
                 <% statusCategory.forEach(status => { %>
@@ -44,13 +45,13 @@
           </div>
         </div>
 
-        <div class="col-md-12">
-          <div class="search-row" style="margin-top: 20px;">
+        <div class="col-12 col-sm-12">
+          <div class="search-row" style="margin-top:-10px;"  >
            
             <!-- Price Range -->
-            <div class="col-sm-3">
+            <div class="col-12 col-md-3"><br>
               <label>Price range ($):</label>
-              <input type="text" id="price-range" class="span2" />
+              <input type="text" id="price-range" class="span2"  style="margin-bottom: 15px;"/>
               <br />
               <b class="pull-left color">300000$</b>
               <b class="pull-right color">10000000$</b>
@@ -58,9 +59,9 @@
             </div>
 
             <!-- Min Baths -->
-            <div class="col-sm-3">
+            <div class="col-12 col-md-3 mb-3"><br>
               <label>Baths:</label>
-              <input type="text" id="min-baths" class="span2" />
+              <input type="text" id="min-baths" class="span2" style="margin-bottom: 15px;" />
               <br />
               <b class="pull-left color">1</b>
               <b class="pull-right color">120</b>
@@ -69,9 +70,9 @@
             </div>
 
             <!-- Min Beds -->
-            <div class="col-sm-3">
+            <div class="col-12 col-md-3 mb-3"><br>
               <label>Beds:</label>
-              <input type="text" id="min-bed" class="span2" />
+              <input type="text" id="min-bed" class="span2" style="margin-bottom: 15px;"/>
               <br />
               <b class="pull-left color">1</b>
               <b class="pull-right color">120</b>
@@ -79,9 +80,9 @@
             </div>
 
             <!-- Area Range -->
-            <div class="col-sm-3">
+            <div class="col-12 col-md-3 "><br>
               <label>Area range (sqft):</label>
-              <input type="text" id="area-range" class="span2" />
+              <input type="text" id="area-range" class="span2" style="margin-bottom: 15px;" />
               <br />
               <b class="pull-left color">100 sqft</b>
               <b class="pull-right color">10000 sqft</b>
@@ -91,14 +92,14 @@
           </div>
 
           <!-- Features Section -->
-          <div class="search-row" style="margin-top: 20px;">
+          <div class="search-row ">
             <div class="col-sm-12">
               <% const selectedFeatures = Array.isArray(features) ? features : []; %>
               <% if (propertyFeatures && propertyFeatures.length > 0) { %>
                 <% propertyFeatures.forEach(feature => { %>
-                  <div class="checkbox">
+                  <div class="checkbox" >
                     <label>
-                      <input type="checkbox" name="features" value="<%= feature.name %>" <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> />
+                      <input type="checkbox" class="helo" name="features" value="<%= feature.name %>" <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> />
                       <%= feature.name %>
                     </label>
                   </div>
