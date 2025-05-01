@@ -205,12 +205,25 @@ exports.postEditProperty = async (req, res) => {
         property.area = req.body.area;
         property.categoryId = req.body.categoryId;
         property.stateId = req.body.stateId;
+        property.cityId = req.body.cityId;
         property.statusId = req.body.statusId;
         property.phone = req.body.phone;
+        property.features = Array.isArray(req.body.featureIds) ? req.body.featureIds : [req.body.featureIds];
+        
+        // Handle video links
+        property.videoLinks = Array.isArray(req.body.videoLink) ? 
+            req.body.videoLink.filter(link => link.trim() !== '') : 
+            req.body.videoLink ? [req.body.videoLink] : [];
 
-        // Handle image upload if new image is provided
-        if (req.file) {
-            property.image = req.file.filename;
+        // Handle main image upload
+        if (req.files && req.files.mainImage) {
+            property.image = req.files.mainImage[0].filename;
+        }
+
+        // Handle gallery images upload
+        if (req.files && req.files.galleryImages) {
+            const newGalleryImages = req.files.galleryImages.map(file => file.filename);
+            property.galleryImages = [...(property.galleryImages || []), ...newGalleryImages];
         }
 
         await property.save();

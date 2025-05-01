@@ -8,7 +8,7 @@ exports.handle404 = async (req, res, next) => {
         const [companyInfo, navbar, blogs] = await Promise.all([
             CompanyInfo.findOne(),
             Navbar.find(),
-            Blog.find()
+            Blog.find({})
         ]);
 
         res.status(404).render('pages/404', {
@@ -30,6 +30,7 @@ exports.handle500 = async (err, req, res, next) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
         const navbar = await Navbar.find();  
+        const blogs = await Navbar.find({});  
 
         console.error(err.stack); 
 
@@ -38,6 +39,7 @@ exports.handle500 = async (err, req, res, next) => {
             path: '/500',
             companyInfo: companyInfo,
             navbar: navbar,
+            blogs:blogs,
             isLoggedIn: req.session && req.session.isLoggedIn || false,
             error: process.env.NODE_ENV === 'production' ? err : {} ///for future reference 
         });
