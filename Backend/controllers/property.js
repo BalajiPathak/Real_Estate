@@ -153,46 +153,6 @@ exports.getAllProperties = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-isLoggedIn: req.session.isLoggedIn || false,  // Updated
- properties,
- 
-cities,
- propertyFeatures,
- 
-filterProperties,
- 
-currentPage: page,
-totalPages,
-statusCategory,
-keyword: req.query.keyword || '',
- cityId: req.query.cityId || '',
- 
- statusId: req.query.statusId || '',
- 
-priceRange: req.query.priceRange || '',
-areaRange: req.query.areaRange || '',
-minBaths: req.query.minBaths || '',
-minBeds: req.query.minBeds || '',
-companyInfo:companyInfo||[],
-navbar:navbar ||[],
-blogs:blogs ||[],
- features: req.query.features || [], // Pass selected features to the view
-});
- 
- 
- 
-} catch (error) {
- 
- console.error('Error fetching properties:', error);
- 
-  res.status(500).send('Server Error');
- }
- 
- };
-=======
->>>>>>> 6b81e8fd5084dfeea800fe18623383b96d90aa3b
-
 exports.getPropertyById = async (req, res) => {
   try {
     const companyInfo = await CompanyInfo.findOne();  
