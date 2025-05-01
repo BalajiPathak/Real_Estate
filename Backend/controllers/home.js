@@ -10,6 +10,7 @@ const Testimonial = require('../models/testimonial');
 const { PropertyDataFeature, PropertyFeature } = require('../models/propertyFeature');  // Update this line
 const City = require('../models/city');
 const PropertyVideo = require('../models/propertyVideo');
+const Blog = require('../models/blog');
 
 const createBannerDetails = async (req, res) => {
     try {
@@ -128,7 +129,7 @@ exports.getTestimonials = async (req, res) => {
 
 exports.getHome = async (req, res) => {
     try {
-        const [companyInfo, navbar, banners, featuredProperties, testimonials, cities, statusCategory, propertyFeatures] = await Promise.all([
+        const [companyInfo, navbar, banners, featuredProperties, testimonials, cities, statusCategory, propertyFeatures,blogs] = await Promise.all([
             CompanyInfo.findOne(),
             Navbar.find(),
             Banner.find().populate('banner_detail_id'),
@@ -140,7 +141,8 @@ exports.getHome = async (req, res) => {
             Testimonial.find().sort({ createdAt: -1 }),
             City.find(),
             StatusCategory.find(),
-            PropertyFeature.find()
+            PropertyFeature.find(),
+            Blog.find()
         ]);
 
         res.render('index', {
@@ -155,6 +157,7 @@ exports.getHome = async (req, res) => {
             cities: cities || [],
             statusCategory: statusCategory || [],
             propertyFeatures: propertyFeatures || [],
+            blogs:blogs||[],
             features: [],  // Add this line for selected features
             cityId: '',
             statusId: '',

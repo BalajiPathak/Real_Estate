@@ -7,8 +7,7 @@ const crypto = require('crypto');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
 const { validationResult } = require('express-validator');  
-
-// Update the SendGrid transporter setup with your API key
+const Blog = require('../models/blog');
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
         api_key: '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'
@@ -19,6 +18,7 @@ exports.getLogin = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
         const navbar = await Navbar.find();  
+        const blogs = await Blog.find();  
 
         res.render('auth/login', {
             pageTitle: 'Login',
@@ -31,6 +31,7 @@ exports.getLogin = async (req, res) => {
             },
             companyInfo: companyInfo,
             navbar: navbar,
+            blogs:blogs,
             isLoggedIn: req.session.isLoggedIn
         });
     } catch (err) {
@@ -52,6 +53,7 @@ exports.getSignup = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
         const navbar = await Navbar.find();  
+        const blogs = await Blog.find();    
 
         res.render('auth/signup', {
             pageTitle: 'Signup',
@@ -66,6 +68,7 @@ exports.getSignup = async (req, res) => {
             },
             companyInfo: companyInfo,
             navbar: navbar,
+            blogs:blogs,
             isLoggedIn: req.session.isLoggedIn
         });
     } catch (err) {
@@ -91,33 +94,36 @@ exports.postSignup = async (req, res) => {
         const errors = validationResult(req);
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
+        const blogs = await Blog.find();  // Add blogs
 
+        // Check if email already exists first
+        const existingUser = await User.findOne({ Email });
+        if (existingUser) {
+            return res.status(422).render('auth/signup', {
+                pageTitle: 'Signup',
+                path: '/signup',
+                errorMessage: 'Email is already in use. Please use a different email address.',  // Updated error message
+                validationErrors: [{ param: 'Email' }],
+                oldInput: {
+                    First_Name,
+                    Last_Name,
+                    Email,
+                    Password
+                },
+                companyInfo,
+                navbar,
+                blogs,  // Add blogs
+                isLoggedIn: req.session.isLoggedIn
+            });
+        }
+
+        // Rest of validation
         if (!errors.isEmpty()) {
             return res.status(422).render('auth/signup', {
                 pageTitle: 'Signup',
                 path: '/signup',
                 errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(),
-                oldInput: {
-                    First_Name: First_Name,
-                    Last_Name: Last_Name,
-                    Email: Email,
-                    Password: Password
-                },
-                companyInfo: companyInfo,
-                navbar: navbar,
-                isLoggedIn: req.session.isLoggedIn
-            });
-        }
-
-        // Check if email already exists
-        const existingUser = await User.findOne({ Email });
-        if (existingUser) {
-            return res.status(422).render('auth/signup', {
-                pageTitle: 'Signup',
-                path: '/signup',
-                errorMessage: 'Email already exists',
-                validationErrors: [{ param: 'Email' }],
                 oldInput: {
                     First_Name: First_Name,
                     Last_Name: Last_Name,

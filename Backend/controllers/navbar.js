@@ -2,6 +2,8 @@ const Navbar = require('../models/navbar');
 const CompanyInfo = require('../models/companyInfo');
 const ContactForm = require('../models/contactForm');
 const { validationResult } = require('express-validator');
+const Blog = require('../models/blog');
+
 
 const createNavbar = async (req, res) => {
     try {
@@ -49,14 +51,15 @@ const getContact = async (req, res) => {
     try {
         const navbar = await Navbar.find();
         const companyInfo = await CompanyInfo.findOne();
-        
+        const blog = await Blog.find({});
         res.render('contact', {
             navbar: navbar,          
             companyInfo: companyInfo,
-            isLoggedIn: req.isLoggedIn || false,
+            isLoggedIn: req.session.isLoggedIn || false,  // Use session status consistently
             pageTitle: 'Contact Us',
             errorMessage: null,
             validationErrors: [], 
+            blogs:blog,
             oldInput: {
                 First_Name: '',
                 Last_Name: '',
@@ -69,18 +72,20 @@ const getContact = async (req, res) => {
         console.error('Error loading contact page:', error);
         res.status(500).render('contact', {
             errorMessage: 'An error occurred while loading the page',
-            validationErrors: [], // Add this line
+            validationErrors: [],
             oldInput: {
                 First_Name: '',
                 Last_Name: '',
                 Email: '',
                 Subject: '',
                 Message: ''
-            }
+            },
+            isLoggedIn: req.session.isLoggedIn || false  // Add isLoggedIn here too
         });
     }
 };
 
+// Also update postContact function
 const postContact = async (req, res) => {
     try {
         const { firstname: First_Name, lastname: Last_Name, email: Email, subject: Subject, message: Message } = req.body;
@@ -102,7 +107,7 @@ const postContact = async (req, res) => {
                     Subject,
                     Message
                 },
-                isLoggedIn: req.isLoggedIn || false
+                isLoggedIn: req.session.isLoggedIn || false  // Use session status
             });
         }
 
@@ -130,7 +135,7 @@ const postContact = async (req, res) => {
                 Subject: '',
                 Message: ''
             },
-            isLoggedIn: req.isLoggedIn || false
+            isLoggedIn: req.session.isLoggedIn || false  // Use session status
         });
 
     } catch (error) {
@@ -141,7 +146,7 @@ const postContact = async (req, res) => {
             pageTitle: 'Contact Us',
             errorMessage: 'An error occurred while sending your message',
             oldInput: req.body,
-            isLoggedIn: req.isLoggedIn || false
+            isLoggedIn: req.session.isLoggedIn || false  // Use session status
         });
     }
 };
