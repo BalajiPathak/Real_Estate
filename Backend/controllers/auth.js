@@ -210,6 +210,7 @@ exports.postLogin = async (req, res) => {
                 },
                 companyInfo: companyInfo,
                 navbar: navbar,
+                blogs: blogs || [],
                 isLoggedIn: false
             });
         }
@@ -229,6 +230,7 @@ exports.postLogin = async (req, res) => {
                 },
                 companyInfo: companyInfo,
                 navbar: navbar,
+                blogs: blogs || [],
                 isLoggedIn: false
             });
         }

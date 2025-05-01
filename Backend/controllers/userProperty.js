@@ -1,3 +1,5 @@
+
+
 const Property = require('../models/propertyData');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
@@ -15,14 +17,20 @@ const FilterProperty = require('../models/filterProperty'); // Add FilterPropert
 
 exports.getUserProperties = async (req, res) => {
     try {
-        if (!req.isAuthenticated() && !req.session.user) {
+        // Updated authentication check
+        if (!req.session.isLoggedIn && !req.isAuthenticated()) {
             return res.redirect('/login');
         }
 
         let userId;
+        // Check both session user and passport user
         if (req.session.user) {
             userId = req.session.user._id;
         } else if (req.user) {
+            // If using passport but session not set, set it
+            req.session.user = req.user;
+            req.session.isLoggedIn = true;
+            await req.session.save();
             userId = req.user._id;
         }
         
@@ -205,25 +213,12 @@ exports.postEditProperty = async (req, res) => {
         property.area = req.body.area;
         property.categoryId = req.body.categoryId;
         property.stateId = req.body.stateId;
-        property.cityId = req.body.cityId;
         property.statusId = req.body.statusId;
         property.phone = req.body.phone;
-        property.features = Array.isArray(req.body.featureIds) ? req.body.featureIds : [req.body.featureIds];
-        
-        // Handle video links
-        property.videoLinks = Array.isArray(req.body.videoLink) ? 
-            req.body.videoLink.filter(link => link.trim() !== '') : 
-            req.body.videoLink ? [req.body.videoLink] : [];
 
-        // Handle main image upload
-        if (req.files && req.files.mainImage) {
-            property.image = req.files.mainImage[0].filename;
-        }
-
-        // Handle gallery images upload
-        if (req.files && req.files.galleryImages) {
-            const newGalleryImages = req.files.galleryImages.map(file => file.filename);
-            property.galleryImages = [...(property.galleryImages || []), ...newGalleryImages];
+        // Handle image upload if new image is provided
+        if (req.file) {
+            property.image = req.file.filename;
         }
 
         await property.save();
@@ -256,3 +251,4 @@ exports.deleteProperty = async (req, res) => {
         res.status(500).redirect('/myproperties');
     }
 };
+

@@ -30,7 +30,7 @@
                     <div class="wizard-container"> 
 
                         <div class="wizard-card ct-wizard-orange" id="wizardProperty">
-                            <form action="/property/<%= property._id %>" method="POST" enctype="multipart/form-data">                      
+                            <form action="/property %>" method="POST" enctype="multipart/form-data">                      
                                 <div class="wizard-header">
                                     <h3>
                                         <b>Edit</b> YOUR PROPERTY <br>
@@ -53,9 +53,9 @@
                                             <div class="col-sm-4 col-sm-offset-1">
                                                 <div class="picture-container">
                                                     <div class="picture">
-                                                        
-                                                        <input type="file" name="mainImage" class="form-control" id="wizard-picture" required>
-                                                        <img src="/assets/img/default-property.jpg" class="picture-src" id="wizardPicturePreview" title=""/>
+                                                        <!-- Fix the image path -->
+                                                        <img src="/uploads/<%= property.image %>" class="picture-src" id="wizardPicturePreview" title=""/>
+                                                        <input type="file" name="mainImage" class="form-control" id="wizard-picture">
                                                     </div> 
                                                 </div>
                                             </div>
