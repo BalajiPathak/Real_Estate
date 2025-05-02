@@ -47,7 +47,6 @@
                                             </div>
                                             <div class="item-entry overflow">
                                                 <h5><a href="/property/<%= property._id %>"><%= property.title %></a></h5>
-                                                <div class="dot-hr"></div>
                                                 <span class="pull-left"><b>Name :</b> <%= property.name %> </span>
                                                 <br>
                                                 <span class="pull-left"><b>Area :</b> <%= property.area %>m² </span>
@@ -78,7 +77,7 @@
                             <% } %>
                         </div>
                     </div>
-                    <% if (properties && properties.length > 0) { %>
+                    <% if (properties && properties.length > 5) { %>
                     <div class="section"> 
                         <div class="pull-right">
                             <div class="pagination">

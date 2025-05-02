@@ -27,13 +27,16 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter
 });
-router.get('/myproperties', userPropertyController.getUserProperties);
-router.get('/property/edit/:id', userPropertyController.getEditProperty);
-// Update the route to handle multiple file uploads
-router.post('/property/:id', upload.fields([
+// Current routes
+router.get('/myproperties',isAuth, userPropertyController.getUserProperties);
+router.get('/property/edit/:id',isAuth, userPropertyController.getEditProperty);
+
+// Update this route to match the form action
+router.post('/user/property/:id', isAuth, upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'galleryImages', maxCount: 5 }
 ]), userPropertyController.postEditProperty);
-router.post('/property/delete/:id', userPropertyController.deleteProperty);
+
+router.post('/property/delete/:id',isAuth,  userPropertyController.deleteProperty);
 
 module.exports = router;
