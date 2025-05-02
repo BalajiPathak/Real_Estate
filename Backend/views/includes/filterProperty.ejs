@@ -92,17 +92,19 @@
           </div>
 
           <!-- Features Section -->
-          <div class="search-row ">
-            <div class="col-sm-12">
+          <div class="search-row justify-content-center" style="margin-top: 20px !important">
+            <div class="col-sm-12 mt-2">
               <% const selectedFeatures = Array.isArray(features) ? features : []; %>
               <% if (propertyFeatures && propertyFeatures.length > 0) { %>
                 <% propertyFeatures.forEach(feature => { %>
-                  <div class="checkbox" >
-                    <label>
-                      <input type="checkbox" class="helo" name="features" value="<%= feature.name %>" <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> />
+                  <div class="col-md-1 text-center" style="margin-right:35px !important">
+                  <div class="checkbox" style="display:flex !important">
+                    <input type="checkbox" style="margin-right: -2px !important;
+    margin-left: -4px !important;" class="helo" name="features" value="<%= feature.name %>" <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> />
+                    <label style="margin-right: 20px !important; margin-left: 20px !important;">
                       <%= feature.name %>
-                    </label>
                   </div>
+                </div>
                 <% }) %>
               <% } %>
             </div>
