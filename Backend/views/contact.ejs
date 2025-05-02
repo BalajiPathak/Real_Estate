@@ -1,134 +1,133 @@
 <%- include('includes/head.ejs') %>
-<%- include('includes/header.ejs') %>
-<%- include('includes/navbar.ejs') %>
+    <%- include('includes/header.ejs') %>
+        <%- include('includes/navbar.ejs') %>
 
-<body class="bg-gray-100">
-    <div class="page-head">
-        <div class="container">
-            <div class="row">
-                <div class="page-head-content">
-                    <h1 class="page-title">Contact Us</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="register-area">
-        <div class="container">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="box-for overflow">
-                    <div class="col-md-12 col-xs-12 register-blocks">
-                        <h2>Contact form</h2>
-                        
-                        <% if (errorMessage) { %>
-                            <div class="alert alert-danger">
-                                <%= errorMessage %>
+            <body class="bg-gray-100">
+                <div class="page-head">
+                    <div class="container">
+                        <div class="row">
+                            <div class="page-head-content">
+                                <h1 class="page-title">Contact Us</h1>
                             </div>
-                        <% } %>
-                        
-                        <% if (locals.successMessage) { %>
-                            <div class="alert alert-success">
-                                <%= successMessage %>
-                            </div>
-                        <% } %>
-
-                        <form action="/contact" method="POST" novalidate>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="firstname">First Name</label>
-                                        <input type="text" 
-                                            class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
-                                            id="firstname" 
-                                            name="firstname"
-                                            value="<%= oldInput.First_Name %>"
-                                            required>
-                                    </div>
-                                </div>
-                                <!-- Repeat similar pattern for other fields -->
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="lastname">Last Name</label>
-                                        <input type="text" 
-                                            class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
-                                            id="lastname" 
-                                            name="lastname"
-                                            value="<%= oldInput.Last_Name %>"
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" 
-                                            class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
-                                            id="email" 
-                                            name="email"
-                                            value="<%= oldInput.Email %>"
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="subject">Subject</label>
-                                        <input type="text" 
-                                            class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
-                                            id="subject" 
-                                            name="subject"
-                                            value="<%= oldInput.Subject %>"
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label for="message">Message</label>
-                                        <textarea 
-                                            class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
-                                            id="message" 
-                                            name="message"
-                                            rows="5" 
-                                            required><%= oldInput.Message %></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 text-center">
-                                    <button type="submit" class="btn " style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
-                                        <i class="fa fa-envelope-o"></i> Send message
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <style>
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-control {
-            height: 40px;
-            padding: 8px 12px;
-        }
-        
-        textarea.form-control {
-            height: auto;
-            min-height: 150px;
-        }
-        
-        .btn-primary {
-            background-color: #3498db;
-            border-color: #3498db;
-            padding: 10px 20px;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-        }
-    </style>
-<%- include('includes/footer.ejs') %>
+                <div class="content-area recent-property padding-top-40" style="background-color: #FFF;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2">
+                                <div class="" id="contact1">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <h3><i class="fa fa-map-marker"></i> Address</h3>
+                                            <p>
+                                                <%= companyInfo.Address %>
+                                            </p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <h3><i class="fa fa-phone"></i> Call center</h3>
+                                            <p class="text-muted">This number is toll free if calling from
+                                                Great Britain otherwise we advise you to use the electronic
+                                                form of communication.</p>
+                                            <p><strong>
+                                                    <%= companyInfo.Phone_No %>
+                                                </strong></p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <h3><i class="fa fa-envelope"></i> Electronic support</h3>
+                                            <p class="text-muted">Please feel free to write an email to us or to use our
+                                                electronic ticketing system.</p>
+                                            <ul>
+                                                <li><strong><a href="mailto:<%= companyInfo.Email %>">
+                                                            <%= companyInfo.Email %>
+                                                        </a></strong></li>
+                                                <li><strong><a href="#">Ticketio</a></strong> - our ticketing support
+                                                    platform</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <h2>Contact form</h2>
+                                    <% if (errorMessage) { %>
+                                        <div class="alert alert-danger">
+                                            <%= errorMessage %>
+                                        </div>
+                                        <% } %>
+
+                                    <% if (locals.successMessage) { %>
+                                        <div class="alert alert-success">
+                                            <%= successMessage %>
+                                        </div>
+                                        <% } %>
+
+                                    <form action="/contact" method="POST" >
+                                        <div class="row">
+                                            <style>
+                                                .required-field::after {
+                                                    content: "*";
+                                                    color: #ff0000;
+                                                    margin-left: 4px;
+                                                }
+                                            </style>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="firstname" class="required-field">First Name</label>
+                                                    <input type="text"
+                                                        class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
+                                                        id="firstname" name="firstname"
+                                                        value="<%= oldInput.First_Name %>" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="lastname" class="required-field">Last Name</label>
+                                                    <input type="text"
+                                                        class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
+                                                        id="lastname" name="lastname"
+                                                        value="<%= oldInput.Last_Name %>" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="email" class="required-field">Email</label>
+                                                    <input type="email"
+                                                        class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
+                                                        id="email" name="email"
+                                                        value="<%= oldInput.Email %>" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="subject" class="required-field">Subject</label>
+                                                    <input type="text"
+                                                        class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
+                                                        id="subject" name="subject"
+                                                        value="<%= oldInput.Subject %>" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="message" class="required-field">Message</label>
+                                                    <textarea
+                                                        class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
+                                                        id="message" name="message" rows="5"
+                                                        required><%= oldInput.Message %></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 text-center">
+                                                <button type="submit" class="btn "
+                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
+                                                    <i class="fa fa-envelope-o"></i> Send
+                                                    message
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    <%- include('includes/footer.ejs') %>
 
 <%- include('includes/end.ejs') %>
