@@ -62,9 +62,16 @@
 
                                     <form action="/contact" method="POST" >
                                         <div class="row">
+                                            <style>
+                                                .required-field::after {
+                                                    content: "*";
+                                                    color: #ff0000;
+                                                    margin-left: 4px;
+                                                }
+                                            </style>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label for="firstname">First Name</label>
+                                                    <label for="firstname" class="required-field">First Name</label>
                                                     <input type="text"
                                                         class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
                                                         id="firstname" name="firstname"
@@ -73,7 +80,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label for="lastname">Last Name</label>
+                                                    <label for="lastname" class="required-field">Last Name</label>
                                                     <input type="text"
                                                         class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
                                                         id="lastname" name="lastname"
@@ -82,7 +89,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label for="email">Email</label>
+                                                    <label for="email" class="required-field">Email</label>
                                                     <input type="email"
                                                         class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
                                                         id="email" name="email"
@@ -91,7 +98,7 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label for="subject">Subject</label>
+                                                    <label for="subject" class="required-field">Subject</label>
                                                     <input type="text"
                                                         class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
                                                         id="subject" name="subject"
@@ -100,7 +107,7 @@
                                             </div>
                                             <div class="col-sm-12">
                                                 <div class="form-group">
-                                                    <label for="message">Message</label>
+                                                    <label for="message" class="required-field">Message</label>
                                                     <textarea
                                                         class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
                                                         id="message" name="message" rows="5"
@@ -121,33 +128,6 @@
                         </div>
                     </div>
                 </div>
-
-                <style>
-                    .form-group {
-                        margin-bottom: 20px;
-                    }
-
-                    .form-control {
-                        height: 40px;
-                        padding: 8px 12px;
-                    }
-
-                    textarea.form-control {
-                        height: auto;
-                        min-height: 150px;
-                    }
-
-                    .btn-primary {
-                        background-color: #3498db;
-                        border-color: #3498db;
-                        padding: 10px 20px;
-                    }
-
-                    .btn-primary:hover {
-                        background-color: #2980b9;
-                        border-color: #2980b9;
-                    }
-                </style>
     <%- include('includes/footer.ejs') %>
 
 <%- include('includes/end.ejs') %>
