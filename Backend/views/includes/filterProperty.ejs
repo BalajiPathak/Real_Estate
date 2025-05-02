@@ -136,10 +136,10 @@
     document.addEventListener('DOMContentLoaded', function() {
       // Price Range
       var priceSlider = new Slider('#price-range', {
-        min: 0,
-        max: 50000000,
+        min: 3000000,
+        max: 10000000,
         step: 1000,
-        value: [3000000, 50000000],
+        value: [3000000, 10000000],
         tooltip_split: true,
         range: true
       });
@@ -150,7 +150,7 @@
 
       // Min Baths
       var bathsSlider = new Slider('#min-baths', {
-        min: 0,
+        min: 1,
         max: 120,
         step: 1,
         value: [1, 120],
@@ -164,7 +164,7 @@
 
       // Min Beds
       var bedsSlider = new Slider('#min-bed', {
-        min: 0,
+        min: 1,
         max: 120,
         step: 1,
         value: [1, 120],
