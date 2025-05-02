@@ -31,19 +31,6 @@
                                     </a>
                                 </li>
                             </ul>
-
-                            <div class="items-per-page pull-right">
-                                <label for="items_per_page"><b>Property per page :</b></label>
-                                <div class="sel">
-                                    <select id="items_per_page" name="per_page">
-                                        <option value="6">6</option>
-                                        <option value="9">9</option>
-                                        <option selected="selected" value="12">12</option>
-                                        <option value="15">15</option>
-                                        <option value="30">30</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -91,7 +78,7 @@
                             <% } %>
                         </div>
                     </div>
-
+                    <% if (properties && properties.length > 0) { %>
                     <div class="section"> 
                         <div class="pull-right">
                             <div class="pagination">
@@ -105,6 +92,7 @@
                             </div>
                         </div>                
                     </div>
+                    <% } %>
                 </div>
 
                 <div class="col-md-3 p0 padding-top-40">

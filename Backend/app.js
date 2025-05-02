@@ -46,63 +46,45 @@ const fs = require('fs');
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
-
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Create multer instance
 const upload = multer({ storage: storage });
-
-// Make uploads directory accessible
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Export upload for use in routes
 module.exports = upload;
-// Add after other app.use() statements
-// Move this before any route declarations
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(session({
     secret: 'your-secret-key',
-    resave: false,
+    resave: true,  
     saveUninitialized: false,
     cookie: { 
-        secure: false, // set to true if using https
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
-// Add this middleware to make user data available globally
+// Initialize passport after session
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Flash messages after passport
+app.use(flash());
+
+// Update the session check middleware
 app.use((req, res, next) => {
-    res.locals.isLoggedIn = !!req.session.user;
-    res.locals.currentUser = req.session.user;
+    res.locals.isLoggedIn = req.session.isLoggedIn || false;
+    res.locals.currentUser = req.session.user || null;
     next();
 });
 
-// Your routes should come after these middlewares
-app.use('/', propertyRoutes);
-
-// Add this to handle file uploads
+// Routes should come after all middleware
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 const crypto = require('crypto');
 // Add Facebook Strategy import
 const FacebookStrategy = require('passport-facebook').Strategy;
 
-
-
-app.use(cookieParser());
-app.use(session({
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-}));
-
-// Add flash middleware after session middleware
 app.use(flash());               
 
-// Initialize Passport
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -184,11 +166,6 @@ const authenticateToken = (req, res, next) => {
 
 app.use(authenticateToken);
 
-// Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Passport configuration
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
@@ -286,14 +263,6 @@ app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
 
-
-app.use(authenticateToken);
-
-// Register models
-// require('./models/propertyCategory');
-// require('./models/state');
-// require('./models/statusCategory');
-// require('./models/propertyData');
 
 const PORT =3006;
 app.listen(PORT, () => {

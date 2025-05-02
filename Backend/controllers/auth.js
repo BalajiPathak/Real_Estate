@@ -169,7 +169,6 @@ exports.postSignup = async (req, res) => {
     }
 };
  
- 
 exports.postLogin = async (req, res) => {
     try {
         const { Email, Password } = req.body;
@@ -197,6 +196,22 @@ exports.postLogin = async (req, res) => {
         }
  
         const user = await User.findOne({ Email });
+        const isValidPassword = await bcrypt.compare(Password, user.Password);
+       
+        if (isValidPassword) {
+            // Store user in session
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+
+            // Wait for session to be saved before redirecting
+            return req.session.save(err => {
+                if (err) {
+                    console.error('Session save error:', err);
+                    return next(err);
+                }
+                res.redirect('/home');
+            });
+        }
        
         // User not found
         if (!user) {
@@ -216,25 +231,9 @@ exports.postLogin = async (req, res) => {
             });
         }
  
-        const isValidPassword = await bcrypt.compare(Password, user.Password);
        
-        // Password mismatch
-        if (!isValidPassword) {
-            return res.status(401).render('auth/login', {
-                pageTitle: 'Login',
-                path: '/login',
-                errorMessage: 'Password didn\'t match', // Updated error message
-                validationErrors: [{ param: 'Password' }],
-                oldInput: {
-                    Email: Email,
-                    Password: Password
-                },
-                companyInfo: companyInfo,
-                navbar: navbar,
-                blogs: blogs || [],
-                isLoggedIn: false
-            });
-        }
+       
+        
  
         // Success case continues...
         const token = jwt.sign(

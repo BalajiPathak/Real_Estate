@@ -51,60 +51,29 @@ router.get('/auth/google/callback',
         failureFlash: true
     }),
     (req, res) => {
-        const token = jwt.sign(
-            { userId: req.user._id },
-            authConfig.jwt.secret,
-            { expiresIn: authConfig.jwt.expiresIn }
-        );
-        
         req.session.isLoggedIn = true;
         req.session.user = req.user;
         
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        req.session.save(err => {
+            if (err) console.error('Session save error:', err);
+            res.redirect('/home');
         });
-        res.redirect('/home');
     }
-);
-
-// Add these routes after your existing Google auth routes
-
-router.get('/auth/facebook',
-    passport.authenticate('facebook', { 
-        scope: ['email', 'public_profile']
-    })
 );
 
 router.get('/auth/facebook/callback',
     passport.authenticate('facebook', { 
         failureRedirect: '/login',
-        failureFlash: true,
-        failureMessage: true
+        failureFlash: true
     }),
     (req, res) => {
-        // Only proceed if authentication was successful
-        if (req.user) {
-            const token = jwt.sign(
-                { userId: req.user._id },
-                authConfig.jwt.secret,
-                { expiresIn: authConfig.jwt.expiresIn }
-            );
-            
-            req.session.isLoggedIn = true;
-            req.session.user = req.user;
-            
-            res.cookie('jwt', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 24 * 60 * 60 * 1000 // 24 hours
-            });
+        req.session.isLoggedIn = true;
+        req.session.user = req.user;
+        
+        req.session.save(err => {
+            if (err) console.error('Session save error:', err);
             res.redirect('/home');
-        } else {
-            // If there's an error message, pass it to the login page
-            res.redirect('/login?error=' + encodeURIComponent(req.session.messages[0]));
-        }
+        });
     }
 );
 module.exports = router;
