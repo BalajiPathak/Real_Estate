@@ -280,23 +280,46 @@ exports.postLogout = (req, res) => {
 };
  
 exports.getReset = async(req, res) => {
-    const companyInfo = await CompanyInfo.findOne();  
-        const navbar = await Navbar.find();  
-    res.render('auth/reset', {
-        pageTitle: 'Reset Password',
-        path: '/reset',
-        errorMessage: null,
-        CompanyInfo: CompanyInfo,
-            Navbar:Navbar
-    });
+    try {
+        const companyInfo = await CompanyInfo.findOne();  // Changed from find() to findOne()
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
+        
+        res.render('auth/reset', {
+            pageTitle: 'Reset Password',
+            path: '/reset',
+            errorMessage: null,
+            companyInfo: companyInfo,
+            navbar: navbar,
+            blogs: blogs,
+            isLoggedIn: req.session ? req.session.isLoggedIn : false
+        });
+    } catch (err) {
+        console.error('Reset page error:', err);
+        res.status(500).render('auth/reset', {
+            pageTitle: 'Reset Password',
+            path: '/reset',
+            errorMessage: 'An error occurred',
+            companyInfo: null,
+            navbar: [],
+            blogs: [],
+            isLoggedIn: false
+        });
+    }
 };
  
 exports.postReset = async (req, res) => {
     try {
+        const companyInfo = await CompanyInfo.findOne();  // Changed from find() to findOne()
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
         if (!req.body.Email) {
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
                 path: '/reset',
+                companyInfo: companyInfo,
+                navbar:navbar,
+                blogs:blogs,
                 errorMessage: 'Please provide an email address.'
             });
         }
@@ -313,12 +336,16 @@ exports.postReset = async (req, res) => {
  
         const token = buffer.toString('hex');
         const user = await User.findOne({ Email: req.body.Email });
- 
+  
         if (!user) {
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
                 path: '/reset',
-                errorMessage: 'No account with that email found.'
+                errorMessage: 'No account with that email found.',
+                companyInfo: companyInfo,
+                navbar:navbar,
+                blogs:blogs,
+
             });
         }
  
@@ -340,7 +367,10 @@ exports.postReset = async (req, res) => {
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
                 path: '/reset',
-                errorMessage: 'Reset link sent to your email.'
+                errorMessage: 'Reset link sent to your email.',
+                companyInfo: companyInfo,
+                navbar:navbar,
+                blogs:blogs,
             });
         } catch (emailError) {
             console.error('Email sending error:', emailError);
@@ -351,15 +381,24 @@ exports.postReset = async (req, res) => {
             return res.render('auth/reset', {
                 pageTitle: 'Reset Password',
                 path: '/reset',
-                errorMessage: 'Failed to send reset email. Please try again.'
+                errorMessage: 'Failed to send reset email. Please try again.',
+                companyInfo: companyInfo,
+                navbar:navbar,
+                blogs:blogs,
             });
         }
     } catch (err) {
+        const companyInfo = await CompanyInfo.find({});  
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();  
         console.error('Reset password error:', err);
         return res.render('auth/reset', {
             pageTitle: 'Reset Password',
             path: '/reset',
-            errorMessage: 'An error occurred. Please try again.'
+            errorMessage: 'An error occurred. Please try again.',
+            companyInfo: companyInfo,
+            navbar:navbar,
+            blogs:blogs,
         });
     }
 };
@@ -367,7 +406,9 @@ exports.postReset = async (req, res) => {
 exports.getNewPassword = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();  
-        const navbar = await Navbar.find();  
+        const navbar = await Navbar.find(); 
+        const blogs = await Blog.find();  // Add blogs
+   
         const token = req.params.token;
         const user = await User.findOne({
             resetToken: token,
@@ -384,8 +425,9 @@ exports.getNewPassword = async (req, res) => {
             userId: user._id.toString(),
             resetToken: token,
             errorMessage: null,
-            CompanyInfo: CompanyInfo,
-            Navbar:Navbar
+            companyInfo: companyInfo,
+            navbar:navbar,
+            blogs:blogs,
         });
  
     } catch (err) {
