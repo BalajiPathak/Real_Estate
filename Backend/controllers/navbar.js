@@ -92,11 +92,12 @@ const postContact = async (req, res) => {
         const errors = validationResult(req);
         const navbar = await Navbar.find();
         const companyInfo = await CompanyInfo.findOne();
-
+        const blogs = await Blog.find(); 
         if (!errors.isEmpty()) {
             return res.status(422).render('contact', {
                 navbar,
                 companyInfo,
+                blogs,
                 pageTitle: 'Contact Us',
                 errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(), 
@@ -124,6 +125,7 @@ const postContact = async (req, res) => {
         res.render('contact', {
             navbar,
             companyInfo,
+            blogs,
             pageTitle: 'Contact Us',
             successMessage: 'Message sent successfully!',
             errorMessage: null,

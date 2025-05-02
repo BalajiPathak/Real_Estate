@@ -132,6 +132,7 @@ exports.postSignup = async (req, res) => {
                 },
                 companyInfo: companyInfo,
                 navbar: navbar,
+                blogs,
                 isLoggedIn: req.session.isLoggedIn
             });
         }
