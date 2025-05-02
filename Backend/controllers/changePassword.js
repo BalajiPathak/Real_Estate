@@ -101,7 +101,7 @@ exports.postPassword = async (req, res) => {
     await user.save();
  
     console.log('Password updated successfully');
-    return res.redirect('/changePassword'); // You can redirect to a success page if you want
+    return res.redirect('/changePassword'); 
   } catch (err) {
     console.error('Error in postPassword:', err);
     res.status(500).render('changePassword/changePassword', {
