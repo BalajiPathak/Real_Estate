@@ -10,6 +10,31 @@
     .slider-selection{background-image: linear-gradient(to bottom, #f1e31a 0, #fdfa1f 100%);}
     .slider-handle {background-image: linear-gradient(to bottom, #f1ba23 0, #f1ba23 100%);}
     .helo{margin-top:15px;}
+    .form-check {
+      display: flex !important;
+      align-items: center !important;
+      flex-direction: row !important;
+      gap: 8px;
+    }
+  
+    .form-check-input {
+      margin-top: 0 !important;
+      border: 1px solid #ccc !important;
+      width: 18px;
+      height: 18px;
+    }
+  
+    .form-check-label {
+      font-weight: 500 !important;
+      color: #555 !important;
+      margin: 0 !important;
+    }
+  
+    @media (max-width: 576px) {
+      .form-check-label {
+        font-size: 0.9rem !important;
+      }
+    }
   </style>
 
 
@@ -92,23 +117,33 @@
           </div>
 
           <!-- Features Section -->
-          <div class="search-row justify-content-center" style="margin-top: 20px !important">
-            <div class="col-sm-12 mt-2">
-              <% const selectedFeatures = Array.isArray(features) ? features : []; %>
-              <% if (propertyFeatures && propertyFeatures.length > 0) { %>
-                <% propertyFeatures.forEach(feature => { %>
-                  <div class="col-md-1 text-center" style="margin-right:35px !important">
-                  <div class="checkbox" style="display:flex !important">
-                    <input type="checkbox" style="margin-right: -2px !important;
-    margin-left: -4px !important;" class="helo" name="features" value="<%= feature.name %>" <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> />
-                    <label style="margin-right: 20px !important; margin-left: 20px !important;">
-                      <%= feature.name %>
-                  </div>
-                </div>
-                <% }) %>
-              <% } %>
+<div class="search-row justify-content-center mt-4">
+  <div class="container">
+    <div class="row">
+      <% const selectedFeatures = Array.isArray(features) ? features : []; %>
+      <% if (propertyFeatures && propertyFeatures.length > 0) { %>
+        <% propertyFeatures.forEach(feature => { %>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2">
+            <div class="form-check  align-items-center">
+              
+              <input 
+  type="checkbox" 
+  class="form-check-input me-2" 
+  name="features" 
+  value="<%= feature.name %>" 
+  id="feature-<%= feature.id %>"
+  <%= selectedFeatures.includes(feature.name) ? 'checked' : '' %> 
+/>
+<label class="form-check-label" for="feature-<%= feature.id %>">
+  <%= feature.name %>
+</label>
             </div>
           </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</div>
 
           <!-- Yellow Button -->
           <div class="col-md-12" style="margin-top: 20px;">
