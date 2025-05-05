@@ -169,95 +169,98 @@ exports.postSignup = async (req, res) => {
     }
 };
  
-exports.postLogin = async (req, res) => {
+exports.postLogin = async (req, res, next) => {
     try {
         const { Email, Password } = req.body;
         const errors = validationResult(req);
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
-        const blogs = await Blog.find();  // Add blogs
-        // Format validation (email format and password length)
+        const blogs = await Blog.find();
+
+        // Format validation check
         if (!errors.isEmpty()) {
             return res.status(422).render('auth/login', {
                 pageTitle: 'Login',
                 path: '/login',
                 errorMessage: errors.array()[0].msg,
                 validationErrors: errors.array(),
-               
-                oldInput: {
-                    Email: Email,
-                    Password: Password
-                },
-                companyInfo: companyInfo,
-                navbar: navbar,
-                blogs:blogs,
+                oldInput: { Email, Password },
+                companyInfo, navbar, blogs,
                 isLoggedIn: false
             });
         }
- 
-        const user = await User.findOne({ Email });
-        const isValidPassword = await bcrypt.compare(Password, user.Password);
-       
-        if (isValidPassword) {
-            // Store user in session
-            req.session.isLoggedIn = true;
-            req.session.user = user;
 
-            // Wait for session to be saved before redirecting
-            return req.session.save(err => {
-                if (err) {
-                    console.error('Session save error:', err);
-                    return next(err);
-                }
-                res.redirect('/home');
-            });
-        }
-       
-        // User not found
+        // Find user first
+        const user = await User.findOne({ Email });
+        
+        // Check if user exists
         if (!user) {
             return res.status(401).render('auth/login', {
                 pageTitle: 'Login',
                 path: '/login',
                 errorMessage: 'Invalid email or password',
                 validationErrors: [{ param: 'Email' }],
-                oldInput: {
-                    Email: Email,
-                    Password: Password
-                },
-                companyInfo: companyInfo,
-                navbar: navbar,
-                blogs: blogs || [],
+                oldInput: { Email, Password },
+                companyInfo, navbar, blogs,
                 isLoggedIn: false
             });
         }
- 
-       
-       
+
+        // Verify password
+        const isValidPassword = await bcrypt.compare(Password, user.Password);
         
- 
-        // Success case continues...
+        if (!isValidPassword) {
+            return res.status(401).render('auth/login', {
+                pageTitle: 'Login',
+                path: '/login',
+                errorMessage: 'Invalid email or password',
+                validationErrors: [{ param: 'Password' }],
+                oldInput: { Email, Password },
+                companyInfo, navbar, blogs,
+                isLoggedIn: false
+            });
+        }
+
+        // Login successful - set session
+        req.session.isLoggedIn = true;
+        req.session.user = user;
+        req.session.userId = user._id;
+
+        // Create JWT token
         const token = jwt.sign(
             { userId: user._id, email: user.Email },
             'your-jwt-secret',
             { expiresIn: '24h' }
         );
- 
+
+        // Set cookie
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000
         });
- 
-        req.session.isLoggedIn = true;
-        req.session.userId = user._id;
- 
-        res.redirect('/home');
+
+        // Save session and redirect
+        return req.session.save(err => {
+            if (err) {
+                console.error('Session save error:', err);
+                return next(err);
+            }
+            res.redirect('/home');
+        });
+
     } catch (err) {
         console.error('Login error:', err);
         res.status(500).render('auth/login', {
             pageTitle: 'Login',
             path: '/login',
-            errorMessage: 'An error occurred during login'
+            errorMessage: 'An error occurred during login',
+            validationErrors: [],
+            oldInput: { Email: '', Password: '' },
+            companyInfo: null,
+            navbar: [],
+            blogs: [],
+            isLoggedIn: false
         });
     }
 };

@@ -17,100 +17,40 @@ const FilterProperty = require('../models/filterProperty'); // Add FilterPropert
 
 exports.getUserProperties = async (req, res) => {
     try {
-        // Updated authentication check
-        if (!req.session.isLoggedIn && !req.isAuthenticated()) {
+        if (!req.session.isLoggedIn) {
             return res.redirect('/login');
         }
 
-        let userId;
-        // Check both session user and passport user
-        if (req.session.user) {
-            userId = req.session.user._id;
-        } else if (req.user) {
-            // If using passport but session not set, set it
-            req.session.user = req.user;
-            req.session.isLoggedIn = true;
-            await req.session.save();
-            userId = req.user._id;
-        }
+        // Get user data from session
+        const user = req.session.user;
         
-        const [
-            properties, 
-            companyInfo, 
-            navbars,
-            cities,
-            states,
-            categories,
-            statuses,
-            propertyFeatures,
-            filterProperties, blogs
-        ] = await Promise.all([
-            Property.find({ userId: userId }).populate('categoryId stateId statusId'),
-            CompanyInfo.findOne(),
-            Navbar.find({}).sort({ _id: 1 }),
-            City.find({}),
-            State.find({}),
-            propertyCategory.find({}),
-            statusCategory.find({}),
-            PropertyFeature.find({}),
-            FilterProperty.find({}),
-            Blog.find(),
-            
-        ]);
+        // Normalize user data structure
+        const userData = {
+            First_Name: user.First_Name || user.firstName || user.given_name || 'User',
+            // Add other user fields if needed
+        };
+
+        const properties = await Property.find({ userId: user._id })
+            .populate('categoryId stateId statusId');
+
+        const companyInfo = await CompanyInfo.findOne();
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
 
         res.render('userProperty/userProperty', {
             pageTitle: 'My Properties',
-            properties: properties,
             path: '/myproperties',
-            companyInfo: companyInfo,
-            navbar: navbars,
-            user: req.user || req.session.user,
-            isLoggedIn: req.isAuthenticated() || !!req.session.user,
-            currentPath: '/myproperties',
-            uploadsPath: '/uploads/',
-            cities: cities,
-            states: states,
-            propertyCategory: categories,
-            statusCategory: statuses,
-            propertyFeatures: propertyFeatures,
-            filterProperties: filterProperties,
-            blogs:blogs,
-            // Current filter values
-            keyword: req.query.keyword || '',
-            cityId: req.query.cityId || '',
-            statusId: req.query.statusId || '',
-            priceRange: req.query.priceRange || '',
-            minBaths: req.query.minBaths || '',
-            minBeds: req.query.minBeds || '',
-            areaRange: req.query.areaRange || '',
-            features: req.query.features || []
+            properties: properties,
+            user: userData, // Pass normalized user data
+            isLoggedIn: req.session.isLoggedIn,
+            companyInfo: companyInfo || [],
+            navbar: navbar || [],
+            blogs: blogs || []
         });
+
     } catch (error) {
-        console.error('Error fetching user properties:', error);
-        res.render('userProperty/userProperty', {
-            pageTitle: 'Error',
-            error: 'Failed to fetch properties',
-            properties: [],
-            companyInfo: await CompanyInfo.findOne(),
-            navbar: await Navbar.find({}).sort({ _id: 1 }),
-            user: req.user || req.session.user,
-            isLoggedIn: req.isAuthenticated() || !!req.session.user,
-            currentPath: '/myproperties',
-            cities: [],
-            states: [],
-            propertyCategory: [],
-            statusCategory: [],
-            propertyFeatures: [],
-            filterProperties: [],
-            keyword: '',
-            cityId: '',
-            statusId: '',
-            priceRange: '',
-            minBaths: '',
-            minBeds: '',
-            areaRange: '',
-            features: []
-        });
+        console.error('Error in getUserProperties:', error);
+        res.status(500).redirect('/home');
     }
 };
 
@@ -216,9 +156,15 @@ exports.postEditProperty = async (req, res) => {
         property.statusId = req.body.statusId;
         property.phone = req.body.phone;
 
-        // Handle image upload if new image is provided
-        if (req.file) {
-            property.image = req.file.filename;
+        // Handle main image upload
+        if (req.files && req.files.mainImage && req.files.mainImage[0]) {
+            property.image = req.files.mainImage[0].filename;
+        }
+
+        // Handle gallery images
+        if (req.files && req.files.galleryImages) {
+            const galleryImages = req.files.galleryImages.map(file => file.filename);
+            property.galleryImages = galleryImages;
         }
 
         await property.save();

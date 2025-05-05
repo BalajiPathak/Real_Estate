@@ -255,19 +255,30 @@ blogs:blogs ||[],
 
 exports.submitProperty = async (req, res, next) => {
     try {
-      if (!req.session.isLoggedIn) {
-        return res.redirect('/login');
-    }
+        // Add debugging logs
+        console.log('Session:', req.session);
+        console.log('User ID in session:', req.session.userId);
+        console.log('Is logged in:', req.session.isLoggedIn);
 
-    const companyInfo = await CompanyInfo.findOne();  
-    const navbar = await Navbar.find();  
-    const blogs = await Blog.find();
-        // Convert termsAndConditions from "on" to true
+        if (!req.session.isLoggedIn) {
+            return res.redirect('/login');
+        }
+
+        if (!req.session.userId) {
+            console.log('User ID missing in session');
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        const companyInfo = await CompanyInfo.findOne();  
+        const navbar = await Navbar.find();  
+        const blogs = await Blog.find();
+
+        // Create property data with explicit userId
         const propertyData = new PropertyData({
             ...req.body,
-            userId: req.session.userId,
+            userId: req.session.userId,  // Ensure this is set
             image: req.files && req.files.mainImage ? req.files.mainImage[0].filename : null,
-            termsAndConditions: req.body.termsAndConditions === 'on' ? true : false
+            termsAndConditions: req.body.termsAndConditions === 'on'
         });
 
         const savedProperty = await propertyData.save();

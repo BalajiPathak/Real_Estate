@@ -73,6 +73,12 @@ app.use(flash());
 app.use((req, res, next) => {
     res.locals.isLoggedIn = req.session.isLoggedIn || false;
     res.locals.currentUser = req.session.user || null;
+    
+    // Add this: Set userId in session if user exists
+    if (req.session.user) {
+        req.session.userId = req.session.user._id;
+    }
+    
     next();
 });
 
