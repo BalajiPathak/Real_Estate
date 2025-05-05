@@ -217,6 +217,10 @@ console.log(featureNames);
 };
 
 exports.renderSubmitForm = async (req, res) => {
+  try {
+    if (!req.session.isLoggedIn) {
+      return res.redirect('/login');
+  }
   const PropertyCategory = mongoose.model('PropertyCategory');
   const State = mongoose.model('State');
   const StatusCategory = mongoose.model('StatusCategory');
@@ -243,18 +247,25 @@ exports.renderSubmitForm = async (req, res) => {
 navbar:navbar ||[],
 blogs:blogs ||[],
   });
+} catch (error) {
+  console.warn('Error saving property:', error);
+  res.status(500).json({ error: error.message });
+}
 };
 
 exports.submitProperty = async (req, res, next) => {
     try {
-        if (!req.session || !req.session.user || !req.session.user._id) {
-            return res.status(401).json({ error: 'Please login to submit a property' });
-        }
+      if (!req.session.isLoggedIn) {
+        return res.redirect('/login');
+    }
 
+    const companyInfo = await CompanyInfo.findOne();  
+    const navbar = await Navbar.find();  
+    const blogs = await Blog.find();
         // Convert termsAndConditions from "on" to true
         const propertyData = new PropertyData({
             ...req.body,
-            userId: req.session.user._id,
+            userId: req.session.userId,
             image: req.files && req.files.mainImage ? req.files.mainImage[0].filename : null,
             termsAndConditions: req.body.termsAndConditions === 'on' ? true : false
         });
@@ -284,7 +295,15 @@ exports.submitProperty = async (req, res, next) => {
             }
         }
 
-        res.redirect('/property/' + savedProperty._id);
+        res.render('property/welcome', {
+          pageTitle: 'Real Estate',
+          isLoggedIn: req.session && req.session.isLoggedIn || false,  
+          path: '/property/welcome',
+          successMessage:'You have successfullt submitted the Property',
+          companyInfo:companyInfo||[],
+      navbar:navbar ||[],
+      blogs:blogs ||[],
+        });
     } catch (error) {
         console.warn('Error saving property:', error);
         res.status(500).json({ error: error.message });

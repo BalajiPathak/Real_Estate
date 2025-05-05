@@ -87,10 +87,10 @@ a:focus {
     text-decoration: none;
 }
 img {
-    height: auto;
+    height: 100%;
     max-width: 100%;
     vertical-align: middle;
-    border: 0px none; 
+    border: 0px none;
 }
 
 input {

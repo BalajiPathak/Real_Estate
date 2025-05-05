@@ -67,7 +67,14 @@
                             <div class="box-two proerty-item">
                                 
                                 <div class="item-thumb">
-                                    <a href="/property/<%= property._id %>" ><img src="/uploads/<%= property.image %>"></a>
+                                    <a href="/property/<%= property._id %>">
+                                        <img
+                                          src="/uploads/<%= property.image && property.image.trim() !== '' ? property.image : 'default-property-image.jpg' %>"
+                                          alt="Property Image"
+                                          
+                                        >
+                                      </a>
+                                   
                                 </div>
 
                                 <div class="item-entry overflow">

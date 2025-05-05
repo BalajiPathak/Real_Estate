@@ -1,266 +1,375 @@
 <%- include('../includes/head.ejs') %>
-<%- include('../includes/header.ejs') %>
-<%- include('../includes/navbar.ejs') %>
-    <body>
+    <%- include('../includes/header.ejs') %>
+        <%- include('../includes/navbar.ejs') %>
 
-        
-        <!-- Body content -->
+            <body>
 
-            
-        <!--End top header -->
 
-        
-        <!-- End of nav bar -->
+                <!-- Body content -->
 
-        <div class="page-head"> 
-            <div class="container">
-                <div class="row">
-                    <div class="page-head-content">
-                        <h1 class="page-title">Submit new property</h1>               
+
+                <!--End top header -->
+
+
+                <!-- End of nav bar -->
+
+                <div class="page-head">
+                    <div class="container">
+                        <div class="row">
+                            <div class="page-head-content">
+                                <h1 class="page-title">Submit new property</h1>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- End page header -->
+                <!-- End page header -->
 
-        <!-- property area -->
-        <div class="content-area submit-property" style="background-color: #FCFCFC;">&nbsp;
-            <div class="container">
-                <div class="clearfix" > 
-                    <div class="wizard-container"> 
+                <!-- property area -->
+                <div class="content-area submit-property" style="background-color: #FCFCFC;">&nbsp;
+                    <div class="container">
+                        <div class="clearfix">
+                            <div class="wizard-container">
 
-                        <div class="wizard-card ct-wizard-orange" id="wizardProperty">
-                            <form action="/property" method="POST" enctype="multipart/form-data">                      
-                                <div class="wizard-header">
-                                    <h3>
-                                        <b>Submit</b> YOUR PROPERTY <br>
-                                        <small>Lorem ipsum dolor sit amet, consectetur adipisicing.</small>
-                                    </h3>
+                                <div class="wizard-card ct-wizard-orange" id="wizardProperty">
+                                    <form action="/property" method="POST" enctype="multipart/form-data">
+                                        <div class="wizard-header">
+                                            <h3>
+                                                <b>Submit</b> YOUR PROPERTY <br>
+                                                <small>Lorem ipsum dolor sit amet, consectetur adipisicing.</small>
+                                            </h3>
+                                        </div>
+
+                                        <ul>
+                                            <li><a href="#step1" data-toggle="tab">Step 1 </a></li>
+                                            <li><a href="#step2" data-toggle="tab">Step 2 </a></li>
+                                            <li><a href="#step3" data-toggle="tab">Step 3 </a></li>
+                                            <li><a href="#step4" data-toggle="tab">Finished </a></li>
+                                        </ul>
+
+                                        <div class="tab-content">
+
+                                            <div class="tab-pane" id="step1">
+                                                <div class="row p-b-15  ">
+                                                    <h4 class="info-text"> Let's start with the basic information (with
+                                                        validation)</h4>
+                                                    <div class="col-sm-4 col-sm-offset-1">
+                                                        <div class="picture-container">
+                                                            <div class="picture">
+
+                                                                <img id="mainImagePreview" src="/assets/img/default.jpg"
+                                                                    alt="Image Preview"
+                                                                   />
+                                                                <input type="file" name="mainImage" id="mainImageInput"
+                                                                    class="form-control">
+                                                                <span id="mainImageError"
+                                                                    style="color: red; display: none;">Only image files
+                                                                    (jpeg, jpg, png, gif, webp) are allowed.</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Property name <small>(required)</small></label>
+                                                            <input name="name" type="text" class="form-control"
+                                                                placeholder="Super villa ..." required>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>Property price <small>(required)</small></label>
+                                                            <input name="price" type="number" class="form-control"
+                                                                placeholder="3330000" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Telephone <small>(empty if you wanna use default
+                                                                    phone number)</small></label>
+
+                                                            <input type="number" name="phone" class="form-control"
+                                                                placeholder="+91 473 843 7436" min="6000000000"
+                                                                max="9999999999"
+                                                                title="Telephone must be required and contains 10 digit"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--  End step 1 -->
+
+                                            <div class="tab-pane" id="step2">
+                                                <h4 class="info-text"> How much your Property is Beautiful ? </h4>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label>Property Description :</label>
+                                                                <textarea rows="4" name="description" type="text"
+                                                                    class="form-control " required></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-12">
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label>Property State :</label>
+                                                                <select name="stateId" class="form-control" required>
+                                                                    <% states.forEach(state=> { %>
+                                                                        <option value="<%= state._id %>">
+                                                                            <%= state.name %>
+                                                                        </option>
+                                                                        <% }) %>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label>Property City :</label>
+                                                                <select name="cityId" class="form-control" required>
+                                                                    <% cities.forEach(city=> { %>
+                                                                        <option value="<%= city._id %>">
+                                                                            <%= city.name %>
+                                                                        </option>
+                                                                        <% }) %>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label>Property Statue :</label>
+                                                                <select name="statusId" class="form-control" required>
+                                                                    <% statuses.forEach(stat=> { %>
+                                                                        <option value="<%= stat._id %>">
+                                                                            <%= stat.name %>
+                                                                        </option>
+                                                                        <% }) %>
+                                                                </select>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="form-group">
+                                                                <label>Property Category :</label>
+                                                                <select name="categoryId" class="form-control" required>
+                                                                    <% categories.forEach(cat=> { %>
+                                                                        <option value="<%= cat._id %>">
+                                                                            <%= cat.name %>
+                                                                        </option>
+                                                                        <% }) %>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-12 padding-top-15">
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label for="property-geo">Number of Bed :</label>
+                                                                <input name="beds" type="number" class="form-control"
+                                                                    placeholder="Beds" required><br>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+
+                                                            <div class="form-group">
+                                                                <label for="price-range">Number of Bath :</label>
+                                                                <input name="baths" type="number" class="form-control"
+                                                                    placeholder="Baths" required><br>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+
+                                                            <div class="form-group">
+                                                                <label for="property-geo">Property geo (m2) :</label>
+                                                                <input name="area" type="number" class="form-control"
+                                                                    placeholder="Area in sqft" required><br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-12 padding-top-15">
+                                                        <% features.forEach(f=> { %>
+                                                            <div class="col-sm-3">
+                                                                <div class="form-group">
+                                                                    <div class="checkbox">
+                                                                        <label style="margin-right: 5px;">
+                                                                            <input
+                                                                                style="margin-left: 5px; margin-top:5px;"
+                                                                                type="checkbox" name="featureIds" id="featuresCheckbox"
+                                                                                value="<%= f._id %>" >
+                                                                            <%= f.name %>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% }) %>
+
+                                                    </div>
+                                                    <br>
+                                                    <div id="featuresError" style="color: red; display: none; margin-top: 5px;">
+                                                        Features are required
+                                                      </div>
+                                                </div>
+                                            </div>
+                                            <!-- End step 2 -->
+
+                                            <div class="tab-pane" id="step3">
+                                                <h4 class="info-text">Give us somme images and videos ? </h4>
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label for="property-video">Chose Images :</label>
+                                                            <input class="form-control" type="file" id="property-images"
+                                                                name="galleryImages" multiple class="form-control"
+                                                                required>
+
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="file" id="property-images"
+                                                                name="galleryImages" multiple class="form-control">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="file" id="property-images"
+                                                                name="galleryImages" multiple class="form-control">
+                                                            <p class="help-block">Select multipel images for your
+                                                                property .</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+
+                                                            <label for="property-video">Property video :</label>
+                                                            <input class="form-control" value="" name="videoLink"
+                                                                class="form-control" placeholder="YouTube/Vimeo Link"
+                                                                type="text" required>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <input class="form-control" value="" name="videoLink"
+                                                                class="form-control" placeholder="YouTube/Vimeo Link"
+                                                                type="text">
+                                                        </div>
+
+                                                        <div class="form-group">
+
+                                                            <input class="form-control" value="" name="videoLink"
+                                                                class="form-control" placeholder="YouTube/Vimeo Link"
+                                                                type="text">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--  End step 3 -->
+
+                                            <div class="tab-pane" id="step4">
+                                                <h4 class="info-text"> Finished and submit </h4>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="">
+                                                            <p>
+                                                                <label><strong>Terms and Conditions</strong></label>
+                                                                By accessing or using GARO ESTATE services, such as
+                                                                posting your property advertisement with your personal
+                                                                information on our website you agree to the
+                                                                collection, use and disclosure of your personal
+                                                                information
+                                                                in the legal proper manner
+                                                            </p>
+
+                                                            <div class="checkbox">
+                                                                <label>
+
+                                                                    <input type="checkbox" name="termsAndConditions" id="termsCheckbox"/><strong>Accept termes and conditions.</strong>
+                                                                    
+                                                                </label>
+                                                            </div>
+                                                            <div id="termsError" style="color: red; display: none; margin-top: 5px;">
+                                                                You must accept the terms and conditions to proceed.
+                                                              </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--  End step 4 -->
+
+                                        </div>
+
+                                        <div class="wizard-footer">
+                                            <div class="pull-right">
+                                                <input type='button' class='btn btn-next ' name='next' value='Next'
+                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
+                                                <input type='submit' class='btn btn-finish  ' name='finish'
+                                                    value='Finish'
+                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
+                                            </div>
+
+                                            <div class="pull-left">
+                                                <input type='button' class='btn btn-previous btn-default'
+                                                    name='previous' value='Previous'
+                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </form>
                                 </div>
-
-                                <ul>
-                                    <li><a href="#step1" data-toggle="tab">Step 1 </a></li>
-                                    <li><a href="#step2" data-toggle="tab">Step 2 </a></li>
-                                    <li><a href="#step3" data-toggle="tab">Step 3 </a></li>
-                                    <li><a href="#step4" data-toggle="tab">Finished </a></li>
-                                </ul>
-
-                                <div class="tab-content">
-
-                                    <div class="tab-pane" id="step1">
-                                        <div class="row p-b-15  ">
-                                            <h4 class="info-text"> Let's start with the basic information (with validation)</h4>
-                                            <div class="col-sm-4 col-sm-offset-1">
-                                                <div class="picture-container">
-                                                    <div class="picture">
-                                                        
-                                                        <input type="file" name="mainImage" class="form-control" id="wizard-picture" required>
-                                                        <img src="/assets/img/default-property.jpg" class="picture-src" id="wizardPicturePreview" title=""/>
-                                                    </div> 
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label>Property name <small>(required)</small></label>
-                                                    <input name="name" type="text" class="form-control" placeholder="Super villa ..." required>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label>Property price <small>(required)</small></label>
-                                                    <input name="price" type="number" class="form-control" placeholder="3330000" required>
-                                                </div> 
-                                                <div class="form-group">
-                                                    <label>Telephone <small>(empty if you wanna use default phone number)</small></label>
-                                                    <input name="phone" type="tel"  class="form-control" placeholder="+1 473 843 7436" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--  End step 1 -->
-
-                                    <div class="tab-pane" id="step2">
-                                        <h4 class="info-text"> How much your Property is Beautiful ? </h4>
-                                        <div class="row">
-                                            <div class="col-sm-12"> 
-                                                <div class="col-sm-12"> 
-                                                    <div class="form-group">
-                                                        <label>Property Description :</label>
-                                                        <textarea  rows="4" name="description" type="text" class="form-control "required ></textarea>
-                                                    </div> 
-                                                </div> 
-                                            </div>
-                                            
-                                            <div class="col-sm-12">
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <label>Property State :</label>
-                                                        <select name="stateId" class="form-control" required>
-                                                          <% states.forEach(state => { %>
-                                                            <option value="<%= state._id %>"><%= state.name %></option>
-                                                          <% }) %>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                  <div class="form-group">
-                                                      <label>Property City :</label>
-                                                      <select name="cityId" class="form-control" required>
-                                                        <% cities.forEach(city => { %>
-                                                          <option value="<%= city._id %>"><%= city.name %></option>
-                                                        <% }) %>
-                                                      </select>
-                                                  </div>
-                                              </div>
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <label>Property Statue  :</label>
-                                                        <select name="statusId" class="form-control" required>
-                                                          <% statuses.forEach(stat => { %>
-                                                            <option value="<%= stat._id %>"><%= stat.name %></option>
-                                                          <% }) %>
-                                                        </select>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <label>Property Category  :</label>
-                                                        <select name="categoryId" class="form-control" required>
-                                                          <% categories.forEach(cat => { %>
-                                                            <option value="<%= cat._id %>"><%= cat.name %></option>
-                                                          <% }) %>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12 padding-top-15">                                                   
-                                                <div class="col-sm-4">
-                                                    <div class="form-group">
-                                                        <label for="property-geo">Number of Bed :</label>
-                                                        <input name="beds" type="number" class="form-control" placeholder="Beds" required><br>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4">
-
-                                                    <div class="form-group">
-                                                        <label for="price-range">Number of Bath :</label>
-                                                        <input name="baths" type="number" class="form-control" placeholder="Baths" required><br>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4">
-
-                                                    <div class="form-group">
-                                                        <label for="property-geo">Property geo (m2) :</label>
-                                                        <input name="area" type="number" class="form-control" placeholder="Area in sqft" required><br>
-                                                    </div>
-                                                </div>   
-                                            </div>
-                                            <div class="col-sm-12 padding-top-15">
-                                                <% features.forEach(f => { %>
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <div class="checkbox">
-                                                            <label style="margin-right: 5px;">
-                                                                 <input  style="margin-left: 5px; margin-top:5px;" type="checkbox" name="featureIds" value="<%= f._id %>" required>    <%= f.name %></label>
-                                                          </div>
-                                                    </div>
-                                                </div> 
-                                                <% }) %>
-                                                
-                                            </div>
-                                            <br>
-                                        </div>
-                                    </div>
-                                    <!-- End step 2 -->
-
-                                    <div class="tab-pane" id="step3">                                        
-                                        <h4 class="info-text">Give us somme images and videos ? </h4>
-                                        <div class="row">  
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="property-video">Chose Images :</label>
-                                                    <input class="form-control" type="file" id="property-images" name="galleryImages" multiple class="form-control" required>
-                                
-                                                </div>
-                                                <div class="form-group">
-                                                    <input class="form-control" type="file" id="property-images" name="galleryImages" multiple class="form-control">
-                                                  </div>
-                                                  <div class="form-group">
-                                                    <input class="form-control" type="file" id="property-images" name="galleryImages" multiple class="form-control">
-                                                    <p class="help-block">Select multipel images for your property .</p>
-                                                  </div>
-                                            </div>
-                                            <div class="col-sm-6"> 
-                                                <div class="form-group">
-                                                    
-                                                    <label for="property-video">Property video :</label>
-                                                    <input class="form-control" value=""  name="videoLink" class="form-control" placeholder="YouTube/Vimeo Link"type="text" required>
-                                                </div> 
-
-                                                <div class="form-group">
-                                                    <input class="form-control" value=""name="videoLink" class="form-control" placeholder="YouTube/Vimeo Link" type="text">
-                                                </div>
-
-                                                <div class="form-group">
-                                                    
-                                                    <input class="form-control" value="" name="videoLink" class="form-control" placeholder="YouTube/Vimeo Link" type="text">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--  End step 3 -->
-
-                                    <div class="tab-pane" id="step4">                                        
-                                        <h4 class="info-text"> Finished and submit </h4>
-                                        <div class="row">  
-                                            <div class="col-sm-12">
-                                                <div class="">
-                                                    <p>
-                                                        <label><strong>Terms and Conditions</strong></label>
-                                                        By accessing or using  GARO ESTATE services, such as 
-                                                        posting your property advertisement with your personal 
-                                                        information on our website you agree to the
-                                                        collection, use and disclosure of your personal information 
-                                                        in the legal proper manner
-                                                    </p>
-
-                                                    <div class="checkbox ">
-                                                        <label>
-                                                            <input type="checkbox"  name="termsAndConditions" required/> <strong>Accept termes and conditions.</strong>
-                                                        </label>
-                                                    </div> 
-
-                                                </div> 
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!--  End step 4 -->
-
-                                </div>
-
-                                <div class="wizard-footer">
-                                    <div class="pull-right">
-                                        <input type='button' class='btn btn-next ' name='next' value='Next' style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;"/>
-                                        <input type='submit' class='btn btn-finish  ' name='finish' value='Finish' style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
-                                    </div>
-
-                                    <div class="pull-left">
-                                        <input type='button' class='btn btn-previous btn-default' name='previous' value='Previous' style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
-                                    </div>
-                                    <div class="clearfix"></div>                                            
-                                </div>	
-                            </form>
+                                <!-- End submit form -->
+                            </div>
                         </div>
-                        <!-- End submit form -->
-                    </div> 
+                    </div>
                 </div>
-            </div>
-        </div>
 
-          <!-- Footer area-->
-        
+                <!-- Footer area-->
 
-        
-          <%- include('../includes/footer.ejs') %>
-    </body>
+
+
+                <%- include('../includes/footer.ejs') %>
+            </body>
+            <script>
+                document.getElementById('mainImageInput').addEventListener('change', function (e) {
+                  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                  const file = this.files[0];
+                  const errorMsg = document.getElementById('mainImageError');
+                  const previewImg = document.getElementById('mainImagePreview');
+               
+                  if (file) {
+                    if (!allowedTypes.includes(file.type)) {
+              errorMsg.style.display = 'block';
+                      this.value = ''; // Clear the input
+                      previewImg.src = '/images/default.jpg'; // Reset to default if invalid
+                    } else {
+              errorMsg.style.display = 'none';
+                      // Preview image
+                      const reader = new FileReader();
+                      reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }
+                });
+              </script>
+             <script>
+                document.querySelector(".btn-finish").addEventListener("click", function (e) {
+                  const termsCheckbox = document.getElementById("termsCheckbox");
+                  const termsError = document.getElementById("termsError");
+               
+                  if (!termsCheckbox.checked) {
+                    e.preventDefault(); // Prevent form submission
+              termsError.style.display = "block";
+                    termsCheckbox.focus();
+                  } else {
+              termsError.style.display = "none";
+                  }
+                });
+              </script>
+              <script>
+                document.querySelector(".btn-next").addEventListener("click", function (e) {
+                  const featuresCheckbox = document.getElementById("featuresCheckbox");
+                  const featuresError = document.getElementById("featuresError");
+               
+                  if (!featuresCheckbox.checked) {
+                    e.preventDefault(); // Prevent form submission
+                    featuresError.style.display = "block";
+                    featuresCheckbox.focus();
+                  } else {
+                    featuresError.style.display = "none";
+                  }
+                });
+              </script>
