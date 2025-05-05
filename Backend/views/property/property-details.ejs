@@ -78,9 +78,9 @@
                         <h4 class="s-property-title">Features</h4>                
                         <ul> 
                           <% if (features && features.length > 0) { %> 
-                            <% features.forEach(f => { %>
-                              <li><%= f %></li>
-                            <% }) %> 
+                            <% features.forEach(function(feature){ %>
+                              <li><%= feature %></li>
+                            <% }); %> 
                           <% } else { %> 
                             <li>No features available</li>
                           <% } %> 

@@ -109,8 +109,8 @@
               <label>Area range (sqft):</label>
               <input type="text" id="area-range" class="span2" style="margin-bottom: 15px;" />
               <br />
-              <b class="pull-left color">100 sqft</b>
-              <b class="pull-right color">10000 sqft</b>
+              <b class="pull-left color">50 m2</b>
+              <b class="pull-right color">25000 m2</b>
               <input type="hidden" name="areaRange" id="areaRangeInput" value="<%= typeof areaRange !== 'undefined' ? areaRange : '' %>" />
             </div>
 
@@ -215,10 +215,10 @@
 
       // Area Range
       var areaSlider = new Slider('#area-range', {
-        min: 100,
-        max: 10000,
+        min: 50,
+        max: 25000,
         step: 50,
-        value: [100, 10000],
+        value: [100, 25000],
         tooltip_split: true,
         range: true
       });
