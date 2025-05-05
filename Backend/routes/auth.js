@@ -61,6 +61,14 @@ router.get('/auth/google/callback',
     }
 );
 
+// Add Facebook authentication route
+router.get('/auth/facebook',
+    passport.authenticate('facebook', { 
+        scope: ['email', 'public_profile'],
+        prompt: 'select_account'
+    })
+);
+
 router.get('/auth/facebook/callback',
     passport.authenticate('facebook', { 
         failureRedirect: '/login',
