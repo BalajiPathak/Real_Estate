@@ -2,19 +2,17 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/navbar.ejs') %>
 
-<body>
-    <div class="container py-5">
-     
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="alert alert-warning  text-warning text-center">
-                    <h2><%= successMessage %></h2>
-                    
+<body class="bg-gray-100">
+    <div class="content-area error-page" style="background-color: #FCFCFC; padding-bottom: 55px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title ">
+                    <h2 class="error-title text-warning "><%= successMessage %></h2>
                     <form action="/properties" method="GET">
-                        <button type="submit" class="btn btn-warning btn-lg">Go to Properties</button>
+                        <button type="submit"  style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%);" class="btn  btn-lg">Go to Properties</button>
                     </form>
                 </div>
-            </div>
+            </div> 
         </div>
     </div>
 
@@ -22,3 +20,4 @@
 
     <%- include('../includes/end.ejs') %>
   
+    
