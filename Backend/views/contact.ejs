@@ -114,9 +114,32 @@
                                                         required><%= oldInput.Message %></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-12 text-center">
+                                            <!-- Replace the existing reCAPTCHA div with this -->
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="captcha" class="required-field">Enter CAPTCHA</label>
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <canvas id="captcha" style="border:1px solid #ccc; margin-bottom:10px;"></canvas>
+                                                            <button type="button" class="btn btn-sm" onclick="generateCaptcha()" style="margin-bottom:10px;">
+                                                                <i class="fa fa-refresh"></i> Refresh CAPTCHA
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <input type="text" 
+                                                                class="form-control" 
+                                                                id="captchaInput" 
+                                                                name="captchaInput" 
+                                                                placeholder="Enter the code shown above" 
+                                                                required>
+                                                            <input type="hidden" name="captchaText" id="captchaText">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <div class="col-sm-12 text-center">
                                                 <button type="submit" class="btn "
-                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
+                                                style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
                                                     <i class="fa fa-envelope-o"></i> Send
                                                     message
                                                 </button>
@@ -128,6 +151,43 @@
                         </div>
                     </div>
                 </div>
+            <script>
+                function generateCaptcha() {
+                    const canvas = document.getElementById('captcha');
+                    const ctx = canvas.getContext('2d');
+                    const captchaText = generateRandomString(6);
+                    
+                    canvas.width = 150;
+                    canvas.height = 50;
+                    ctx.fillStyle = '#f0f0f0';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Add noise
+                    for(let i = 0; i < 50; i++) {
+                        ctx.strokeStyle = '#' + Math.floor(Math.random()*16777215).toString(16);
+                        ctx.beginPath();
+                        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                        ctx.stroke();
+                    }
+                    ctx.font = 'bold 30px Arial';
+                    ctx.fillStyle = '#333';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(captchaText, canvas.width/2, canvas.height/2);
+                    document.getElementById('captchaText').value = captchaText;
+                }
+            
+                function generateRandomString(length) {
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    let result = '';
+                    for (let i = 0; i < length; i++) {
+                        result += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    return result;
+                }
+                window.onload = generateCaptcha;
+            </script>
     <%- include('includes/footer.ejs') %>
 
 <%- include('includes/end.ejs') %>
