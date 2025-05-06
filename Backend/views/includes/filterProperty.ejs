@@ -47,11 +47,11 @@
             <input type="text"  name="keyword" class="form-control mb-4" placeholder="Search by keyword" value="<%= typeof keyword !== 'undefined' ? keyword : '' %>" />
           </div>
           <div class="col-md-4 helllllo">
-            <select class="form-control " name="cityId" style="margin-bottom: 15px;">
-              <option value="">City</option>
-              <% if (cities && cities.length > 0) { %>
-                <% cities.forEach(city => { %>
-                  <option value="<%= city.id %>" <%= cityId == city.id ? 'selected' : '' %>><%= city.name %></option>
+            <select class="form-control " name="stateId" style="margin-bottom: 15px;">
+              <option value="">State</option>
+              <% if (state && state.length > 0) { %>
+                <% state.forEach(state => { %>
+                  <option value="<%= state.id %>" <%= stateId == state.id ? 'selected' : '' %>><%= state.name %></option>
                 <% }) %>
               <% } %>
             </select>
@@ -89,7 +89,7 @@
               <input type="text" id="min-baths" class="span2" style="margin-bottom: 15px;" />
               <br />
               <b class="pull-left color">1</b>
-              <b class="pull-right color">120</b>
+              <b class="pull-right color">10</b>
               <input type="hidden" name="minBaths" id="minBathsInput" value="<%= typeof minBaths !== 'undefined' ? minBaths : '' %>" />
               <input type="hidden" name="maxBaths" id="maxBathsInput" value="<%= typeof maxBaths !== 'undefined' ? maxBaths : '' %>" />
             </div>
@@ -100,7 +100,7 @@
               <input type="text" id="min-bed" class="span2" style="margin-bottom: 15px;"/>
               <br />
               <b class="pull-left color">1</b>
-              <b class="pull-right color">120</b>
+              <b class="pull-right color">20</b>
               <input type="hidden" name="minBeds" id="minBedsInput" value="<%= typeof minBeds !== 'undefined' ? minBeds : '' %>" />
             </div>
 
@@ -165,13 +165,14 @@
         </ul>
     </div>
 <% } %>
+
 <!-- Slider JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Price Range
+      
       var priceSlider = new Slider('#price-range', {
         min: 3000000,
         max: 10000000,
@@ -185,12 +186,12 @@
         document.getElementById('priceRangeInput').value = value[0] + ',' + value[1];
       });
 
-      // Min Baths
+  
       var bathsSlider = new Slider('#min-baths', {
         min: 1,
-        max: 120,
+        max: 10,
         step: 1,
-        value: [1, 120],
+        value: [1, 10],
         tooltip_split: true,
         range: true
       });
@@ -199,12 +200,12 @@
         document.getElementById('minBathsInput').value = value;
       });
 
-      // Min Beds
+      
       var bedsSlider = new Slider('#min-bed', {
         min: 1,
-        max: 120,
+        max: 20,
         step: 1,
-        value: [1, 120],
+        value: [1, 20],
         tooltip_split: true,
         range: true
       });
@@ -212,8 +213,7 @@
       bedsSlider.on('slide', function(value) {
         document.getElementById('minBedsInput').value = value;
       });
-
-      // Area Range
+      
       var areaSlider = new Slider('#area-range', {
         min: 50,
         max: 25000,
@@ -227,7 +227,7 @@
         document.getElementById('areaRangeInput').value = value[0] + ',' + value[1];
       });
 
-      // Automatically submit the form on slider change
+      
       document.querySelectorAll('.slider').forEach(function(slider) {
         slider.addEventListener('slideStop', function() {
           document.querySelector('form').submit();
