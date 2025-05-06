@@ -426,14 +426,14 @@
      
                 let valid = true;
      
-                if (!imageInput || !imageInput.files || imageInput.files.length === 0) {
+                if (!imageInput || !imageInput.files || imageInput.files.length == 0) {
                     imageError.style.display = "block";
                     valid = false;
                 } else {
                     imageError.style.display = "none";
                 }
      
-                if (!videoInput || !videoInput.files || videoInput.files.length === 0) {
+                if (!videoInput || !videoInput.files || videoInput.files.length == 0) {
                     videoError.style.display = "block";
                     valid = false;
                 } else {
