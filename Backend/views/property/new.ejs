@@ -398,7 +398,7 @@
                 });
               </script>
     <script>
-    document.querySelectorAll(".btn-next").forEach(function (button) {
+    document.querySelectorAll(".btn-next").forEach(function(button) {
         button.addEventListener("click", function (e) {
             const activeTab = document.querySelector('.tab-pane.active');
      
@@ -415,8 +415,7 @@
                     featuresError.style.display = "none";
                 }
             }
-     
-           
+            
             if (activeTab && activeTab.id === "step3") {
                 const imageInput = document.getElementById("property-images");
                 const videoInput = document.getElementById("propertyVideo");
@@ -427,13 +426,16 @@
                 let valid = true;
      
                 if (!imageInput || !imageInput.files || imageInput.files.length == 0) {
+                    e.preventDefault();
                     imageError.style.display = "block";
+                    
                     valid = false;
                 } else {
                     imageError.style.display = "none";
                 }
      
                 if (!videoInput || !videoInput.files || videoInput.files.length == 0) {
+                    e.preventDefault();
                     videoError.style.display = "block";
                     valid = false;
                 } else {
@@ -445,6 +447,7 @@
                     return false;
                 }
             }
+           
         });
     });
     </script>
