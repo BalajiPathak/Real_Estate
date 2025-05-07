@@ -196,7 +196,7 @@
                                                                                 style="margin-left: 5px; margin-top:5px;"
                                                                                 type="checkbox" name="featureIds"
                                                                                 id="featuresCheckbox"
-                                                                                value="<%= f._id %>">
+                                                                                value="<%= f._id %>" >
                                                                             <%= f.name %>
                                                                         </label>
                                                                     </div>
@@ -207,7 +207,7 @@
                                                     </div>
                                                     <br>
                                                     <div id="featuresError"
-                                                        style="color: red; display: none; margin-top: 5px;">
+                                                        style="color: red; display: none; margin-top: 5px; margin-left:30px;">
                                                         Features are required
                                                     </div>
                                                 </div>
@@ -221,7 +221,7 @@
                                                         <div class="form-group">
                                                             <label for="property-video">Chose Images :</label>
                                                             <input class="form-control" type="file"
-                                                                id="property-images" name='galleryImages' />
+                                                                id="property-images" name='galleryImages' multiple required/>
 
                                                         </div>
                                                         <div class="form-group">
@@ -233,17 +233,14 @@
                                                                 name="galleryImages" />
                                                            
                                                         </div>
-                                                        <div id="imageError"
-                                                        style="color: red; display: none; margin-top: 5px;">
-                                                        You must add the image to proceed.
-                                                        </div>
+                                                        
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
 
                                                             <label for="property-video">Property video :</label>
                                                             <input class="form-control" value="" name="videoLink"
-                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo">
+                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo" multiple required>
                                                         </div>
 
                                                         <div class="form-group">
@@ -256,10 +253,7 @@
                                                             <input class="form-control" value="" name="videoLink"
                                                                 placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo" >
                                                         </div>
-                                                        <div id="videoError"
-                                                                style="color: red; display: none; margin-top: 5px;">
-                                                                You must add the video to proceed.
-                                                            </div>
+                                                        
                                                     </div>
                                                     
                                                 </div>
@@ -402,7 +396,7 @@
         button.addEventListener("click", function (e) {
             const activeTab = document.querySelector('.tab-pane.active');
      
-           
+            console.log("step2");
             if (activeTab && activeTab.id === "step2") {
                 const featureCheckboxes = document.querySelectorAll("input[name='featureIds']:checked");
                 const featuresError = document.getElementById("featuresError");
@@ -416,39 +410,8 @@
                 }
             }
             
-            if (activeTab && activeTab.id === "step3") {
-                const imageInput = document.getElementById("property-images");
-                const videoInput = document.getElementById("propertyVideo");
-                const imageError = document.getElementById("imageError");
-                
-                const videoError = document.getElementById("videoError");
-     
-                let valid = true;
-     
-                if (!imageInput || !imageInput.files || imageInput.files.length == 0) {
-                    e.preventDefault();
-                    imageError.style.display = "block";
-                    
-                    valid = false;
-                } else {
-                    imageError.style.display = "none";
-                }
-     
-                if (!videoInput || !videoInput.files || videoInput.files.length == 0) {
-                    e.preventDefault();
-                    videoError.style.display = "block";
-                    valid = false;
-                } else {
-                    videoError.style.display = "none";
-                }
-     
-                if (!valid) {
-                    e.preventDefault();
-                    return false;
-                }
-            }
            
         });
     });
     </script>
-     
+    
