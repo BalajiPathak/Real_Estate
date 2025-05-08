@@ -19,7 +19,7 @@ exports.getBlogDetails = async (req, res) => {
           const navbar = await Navbar.find();
           const blogs = await Blog.find();
 const blog = await Blog.findById(req.params.id);
-  const comments = await BlogComment.find({ BlogId: blog._id }).sort({ createdAt: -1 });
+  const comments = await BlogComment.find({ BlogId: blog._id });
   res.render('blog/blog-details', {
     pageTitle: 'Real Estate',
     blog,
@@ -29,23 +29,49 @@ const blog = await Blog.findById(req.params.id);
     blogs: blogs || [],
   });
 };
- 
 exports.submitComment = async (req, res) => {
   try {
     const { name, BlogId, Comment } = req.body;
-    console.log("hello");
-    const Img = req.files['commentImage']?.[0]?.filename || 'default.jpg';
+    const Img = req.file ? req.file.filename : 'default.jpg';
     const newComment = new BlogComment({
       name,
       BlogId,
       Comment,
-      Img:Img
+      Img
     });
  
     await newComment.save();
+ 
+    // Emit new comment using Socket.IO
+     req.io.emit('broadcastComment', {
+      name,
+      Comment,
+      Img,
+      BlogId
+    });
+ 
     res.redirect('/blog/' + BlogId);
   } catch (err) {
     console.error(err);
     res.status(500).send('Comment could not be saved.');
   }
 };
+// exports.submitComment = async (req, res) => {
+//   try {
+//     const { name, BlogId, Comment } = req.body;
+//     console.log("hello");
+//     const Img = req.files['commentImage']?.[0]?.filename || 'default.jpg';
+//     const newComment = new BlogComment({
+//       name,
+//       BlogId,
+//       Comment,
+//       Img:Img
+//     });
+ 
+//     await newComment.save();
+//     res.redirect('/blog/' + BlogId);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Comment could not be saved.');
+//   }
+// };
