@@ -10,10 +10,6 @@ router.get('/blog', blogController.getAllBlogs);
 router.get('/blog/:id', blogController.getBlogDetails);
 router.post('/blog/:id', upload.single('commentImage'), blogController.submitComment);
 
-// router.post('/blog/:id',upload.fields([
-//     { name: 'commentImage', maxCount: 1 }
-//   ]), blogController.submitComment);
-
 
 module.exports = router;
 

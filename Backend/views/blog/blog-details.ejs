@@ -87,7 +87,7 @@
 
     const { filename } = await imgRes.json();
 
-    // Emit the comment to server
+ 
     socket.emit('newComment', {
       name,
       Comment,

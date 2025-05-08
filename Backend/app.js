@@ -41,7 +41,7 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 io.on('connection', (socketIO) => {
-    console.log('New client connected');
+    console.log('New user connected');
    
   });
    

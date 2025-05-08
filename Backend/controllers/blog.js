@@ -42,7 +42,7 @@ exports.submitComment = async (req, res) => {
  
     await newComment.save();
  
-    // Emit new comment using Socket.IO
+    
      req.io.emit('broadcastComment', {
       name,
       Comment,
