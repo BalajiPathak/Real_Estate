@@ -25,6 +25,7 @@ const changePasswword= require('./routes/changePassword');
 
 const blogRoutes=require('./routes/blog');
 const faqsRoutes= require('./routes/faqs');
+const legalRoutes = require('./routes/legal');
 
 const multer = require('multer');
 
@@ -168,6 +169,7 @@ app.use(faqsRoutes);
 app.use(userProfileRoutes);
 app.use(userPropertyRoutes);
 app.use(changePasswword);
+app.use(legalRoutes);
 
 app.use(errorHandler.handle404);
 
@@ -240,49 +242,57 @@ passport.use(new GoogleStrategy({
 }));
 
 // After Google Strategy, add Facebook Strategy
+// Facebook Strategy configuration
 passport.use(new FacebookStrategy({
     clientID: authConfig.facebook.clientID,
     clientSecret: authConfig.facebook.clientSecret,
     callbackURL: authConfig.facebook.callbackURL,
-    profileFields: authConfig.facebook.profileFields
+    profileFields: ['id', 'emails', 'name', 'displayName'],
+    enableProof: true,
+    state: true
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // First check if user exists with Facebook ID
-        let user = await User.findOne({ facebookId: profile.id });
+        // Check if profile and email exist
+        if (!profile || !profile.emails || !profile.emails[0]) {
+            return done(null, false, { 
+                message: 'Email access is required for Facebook login'
+            });
+        }
+
+        let user = await User.findOne({ 
+            $or: [
+                { facebookId: profile.id },
+                { Email: profile.emails[0].value }
+            ]
+        });
         
-        // If no user found with Facebook ID, check email
-        if (!user && profile.emails && profile.emails[0]) {
-            user = await User.findOne({ Email: profile.emails[0].value });
-            
-            if (user) {
-                // If user exists with email but has Google auth
-                if (user.googleId) {
-                    return done(null, false, { 
-                        message: 'This email is already registered with Google. Please use Google Sign In.'
-                    });
-                }
-                
-                // Update existing user with Facebook ID
+        if (user) {
+            // Update existing user if needed
+            if (!user.facebookId) {
                 user.facebookId = profile.id;
                 user.auth_provider = 'facebook';
-                await user.save();
-            } else {
-                // Create new user if doesn't exist
-                user = new User({
-                    First_Name: profile.name.givenName || profile.displayName.split(' ')[0],
-                    Last_Name: profile.name.familyName || profile.displayName.split(' ')[1] || '',
-                    Email: profile.emails[0].value,
-                    Password: crypto.randomBytes(16).toString('hex'),
-                    facebookId: profile.id,
-                    auth_provider: 'facebook',
-                    is_verified: true
-                });
+                if (!user.is_verified) {
+                    user.is_verified = true;
+                }
                 await user.save();
             }
+        } else {
+            // Create new user
+            user = new User({
+                First_Name: profile.name.givenName || profile.displayName.split(' ')[0],
+                Last_Name: profile.name.familyName || profile.displayName.split(' ')[1] || '',
+                Email: profile.emails[0].value,
+                Password: crypto.randomBytes(16).toString('hex'),
+                facebookId: profile.id,
+                auth_provider: 'facebook',
+                is_verified: true
+            });
+            await user.save();
         }
         
         return done(null, user);
     } catch (error) {
+        console.error('Facebook authentication error:', error);
         return done(error, null);
     }
 }));
@@ -298,3 +308,8 @@ server.listen(3006,()=>{
 // app.listen(PORT, () => {
 //     console.log(`Server is running on port ${PORT}`);
 // });
+// Add this with your other route imports
+
+
+// Add this with your other route uses (before error handlers)
+app.use(legalRoutes);

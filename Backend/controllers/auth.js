@@ -8,9 +8,10 @@ const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
 const { validationResult } = require('express-validator');  
 const Blog = require('../models/blog');
+// Update this section
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
-        api_key: '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'
+        api_key: process.env.SENDGRID_API_KEY
     }
 }));
  
@@ -363,7 +364,7 @@ exports.postReset = async (req, res) => {
                 subject: 'Password Reset',
                 html: `
                     <p>You requested a password reset</p>
-                    <p>Click this <a href="http://localhost:3006/reset/${token}">link</a> to set a new password.</p>
+                    <p>Click this <a href="${process.env.BASE_URL || 'http://localhost:3006'}/reset/${token}">link</a> to set a new password.</p>
                 `
             });
            
