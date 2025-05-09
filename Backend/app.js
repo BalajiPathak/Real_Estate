@@ -28,8 +28,27 @@ const faqsRoutes= require('./routes/faqs');
 
 const multer = require('multer');
 
+//socketio
+const http = require('http');
+const socketIO = require('socket.io');
 
-const app = express();          
+
+const app = express();    
+
+
+//socketio
+const server = http.createServer(app);
+const io = socketIO(server);
+
+io.on('connection', (socketIO) => {
+    console.log('New user connected');
+   
+  });
+   
+  app.use((req, res, next) => {
+  req.io = io;
+    next();
+  });
 // Add after other middleware configurations
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -184,6 +203,9 @@ passport.deserializeUser(async (id, done) => {
         done(error, null);
     }
 });
+console.log("vaerified");
+//socket 
+
 
 // Google OAuth strategy
 passport.use(new GoogleStrategy({
@@ -269,8 +291,10 @@ app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
 
-
-const PORT =3006;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+server.listen(3006,()=>{
+    console.log(`Server is running on port `);
+})
+// const PORT =3006;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });

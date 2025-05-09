@@ -172,7 +172,18 @@ function validateSecondStep() {
 
 function validateThirdStep() {
     //code here for third step
+   $(".wizard-card form").validate({
+        rules: {
+        },
+        messages: {
+        }
+    });
 
+    if (!$(".wizard-card form").valid()) {
+        console.log('invalid');
+        return false;
+    }
+    return true;
 
 }
 

@@ -7,7 +7,8 @@ const PropertyCategory = require('../models/propertyCategory');
 const State = require('../models/state');
 const StatusCategory = require('../models/statusCategory');
 const Testimonial = require('../models/testimonial');
-const { PropertyDataFeature, PropertyFeature } = require('../models/propertyFeature');  // Update this line
+const { PropertyFeature } = require('../models/propertyFeature');
+const { PropertyDataFeature } = require('../models/propertyFeature');
 const City = require('../models/city');
 const PropertyVideo = require('../models/propertyVideo');
 const Blog = require('../models/blog');
@@ -133,7 +134,7 @@ exports.getHome = async (req, res) => {
             CompanyInfo.findOne(),
             Navbar.find(),
             Banner.find().populate('banner_detail_id'),
-            PropertyData.find({ beds: { $gt: 80 } })
+            PropertyData.find({ beds: { $gt: 5},baths:{$gt :5} })
                 .populate('categoryId')
                 .populate('stateId')
                 .populate('statusId')

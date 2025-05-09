@@ -58,9 +58,9 @@
 
                                                                 <img id="mainImagePreview" src="/assets/img/default.jpg"
                                                                     alt="Image Preview"
-                                                                   />
+                                                                    style="margin-top: 41px !important; height:55% !important;" />
                                                                 <input type="file" name="mainImage" id="mainImageInput"
-                                                                    class="form-control">
+                                                                    class="form-control" required>
                                                                 <span id="mainImageError"
                                                                     style="color: red; display: none;">Only image files
                                                                     (jpeg, jpg, png, gif, webp) are allowed.</span>
@@ -111,7 +111,8 @@
                                                         <div class="col-sm-3">
                                                             <div class="form-group">
                                                                 <label>Property State :</label>
-                                                                <select name="stateId" class="form-control" required>
+                                                                <select name="stateId" id="stateDropdown" class="form-control" required>
+                                                                    <option value="">Select State</option>
                                                                     <% states.forEach(state=> { %>
                                                                         <option value="<%= state._id %>">
                                                                             <%= state.name %>
@@ -123,7 +124,8 @@
                                                         <div class="col-sm-3">
                                                             <div class="form-group">
                                                                 <label>Property City :</label>
-                                                                <select name="cityId" class="form-control" required>
+                                                                <select name="cityId" id="cityDropdown" class="form-control" required>
+                                                                    <option value="">Select City</option>
                                                                     <% cities.forEach(city=> { %>
                                                                         <option value="<%= city._id %>">
                                                                             <%= city.name %>
@@ -163,7 +165,7 @@
                                                             <div class="form-group">
                                                                 <label for="property-geo">Number of Bed :</label>
                                                                 <input name="beds" type="number" class="form-control"
-                                                                    placeholder="Beds" required><br>
+                                                                    placeholder="Beds" min="1" max="20" required><br>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
@@ -171,7 +173,7 @@
                                                             <div class="form-group">
                                                                 <label for="price-range">Number of Bath :</label>
                                                                 <input name="baths" type="number" class="form-control"
-                                                                    placeholder="Baths" required><br>
+                                                                    placeholder="Baths" min="1" max="10" required><br>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
@@ -179,7 +181,8 @@
                                                             <div class="form-group">
                                                                 <label for="property-geo">Property geo (m2) :</label>
                                                                 <input name="area" type="number" class="form-control"
-                                                                    placeholder="Area in sqft" required><br>
+                                                                    placeholder="Area in sqft" min="50" max="25000"
+                                                                    required><br>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -191,7 +194,8 @@
                                                                         <label style="margin-right: 5px;">
                                                                             <input
                                                                                 style="margin-left: 5px; margin-top:5px;"
-                                                                                type="checkbox" name="featureIds" id="featuresCheckbox"
+                                                                                type="checkbox" name="featureIds"
+                                                                                id="featuresCheckbox"
                                                                                 value="<%= f._id %>" >
                                                                             <%= f.name %>
                                                                         </label>
@@ -202,9 +206,10 @@
 
                                                     </div>
                                                     <br>
-                                                    <div id="featuresError" style="color: red; display: none; margin-top: 5px;">
+                                                    <div id="featuresError"
+                                                        style="color: red; display: none; margin-top: 5px; margin-left:30px;">
                                                         Features are required
-                                                      </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <!-- End step 2 -->
@@ -215,44 +220,42 @@
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label for="property-video">Chose Images :</label>
-                                                            <input class="form-control" type="file" id="property-images"
-                                                                name="galleryImages" multiple class="form-control"
-                                                                required>
+                                                            <input class="form-control" type="file"
+                                                                id="property-images" name='galleryImages' multiple required/>
 
                                                         </div>
                                                         <div class="form-group">
                                                             <input class="form-control" type="file" id="property-images"
-                                                                name="galleryImages" multiple class="form-control">
+                                                                name='galleryImages' />
                                                         </div>
                                                         <div class="form-group">
                                                             <input class="form-control" type="file" id="property-images"
-                                                                name="galleryImages" multiple class="form-control">
-                                                            <p class="help-block">Select multipel images for your
-                                                                property .</p>
+                                                                name="galleryImages" />
+                                                           
                                                         </div>
+                                                        
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
 
                                                             <label for="property-video">Property video :</label>
                                                             <input class="form-control" value="" name="videoLink"
-                                                                class="form-control" placeholder="YouTube/Vimeo Link"
-                                                                type="text" required>
+                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo" multiple required>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <input class="form-control" value="" name="videoLink"
-                                                                class="form-control" placeholder="YouTube/Vimeo Link"
-                                                                type="text">
+                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo">
                                                         </div>
 
                                                         <div class="form-group">
 
                                                             <input class="form-control" value="" name="videoLink"
-                                                                class="form-control" placeholder="YouTube/Vimeo Link"
-                                                                type="text">
+                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo" >
                                                         </div>
+                                                        
                                                     </div>
+                                                    
                                                 </div>
                                             </div>
                                             <!--  End step 3 -->
@@ -275,13 +278,16 @@
                                                             <div class="checkbox">
                                                                 <label>
 
-                                                                    <input type="checkbox" name="termsAndConditions" id="termsCheckbox"/><strong>Accept termes and conditions.</strong>
-                                                                    
+                                                                    <input type="checkbox" name="termsAndConditions"
+                                                                        id="termsCheckbox" /><strong>Accept termes and
+                                                                        conditions.</strong>
+
                                                                 </label>
                                                             </div>
-                                                            <div id="termsError" style="color: red; display: none; margin-top: 5px;">
+                                                            <div id="termsError"
+                                                                style="color: red; display: none; margin-top: 5px;">
                                                                 You must accept the terms and conditions to proceed.
-                                                              </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -293,9 +299,9 @@
 
                                         <div class="wizard-footer">
                                             <div class="pull-right">
-                                                <input type='button' class='btn btn-next ' name='next' value='Next'
+                                                <input type='button' class='btn btn-next' name='next' value='Next'
                                                     style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
-                                                <input type='submit' class='btn btn-finish  ' name='finish'
+                                                <input type='submit' class='btn btn-finish' name='finish'
                                                     value='Finish'
                                                     style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
                                             </div>
@@ -331,11 +337,11 @@
                   if (file) {
                     if (!allowedTypes.includes(file.type)) {
               errorMsg.style.display = 'block';
-                      this.value = ''; // Clear the input
-                      previewImg.src = '/images/default.jpg'; // Reset to default if invalid
+                      this.value = ''; 
+                      previewImg.src = '/images/default.jpg'; 
                     } else {
               errorMsg.style.display = 'none';
-                      // Preview image
+                     
                       const reader = new FileReader();
                       reader.onload = function (e) {
                         previewImg.src = e.target.result;
@@ -351,7 +357,7 @@
                   const termsError = document.getElementById("termsError");
                
                   if (!termsCheckbox.checked) {
-                    e.preventDefault(); // Prevent form submission
+                    e.preventDefault(); 
               termsError.style.display = "block";
                     termsCheckbox.focus();
                   } else {
@@ -359,17 +365,53 @@
                   }
                 });
               </script>
+              
               <script>
-                document.querySelector(".btn-next").addEventListener("click", function (e) {
-                  const featuresCheckbox = document.getElementById("featuresCheckbox");
-                  const featuresError = document.getElementById("featuresError");
-               
-                  if (!featuresCheckbox.checked) {
-                    e.preventDefault(); // Prevent form submission
-                    featuresError.style.display = "block";
-                    featuresCheckbox.focus();
-                  } else {
-                    featuresError.style.display = "none";
-                  }
+                const allCities = <%- JSON.stringify(cities) %>;
+              
+                
+                const stateDropdown = document.getElementById('stateDropdown');
+                const cityDropdown = document.getElementById('cityDropdown');
+              
+                stateDropdown.addEventListener('change', () => {
+                  const selectedStateId = stateDropdown.value;
+              
+                 
+                  cityDropdown.innerHTML = '<option value="">-- Select City --</option>';
+              
+                 
+                  const filteredCities = allCities.filter(city => city.stateId && city.stateId._id === selectedStateId);
+              
+                  
+                  filteredCities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city._id;
+                    option.textContent = city.name;
+                    cityDropdown.appendChild(option);
+                  });
                 });
               </script>
+    <script>
+    document.querySelectorAll(".btn-next").forEach(function(button) {
+        button.addEventListener("click", function (e) {
+            const activeTab = document.querySelector('.tab-pane.active');
+     
+            console.log("step2");
+            if (activeTab && activeTab.id === "step2") {
+                const featureCheckboxes = document.querySelectorAll("input[name='featureIds']:checked");
+                const featuresError = document.getElementById("featuresError");
+     
+                if (featureCheckboxes.length === 0) {
+                    e.preventDefault();
+                    featuresError.style.display = "block";
+                    return false;
+                } else {
+                    featuresError.style.display = "none";
+                }
+            }
+            
+           
+        });
+    });
+    </script>
+    

@@ -161,12 +161,16 @@
                                                     <div class="form-group">
                                                         <div class="checkbox">
                                                             <label style="margin-right: 5px;">
-                                                                 <input  style="margin-left: 5px; margin-top:5px;" type="checkbox" name="featureIds" value="<%= f._id %>" required>    <%= f.name %></label>
+                                                                 <input  style="margin-left: 5px; margin-top:5px;" type="checkbox" name="featureIds" value="<%= f._id %>" >    <%= f.name %></label>
                                                           </div>
                                                     </div>
                                                 </div> 
                                                 <% }) %>
-                                                
+                                                <br>
+                                                    <div id="featuresError"
+                                                        style="color: red; display: none; margin-top: 5px; margin-left:30px;">
+                                                        Features are required
+                                                    </div>
                                             </div>
                                             <br>
                                         </div>
@@ -264,4 +268,27 @@
         
           <%- include('../includes/footer.ejs') %>
           <%- include('../includes/end.ejs') %>
-   
+          <script>
+            document.querySelectorAll(".btn-next").forEach(function(button) {
+                button.addEventListener("click", function (e) {
+                    const activeTab = document.querySelector('.tab-pane.active');
+             
+                    console.log("step2");
+                    if (activeTab && activeTab.id === "step2") {
+                        const featureCheckboxes = document.querySelectorAll("input[name='featureIds']:checked");
+                        const featuresError = document.getElementById("featuresError");
+             
+                        if (featureCheckboxes.length === 0) {
+                            e.preventDefault();
+                            featuresError.style.display = "block";
+                            return false;
+                        } else {
+                            featuresError.style.display = "none";
+                        }
+                    }
+                    
+                   
+                });
+            });
+            </script>
+            

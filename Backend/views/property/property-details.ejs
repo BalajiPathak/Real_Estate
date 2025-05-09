@@ -41,33 +41,25 @@
 
                           <ul class="additional-details-list clearfix">
                               <li>
-                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Waterfront</span>
-                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry">Yes</span>
+                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Price</span>
+                                <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry"><%= property.price %></span>
                               </li>
 
                               <li>
-                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Built In</span>
-                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry">2003</span>
+                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Beds</span>
+                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry"><%= property.beds %></span>
                               </li>
                               <li>
-                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Parking</span>
-                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry">2 Or More Spaces,Covered Parking,Valet Parking</span>
-                              </li>
-
-                              <li>
-                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Waterfront</span>
-                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry">Yes</span>
+                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Baths</span>
+                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry"><%= property.baths %></span>
                               </li>
 
                               <li>
-                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">View</span>
-                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry">Intracoastal View,Direct ew</span>
+                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">State</span>
+                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry"><%= property.stateId?.name %></span>
                               </li>
 
-                              <li>
-                                  <span class="col-xs-6 col-sm-4 col-md-4 add-d-title">Waterfront Description:</span>
-                                  <span class="col-xs-6 col-sm-8 col-md-8 add-d-entry">Intracoastal Front,Ocean Access</span>
-                              </li> 
+                              
 
                           </ul>
                       </div>  
@@ -78,9 +70,9 @@
                         <h4 class="s-property-title">Features</h4>                
                         <ul> 
                           <% if (features && features.length > 0) { %> 
-                            <% features.forEach(f => { %>
-                              <li><%= f %></li>
-                            <% }) %> 
+                            <% features.forEach(function(feature){ %>
+                              <li><%= feature %></li>
+                            <% }); %> 
                           <% } else { %> 
                             <li>No features available</li>
                           <% } %> 
@@ -94,7 +86,7 @@
                           <h4 class="s-property-title">Property Video</h4> 
                           <div class="video-thumb">
                               <% videos.forEach(function(video) { %>
-                              <a class="video-popup" href="yout" title="Virtual Tour">
+                              <a class="video-popup" href="<%= video.video %>" title="Virtual Tour">
                                   <img src="<%= video.video %>" class="img-responsive wp-post-image" alt="Exterior">            
                               </a>
                               <% }); %>

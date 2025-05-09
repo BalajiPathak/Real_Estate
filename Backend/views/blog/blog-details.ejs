@@ -1,66 +1,123 @@
 <%- include('../includes/head.ejs') %>
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/navbar.ejs') %>
+<body>
 <div class="content-area blog-page padding-top-40" style="background-color: #FCFCFC; padding-bottom: 55px;">
-    <div class="container">
-        <div class="row">
-            <div class="blog-lst col-md-12 pl0">
-                <section id="id-100" class="post single">
-                    <div class="post-header single">
-                        <div class=""> 
-                            <h2 class="wow fadeInLeft animated"><%= blog.Title %></h2> 
-                            <div class="title-line wow fadeInRight animated"></div> 
-                        </div>
-                        <div class="row wow fadeInRight animated"> 
-                            <div class="col-sm-6"> 
-                                <p class="author-category"> By <a href="#"> <%= blog.Auther %> </a> in <a href="/blog/<%= blog._id %>">Webdesign</a> </p> 
-                            </div> 
-                            <div class="col-sm-6 right"> 
-                                <p class="date-comments"> 
-                                    <a href="/blog/<%= blog._id %>"><i class="fa fa-calendar-o"></i> <%= blog.Date.toDateString() %></a> 
-                                    <a href="/blog/<%= blog._id %>"><i class="fa fa-comment-o"></i> Comments</a> 
-                                </p> 
-                            </div> 
-                        </div> 
-                        <div class="image wow fadeInRight animated">
-                            <img src="<%= blog.Img %>" class="img-responsive" alt="Example blog post alt">
-                        </div>
-                    </div>
-                    <div id="post-content" class="post-body single wow fadeInLeft animated">
-                        <p><%= blog.Description %></p>
-                    </div>
-                </section>
-
-                <section id="comments" class="comments wow fadeInRight animated">
-                    <h4 class="text-uppercase wow fadeInLeft animated"> <%= comments.length %> Comments</h4>
-                    <section id="comments" class="comments wow fadeInRight animated"> 
-                        <% comments.forEach(comment => { %>
-                        <div class="row comment">
-                            <div class="col-sm-3 col-md-2 text-center-xs">
-                                <p>
-                                    <img  src="/uploads/<%= comment.Img %>"class="img-responsive img-circle" alt="user" style="max-width: 68%;
-    height: 107px;">
-                                </p>
-                            </div>
-                            <div class="col-sm-9 col-md-10">
-                                <h5 class="text-uppercase"><%= comment.name %></h5>
-                                <p class="posted"><i class="fa fa-clock-o"></i>  <%= comment.Date.toDateString() %></p>
-                                <p><%= comment.Comment %></p>
-                              
-                                </p>
-                            </div>
-                        </div>
-                        <% }) %>
-                        
-                    </section>
-                    <%- include('new-comment.ejs') %> 
-                </section>
-
+  <div class="container">
+    <div class="row">
+      <div class="blog-lst col-md-12 pl0">
+        <section id="id-100" class="post single">
+          <div class="post-header single">
+            <div>
+              <h2 class="wow fadeInLeft animated"><%= blog.Title %></h2>
+              <div class="title-line wow fadeInRight animated"></div>
             </div>
-        </div>
+            <div class="row wow fadeInRight animated">
+              <div class="col-sm-6">
+                <p class="author-category">By <a href="#"><%= blog.Auther %></a> in <a href="/blog/<%= blog._id %>">Webdesign</a></p>
+              </div>
+              <div class="col-sm-6 right">
+                <p class="date-comments">
+                  <a href="/blog/<%= blog._id %>"><i class="fa fa-calendar-o"></i> <%= blog.Date.toDateString() %></a>
+                  <a href="/blog/<%= blog._id %>"><i class="fa fa-comment-o"></i> Comments</a>
+                </p>
+              </div>
+            </div>
+            <div class="image wow fadeInRight animated">
+              <img src="<%= blog.Img %>" class="img-responsive" alt="Example blog post alt">
+            </div>
+          </div>
+
+          <div id="post-content" class="post-body single wow fadeInLeft animated">
+            <p><%= blog.Description %></p>
+          </div>
+        </section>
+
+        <section class="comments wow fadeInRight animated">
+          <h4 class="text-uppercase wow fadeInLeft animated"><%= comments.length %> Comments</h4>
+
+          <section id="commentsList" class="wow fadeInRight animated">
+            <% comments.forEach(comment => { %>
+              <div class="row comment">
+                <div class="col-sm-3 col-md-2 text-center-xs">
+                  <p>
+                    <img src="/uploads/<%= comment.Img %>" class="img-responsive img-circle" alt="user" style="max-width: 68%; height: 107px;">
+                  </p>
+                </div>
+                <div class="col-sm-9 col-md-10">
+                  <h5 class="text-uppercase"><%= comment.name %></h5>
+                  <p class="posted"><i class="fa fa-clock-o"></i> <%= comment.Date.toDateString() %></p>
+                  <p><%= comment.Comment %></p>
+                </div>
+              </div>
+            <% }) %>
+          </section>
+
+          <%- include('new-comment.ejs') %>
+        </section>
+      </div>
     </div>
+  </div>
 </div>
+
 <%- include('../includes/footer.ejs') %>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const form = document.getElementById('commentForm');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = form.name.value;
+    const Comment = form.Comment.value;
+    const BlogId = form.BlogId.value;
+    const file = form.commentImage.files[0];
+
+    const fd = new FormData();
+    fd.append('commentImage', file);
+    fd.append('name', name);
+    fd.append('Comment', Comment);
+    fd.append('BlogId', BlogId);
+
+    const imgRes = await fetch(`/blog/${BlogId}`, {
+      method: 'POST',
+      body: fd
+    });
+
+    const { filename } = await imgRes.json();
+
+ 
+    socket.emit('newComment', {
+      name,
+      Comment,
+      Img: filename,
+      BlogId
+    });
+
+   
+  });
+
+  socket.on('broadcastComment', (c) => {
+    const html = `
+      <div class="row comment">
+        <div class="col-sm-3 col-md-2 text-center-xs">
+          <img src="/uploads/${c.Img}" class="img-responsive img-circle" style="max-width: 68%; height: 107px;">
+        </div>
+        <div class="col-sm-9 col-md-10">
+          <h5 class="text-uppercase">${c.name}</h5>
+          <p class="posted"><i class="fa fa-clock-o"></i> Just now</p>
+          <p>${c.Comment}</p>
+        </div>
+      </div>
+    `;
+    document.getElementById('commentsList').innerHTML += html;
+    form.reset();
+    form.commentImage.value='';
+    form.name.value='';
+    form.Comment.value='';
+  });
+</script>
 
 <%- include('../includes/end.ejs') %>
 <script src="/assets/js/jquery-1.10.2.min.js"></script>
