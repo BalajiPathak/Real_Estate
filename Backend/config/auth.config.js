@@ -10,12 +10,12 @@ module.exports = {
         callbackURL: `${callbackbaseURL}/auth/google/callback`
     },
     facebook: {
-        clientID: '1432253888148158',
-        clientSecret: 'c8c99cc08f2a5a8d8c4e1263132e71f2',
+        clientID: '1824635041714881',
+        clientSecret: '8291d711986c026a2686fcab5b5e223a',
         callbackURL: `${callbackbaseURL}/auth/facebook/callback`,
         profileFields: ['id', 'emails', 'name', 'displayName'],
-        scope: ['email', 'public_profile'], // Add this line to request permissions
-        termsURL: 'https://real-estate-4-cetp.onrender.com/terms-of-service',
-        privacyURL: 'https://real-estate-4-cetp.onrender.com/privacy-policy'
+        scope: ['email', 'public_profile'], 
+        termsURL: `${callbackbaseURL}/terms-of-service`,
+        privacyURL: `${callbackbaseURL}/privacy-policy`
     }
 };
