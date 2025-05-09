@@ -27,6 +27,10 @@ const blogRoutes=require('./routes/blog');
 const faqsRoutes= require('./routes/faqs');
 const legalRoutes = require('./routes/legal');
 
+const { graphqlHTTP } = require('express-graphql');
+const { schema } = require('./graphql/schema');
+const resolvers = require('./graphql/resolvers');
+
 const multer = require('multer');
 
 //socketio
@@ -50,6 +54,10 @@ io.on('connection', (socketIO) => {
   req.io = io;
     next();
   });
+  
+
+  //graphQL
+
 // Add after other middleware configurations
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -156,6 +164,18 @@ mongoose.connect('mongodb+srv://balajipathak:pUo5vnHtW84bZTej@cluster0.himqpss.m
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
+
+app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    graphiql: true,
+    rootValue: resolvers
+  }));
+app.post('/userprofile', upload.single('user_Image'), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    res.status(200).json({ filename: req.file.filename });
+  });
 
 app.use(homeRoutes); 
 

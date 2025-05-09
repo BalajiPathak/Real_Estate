@@ -8,7 +8,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-10 col-sm-offset-1 profiel-container">
-          <form action="/userprofile" method="POST" enctype="multipart/form-data">
+          <form action="/userprofile" method="POST" enctype="multipart/form-data" id="profileForm">
             <div class="profiel-header">
               <h3><b>BUILD</b> YOUR PROFILE <br><small>This information will let us know more about you.</small></h3>
               <hr>
@@ -88,5 +88,115 @@
 
 <%- include('../includes/footer.ejs') %>
 
+<script>
+async function loadUserProfile() {
+  const query = `
+    query {
+      getUserProfile {
+        First_Name
+        Last_Name
+        Email
+        Facebook
+        Twitter
+        Website
+        Public_email
+        Phone
+        FAX
+        user_image
+      }
+    }
+  `;
+  const res = await fetch('/userprofile', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+  });
+  const json = await res.json();
+  const profile = json.data?.getUserProfile;
+  if (profile) {
+    for (const key in profile) {
+      const input = document.querySelector(`[name="${key}"]`);
+      if (input) input.value = profile[key];
+    }
+    document.getElementById('wizardPicturePreview').src = `/uploads/${profile.user_image}`;
+  }
+}
+ 
+document.addEventListener('DOMContentLoaded', loadUserProfile);
+ 
+document.getElementById('profileForm').addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+  const file = formData.get('user_Image');
+ 
+  let imageName = "";
+ 
+if (file && file.name) {
+    try {
+      const uploadForm = new FormData();
+      uploadForm.append('user_Image', file);
+ 
+      const uploadRes = await fetch('/userprofile', {
+        method: 'POST',
+        body: uploadForm
+      });
+ 
+      const uploadData = await uploadRes.json();
+ 
+      if (!uploadRes.ok) {
+        throw new Error(uploadData.error || 'Image upload failed');
+      }
+ 
+      imageName = uploadData.filename;
+    } catch (err) {
+      alert("Failed to upload image: " + err.message);
+      return;
+    }
+  }
+ 
+  const input = Object.fromEntries(formData.entries());
+ 
+  const query = `
+    mutation {
+      updateUserProfile(data: {
+        First_Name: "${input.First_Name}",
+        Last_Name: "${input.Last_Name}",
+        Email: "${input.Email}",
+        Phone: "${input.Phone}",
+        Address: "${input.Address}",
+        Country: "${input.Country}",
+        user_image: "${imageName}"
+      }) {
+        id
+        First_Name
+        Last_Name
+        Email
+      }
+    }
+  `;
+ 
+  try {
+    const res = await fetch("/userprofile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query })
+    });
+ 
+    const result = await res.json();
+ 
+    if (result.errors) {
+      console.log("Failed to update profile: " + result.errors[0].message);
+      // alert("Failed to update profile: " + result.errors[0].message);
+      return;
+    }
+   console.log("Profile updated successfully");
+    // alert("Profile updated successfully");
+  } catch (error) {
+    console.log("Failed to update profile: " + error.message);
+    // alert("Failed to update profile: " + error.message);
+  }
+});
+</script>
 <%- include('../includes/end.ejs') %>
  
