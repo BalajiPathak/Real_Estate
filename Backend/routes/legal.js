@@ -44,4 +44,24 @@ router.get('/terms-of-service', async (req, res) => {
     }
 });
 
+router.get('/data-deletion', async (req, res) => {
+    try {
+        const companyInfo = await CompanyInfo.findOne();
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
+
+        res.render('legal/data-deletion', {
+            pageTitle: 'Data Deletion Instructions',
+            path: '/data-deletion',
+            companyInfo,
+            navbar,
+            blogs,
+            isLoggedIn: req.session.isLoggedIn || false
+        });
+    } catch (error) {
+        console.error('Data Deletion Page Error:', error);
+        res.status(500).send('Error loading data deletion instructions');
+    }
+});
+
 module.exports = router;
