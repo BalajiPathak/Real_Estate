@@ -1,4 +1,4 @@
-const callbackbaseURL = process.env.BASE_URL;
+const callbackbaseURL = process.env.BASE_URL || 'http://localhost:3006'; 
 module.exports = {
     jwt: {
         secret: 'your-jwt-secret-key',
@@ -13,6 +13,6 @@ module.exports = {
         clientID: '1432253888148158',
         clientSecret: 'c8c99cc08f2a5a8d8c4e1263132e71f2',
         callbackURL: `${callbackbaseURL}/auth/facebook/callback`,
-        profileFields: ['id', 'emails', 'name']
+        profileFields: ['id', 'emails', 'name', 'displayName'] 
     }
 };
