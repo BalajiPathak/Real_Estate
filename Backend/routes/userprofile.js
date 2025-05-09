@@ -4,8 +4,10 @@ const userprofileController = require('../controllers/userprofile');
 const upload = require('../middleware/uploads');
 const isAuth = require('../middleware/is-auth');
 
-router.get('/userprofile',isAuth, userprofileController.getUserProfile);
-router.post('/userprofile', upload.single('user_Image'), userprofileController.postUserProfile);
+// Show user profile (GET)
+router.get('/userprofile', isAuth, userprofileController.getUserProfile);
 
+// Update user profile (POST with image upload)
+router.post('/userprofile', isAuth, upload.single('user_Image'), userprofileController.postUserProfile);
 
 module.exports = router;

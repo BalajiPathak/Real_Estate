@@ -33,23 +33,32 @@ const {
           data: { type: new GraphQLNonNull(UserProfileInputType) },
         },
         resolve: async (_, { data }, { req }) => {
-            try {
-              if (!req.session?.userId) throw new Error('Not authenticated');
-           
-              const updatedUser = await User.findByIdAndUpdate(
-                req.session.userId,
-                data,
-                { new: true }
-              );
-           
-              if (!updatedUser) throw new Error('User not found');
-           
-              return updatedUser;
-            } catch (error) {
-              console.error('Update error:', error);
-              throw new Error('Failed to update profile');
+          try {
+            if (!req.session?.userId) {
+              throw new Error('Not authenticated');
             }
-          },
+        
+            console.log('Session User ID:', req.session.userId);
+            console.log('Update data received:', data);
+        
+            const updatedUser = await User.findByIdAndUpdate(
+              req.session.userId,
+              data,
+              { new: true, runValidators: true }  // Ensure validators are run
+            );
+        
+            if (!updatedUser) {
+              throw new Error('User not found');
+            }
+        
+            console.log('Updated user:', updatedUser);
+            return updatedUser;
+          } catch (error) {
+            console.error('Update error:', error);  // Detailed error logging
+            throw new Error(error.message);  // Propagate original error message
+          }
+        },
+        
       },
     },
   });

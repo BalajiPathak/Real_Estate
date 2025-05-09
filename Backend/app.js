@@ -170,11 +170,40 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true,
     rootValue: resolvers
   }));
-app.post('/userprofile', upload.single('user_Image'), (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+  
+
+  app.post('/userprofile', upload.single('user_Image'), async (req, res) => {
+    try {
+      const { First_Name, Last_Name, Email, Phone, Facebook, Twitter, Website, Public_email, FAX } = req.body;
+      const user_image = req.file ? req.file.filename : null; // Check for file upload
+  
+      // Update the user profile in the database
+      const updatedUser = await User.findByIdAndUpdate(
+        req.userId,  // Ensure you have the logged-in user ID
+        {
+          First_Name,
+          Last_Name,
+          Email,
+          Phone,
+          Facebook,
+          Twitter,
+          Website,
+          Public_email,
+          FAX,
+          user_image,  // Save the uploaded image's filename
+        },
+        { new: true }
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      res.json(updatedUser);
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ error: 'Failed to update profile' });
     }
-    res.status(200).json({ filename: req.file.filename });
   });
 
 app.use(homeRoutes); 

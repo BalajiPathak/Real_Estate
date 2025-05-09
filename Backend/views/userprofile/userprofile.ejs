@@ -2,89 +2,85 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/navbar.ejs') %>
 
-
-
 <div class="content-area user-profiel" style="background-color: #FCFCFC;">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-10 col-sm-offset-1 profiel-container">
-          <form action="/userprofile" method="POST" enctype="multipart/form-data" id="profileForm">
-            <div class="profiel-header">
-              <h3><b>BUILD</b> YOUR PROFILE <br><small>This information will let us know more about you.</small></h3>
-              <hr>
-            </div>
-  
-            <div class="clear">
-              <div class="col-sm-3 col-sm-offset-1">
-                <div class="picture-container">
-                  <div class="picture">
-                    <img src="/uploads/<%= user.user_image %>" class="picture-src" id="wizardPicturePreview" title=""/>
-                    <input type="file" id="wizard-picture" name="user_Image" onchange="previewImage(event)">
-                  </div>
-                  <h6>Choose Picture</h6>
-                </div>
-              </div>
-  
-              <div class="col-sm-3 padding-top-25">
-                <div class="form-group">
-                  <label>First Name <small>(required)</small></label>
-                  <input name="First_Name" type="text" class="form-control" placeholder="Andrew..." value="<%= user.First_Name %>" required>
-                </div>
-                <div class="form-group">
-                  <label>Last Name <small>(required)</small></label>
-                  <input name="Last_Name" type="text" class="form-control" placeholder="Smith..." value="<%= user.Last_Name %>" required>
-                </div>
-                <div class="form-group">
-                  <label>Email <small>(required)</small></label>
-                  <input name="Email" type="email" class="form-control" placeholder="andrew@email.com" value="<%= user.Email %>" required>
-                </div>
-              </div>
-  
-              
-  
-            <div class="clear">
-              <br><hr><br>
-              <div class="col-sm-5 col-sm-offset-1">
-                <div class="form-group">
-                  <label>Facebook:</label>
-                  <input name="Facebook" type="text" class="form-control" placeholder="https://facebook.com/user" value="<%= user.Facebook %>">
-                </div>
-                <div class="form-group">
-                  <label>Twitter:</label>
-                  <input name="Twitter" type="text" class="form-control" placeholder="https://Twitter.com/@user" value="<%= user.Twitter %>">
-                </div>
-                <div class="form-group">
-                  <label>Website:</label>
-                  <input name="Website" type="text" class="form-control" placeholder="https://yoursite.com/" value="<%= user.Website %>">
-                </div>
-              </div>
-  
-              <div class="col-sm-5">
-                <div class="form-group">
-                  <label>Public email:</label>
-                  <input name="Public_email" type="email" class="form-control" placeholder="p-email@rmail.com" value="<%= user.Public_email %>">
-                </div>
-                <div class="form-group">
-                  <label>Phone:</label>
-                  <input name="Phone" type="text" class="form-control" placeholder="+1 9090909090" value="<%= user.Phone %>">
-                </div>
-                <div class="form-group">
-                  <label>FAX:</label>
-                  <input name="FAX" type="text" class="form-control" placeholder="+1 9090909090" value="<%= user.FAX %>">
-                </div>
-              </div>
-            </div>
-           
-            <div class="col-sm-5 col-sm-offset-1">
-              <br>
-              <input type="submit" class="btn btn-finish "  style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;"  name="finish" value="Finish">
-            </div>
-          </form>
-        </div>
-      </div><!-- end row -->
-    </div>
-  </div>
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 profiel-container">
+                <form action="/userprofile" method="POST" enctype="multipart/form-data" id="profileForm">
+                    <div class="profiel-header">
+                        <h3><b>BUILD</b> YOUR PROFILE <br><small>This information will let us know more about you.</small></h3>
+                        <hr>
+                    </div>
 
+                    <div class="clear">
+                        <div class="col-sm-3 col-sm-offset-1">
+                            <div class="picture-container">
+                                <div class="picture">
+                                    <img src="/uploads/<%= user.user_image %>" class="picture-src" id="wizardPicturePreview" title=""/>
+                                    <input type="file" id="wizard-picture" name="user_Image" onchange="previewImage(event)">
+                                </div>
+                                <h6>Choose Picture</h6>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3 padding-top-25">
+                            <div class="form-group">
+                                <label>First Name <small>(required)</small></label>
+                                <input name="First_Name" type="text" class="form-control" placeholder="Andrew..." value="<%= user.First_Name %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name <small>(required)</small></label>
+                                <input name="Last_Name" type="text" class="form-control" placeholder="Smith..." value="<%= user.Last_Name %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email <small>(required)</small></label>
+                                <input name="Email" type="email" class="form-control" placeholder="andrew@email.com" value="<%= user.Email %>" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clear">
+                        <br><hr><br>
+                        <div class="col-sm-5 col-sm-offset-1">
+                            <div class="form-group">
+                                <label>Facebook:</label>
+                                <input name="Facebook" type="text" class="form-control" placeholder="https://facebook.com/user" value="<%= user.Facebook %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Twitter:</label>
+                                <input name="Twitter" type="text" class="form-control" placeholder="https://Twitter.com/@user" value="<%= user.Twitter %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Website:</label>
+                                <input name="Website" type="text" class="form-control" placeholder="https://yoursite.com/" value="<%= user.Website %>">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label>Public email:</label>
+                                <input name="Public_email" type="email" class="form-control" placeholder="p-email@rmail.com" value="<%= user.Public_email %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone:</label>
+                                <input name="Phone" type="text" class="form-control" placeholder="+1 9090909090" value="<%= user.Phone %>">
+                            </div>
+                            <div class="form-group">
+                                <label>FAX:</label>
+                                <input name="FAX" type="text" class="form-control" placeholder="+1 9090909090" value="<%= user.FAX %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-5 col-sm-offset-1">
+                        <br>
+                        <input type="submit" class="btn btn-finish" style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" name="finish" value="Finish">
+                    </div>
+                </form>
+            </div>
+        </div><!-- end row -->
+    </div>
+</div>
 
 <%- include('../includes/footer.ejs') %>
 
@@ -121,42 +117,42 @@ async function loadUserProfile() {
     document.getElementById('wizardPicturePreview').src = `/uploads/${profile.user_image}`;
   }
 }
- 
+
 document.addEventListener('DOMContentLoaded', loadUserProfile);
- 
+
 document.getElementById('profileForm').addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.target;
   const formData = new FormData(form);
   const file = formData.get('user_Image');
- 
+
   let imageName = "";
- 
-if (file && file.name) {
+
+  if (file && file.name) {
     try {
       const uploadForm = new FormData();
       uploadForm.append('user_Image', file);
- 
+
       const uploadRes = await fetch('/userprofile', {
         method: 'POST',
         body: uploadForm
       });
- 
+
       const uploadData = await uploadRes.json();
- 
+
       if (!uploadRes.ok) {
         throw new Error(uploadData.error || 'Image upload failed');
       }
- 
+
       imageName = uploadData.filename;
     } catch (err) {
       alert("Failed to upload image: " + err.message);
       return;
     }
   }
- 
+
   const input = Object.fromEntries(formData.entries());
- 
+
   const query = `
     mutation {
       updateUserProfile(data: {
@@ -164,8 +160,11 @@ if (file && file.name) {
         Last_Name: "${input.Last_Name}",
         Email: "${input.Email}",
         Phone: "${input.Phone}",
-        Address: "${input.Address}",
-        Country: "${input.Country}",
+        Facebook: "${input.Facebook}",
+        Twitter: "${input.Twitter}",
+        Website: "${input.Website}",
+        Public_email: "${input.Public_email}",
+        FAX: "${input.FAX}",
         user_image: "${imageName}"
       }) {
         id
@@ -175,28 +174,25 @@ if (file && file.name) {
       }
     }
   `;
- 
+
   try {
     const res = await fetch("/userprofile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query })
     });
- 
+
     const result = await res.json();
- 
+
     if (result.errors) {
       console.log("Failed to update profile: " + result.errors[0].message);
-      // alert("Failed to update profile: " + result.errors[0].message);
       return;
     }
-   console.log("Profile updated successfully");
-    // alert("Profile updated successfully");
+    console.log("Profile updated successfully");
   } catch (error) {
     console.log("Failed to update profile: " + error.message);
-    // alert("Failed to update profile: " + error.message);
   }
 });
 </script>
+
 <%- include('../includes/end.ejs') %>
- 
