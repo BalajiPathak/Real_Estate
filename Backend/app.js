@@ -292,7 +292,7 @@ app.use(errorHandler.handle404);
 app.use(errorHandler.handle500);
 
 server.listen(3006,()=>{
-    console.log(`Server is running on port `);
+    console.log(`Server is running on port 3006 `);
 })
 // const PORT =3006;
 // app.listen(PORT, () => {
