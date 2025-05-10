@@ -1,193 +1,236 @@
-<%- include('includes/head.ejs') %>
-    <%- include('includes/header.ejs') %>
-        <%- include('includes/navbar.ejs') %>
+    <%- include('includes/head.ejs') %>
+        <%- include('includes/header.ejs') %>
+            <%- include('includes/navbar.ejs') %>
 
-            <body class="bg-gray-100">
-                <div class="page-head">
-                    <div class="container">
-                        <div class="row">
-                            <div class="page-head-content">
-                                <h1 class="page-title">Contact Us</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="content-area recent-property padding-top-40" style="background-color: #FFF;">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-8 col-md-offset-2">
-                                <div class="" id="contact1">
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <h3><i class="fa fa-map-marker"></i> Address</h3>
-                                            <p>
-                                                <%= companyInfo.Address %>
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <h3><i class="fa fa-phone"></i> Call center</h3>
-                                            <p class="text-muted">This number is toll free if calling from
-                                                Great Britain otherwise we advise you to use the electronic
-                                                form of communication.</p>
-                                            <p><strong>
-                                                    <%= companyInfo.Phone_No %>
-                                                </strong></p>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <h3><i class="fa fa-envelope"></i> Electronic support</h3>
-                                            <p class="text-muted">Please feel free to write an email to us or to use our
-                                                electronic ticketing system.</p>
-                                            <ul>
-                                                <li><strong><a href="mailto:<%= companyInfo.Email %>">
-                                                            <%= companyInfo.Email %>
-                                                        </a></strong></li>
-                                                <li><strong><a href="#">Ticketio</a></strong> - our ticketing support
-                                                    platform</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <h2>Contact form</h2>
-                                    <% if (errorMessage) { %>
-                                        <div class="alert alert-danger">
-                                            <%= errorMessage %>
-                                        </div>
-                                        <% } %>
-
-                                    <% if (locals.successMessage) { %>
-                                        <div class="alert alert-success">
-                                            <%= successMessage %>
-                                        </div>
-                                        <% } %>
-
-                                    <form action="/contact" method="POST" >
-                                        <div class="row">
-                                            <style>
-                                                .required-field::after {
-                                                    content: "*";
-                                                    color: #ff0000;
-                                                    margin-left: 4px;
-                                                }
-                                            </style>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="firstname" class="required-field">First Name</label>
-                                                    <input type="text"
-                                                        class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
-                                                        id="firstname" name="firstname"
-                                                        value="<%= oldInput.First_Name %>" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="lastname" class="required-field">Last Name</label>
-                                                    <input type="text"
-                                                        class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
-                                                        id="lastname" name="lastname"
-                                                        value="<%= oldInput.Last_Name %>" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="email" class="required-field">Email</label>
-                                                    <input type="email"
-                                                        class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
-                                                        id="email" name="email"
-                                                        value="<%= oldInput.Email %>" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label for="subject" class="required-field">Subject</label>
-                                                    <input type="text"
-                                                        class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
-                                                        id="subject" name="subject"
-                                                        value="<%= oldInput.Subject %>" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <label for="message" class="required-field">Message</label>
-                                                    <textarea
-                                                        class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
-                                                        id="message" name="message" rows="5"
-                                                        required><%= oldInput.Message %></textarea>
-                                                </div>
-                                            </div>
-                                            <!-- Replace the existing reCAPTCHA div with this -->
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <label for="captcha" class="required-field">Enter CAPTCHA</label>
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <canvas id="captcha" style="border:1px solid #ccc; margin-bottom:10px;"></canvas>
-                                                            <button type="button" class="btn btn-sm" onclick="generateCaptcha()" style="margin-bottom:10px;">
-                                                                <i class="fa fa-refresh"></i> Refresh CAPTCHA
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <input type="text" 
-                                                                class="form-control" 
-                                                                id="captchaInput" 
-                                                                name="captchaInput" 
-                                                                placeholder="Enter the code shown above" 
-                                                                required>
-                                                            <input type="hidden" name="captchaText" id="captchaText">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                             <div class="col-sm-12 text-center">
-                                                <button type="submit" class="btn "
-                                                style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
-                                                    <i class="fa fa-envelope-o"></i> Send
-                                                    message
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
+                <body class="bg-gray-100">
+                    <div class="page-head">
+                        <div class="container">
+                            <div class="row">
+                                <div class="page-head-content">
+                                    <h1 class="page-title">Contact Us</h1>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            <script>
-                function generateCaptcha() {
-                    const canvas = document.getElementById('captcha');
-                    const ctx = canvas.getContext('2d');
-                    const captchaText = generateRandomString(6);
-                    
-                    canvas.width = 150;
-                    canvas.height = 50;
-                    ctx.fillStyle = '#f0f0f0';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Add noise
-                    for(let i = 0; i < 50; i++) {
-                        ctx.strokeStyle = '#' + Math.floor(Math.random()*16777215).toString(16);
-                        ctx.beginPath();
-                        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-                        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-                        ctx.stroke();
-                    }
-                    ctx.font = 'bold 30px Arial';
-                    ctx.fillStyle = '#333';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(captchaText, canvas.width/2, canvas.height/2);
-                    document.getElementById('captchaText').value = captchaText;
-                }
-            
-                function generateRandomString(length) {
-                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-                    let result = '';
-                    for (let i = 0; i < length; i++) {
-                        result += chars.charAt(Math.floor(Math.random() * chars.length));
-                    }
-                    return result;
-                }
-                window.onload = generateCaptcha;
-            </script>
-    <%- include('includes/footer.ejs') %>
 
-<%- include('includes/end.ejs') %>
+                    <div class="content-area recent-property padding-top-40" style="background-color: #FFF;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-8 col-md-offset-2">
+                                    <div class="" id="contact1">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <h3><i class="fa fa-map-marker"></i> Address</h3>
+                                                <p>
+                                                    <%= companyInfo.Address %>
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <h3><i class="fa fa-phone"></i> Call center</h3>
+                                                <p class="text-muted">This number is toll free if calling from
+                                                    Great Britain otherwise we advise you to use the electronic
+                                                    form of communication.</p>
+                                                <p><strong>
+                                                        <%= companyInfo.Phone_No %>
+                                                    </strong></p>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <h3><i class="fa fa-envelope"></i> Electronic support</h3>
+                                                <p class="text-muted">Please feel free to write an email to us or to use our
+                                                    electronic ticketing system.</p>
+                                                <ul>
+                                                    <li><strong><a href="mailto:<%= companyInfo.Email %>">
+                                                                <%= companyInfo.Email %>
+                                                            </a></strong></li>
+                                                    <li><strong><a href="#">Ticketio</a></strong> - our ticketing support
+                                                        platform</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <h2>Contact form</h2>
+                                        <% if (errorMessage) { %>
+                                            <div class="alert alert-danger">
+                                                <%= errorMessage %>
+                                            </div>
+                                            <% } %>
+
+                                        <% if (locals.successMessage) { %>
+                                            <div class="alert alert-success">
+                                                <%= successMessage %>
+                                            </div>
+                                            <% } %>
+
+                                        <form action="/contact" method="POST" >
+                                            <div class="row">
+                                                <style>
+                                                    .required-field::after {
+                                                        content: "*";
+                                                        color: #ff0000;
+                                                        margin-left: 4px;
+                                                    }
+                                                </style>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="firstname" class="required-field">First Name</label>
+                                                        <input type="text"
+                                                            class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
+                                                            id="firstname" name="firstname"
+                                                            value="<%= oldInput.First_Name %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="lastname" class="required-field">Last Name</label>
+                                                        <input type="text"
+                                                            class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
+                                                            id="lastname" name="lastname"
+                                                            value="<%= oldInput.Last_Name %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="email" class="required-field">Email</label>
+                                                        <input type="email"
+                                                            class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
+                                                            id="email" name="email"
+                                                            value="<%= oldInput.Email %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="subject" class="required-field">Subject</label>
+                                                        <input type="text"
+                                                            class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
+                                                            id="subject" name="subject"
+                                                            value="<%= oldInput.Subject %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label for="message" class="required-field">Message</label>
+                                                        <textarea
+                                                            class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
+                                                            id="message" name="message" rows="5"
+                                                            required><%= oldInput.Message %></textarea>
+                                                    </div>
+                                                </div>
+                                                <!-- Replace the existing reCAPTCHA div with this -->
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label for="captcha" class="required-field">Enter CAPTCHA</label>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <canvas id="captcha" style="border:1px solid #ccc; margin-bottom:10px;"></canvas>
+                                                                <button type="button" class="btn btn-sm" onclick="generateCaptcha()" style="margin-bottom:10px;">
+                                                                    <i class="fa fa-refresh"></i> Refresh CAPTCHA
+                                                                </button>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <input type="text" 
+                                                                    class="form-control" 
+                                                                    id="captchaInput" 
+                                                                    name="captchaInput" 
+                                                                    placeholder="Enter the code shown above" 
+                                                                    required>
+                                                                <input type="hidden" name="captchaText" id="captchaText">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 text-center">
+                                                    <button type="submit" class="btn "
+                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
+                                                        <i class="fa fa-envelope-o"></i> Send
+                                                        message
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <script>
+                    function generateCaptcha() {
+                        const canvas = document.getElementById('captcha');
+                        const ctx = canvas.getContext('2d');
+                        const captchaText = generateRandomString(6);
+                        
+                        canvas.width = 150;
+                        canvas.height = 50;
+                        ctx.fillStyle = '#f0f0f0';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Add noise
+                        for(let i = 0; i < 50; i++) {
+                            ctx.strokeStyle = '#' + Math.floor(Math.random()*16777215).toString(16);
+                            ctx.beginPath();
+                            ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                            ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                            ctx.stroke();
+                        }
+                        ctx.font = 'bold 30px Arial';
+                        ctx.fillStyle = '#333';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(captchaText, canvas.width/2, canvas.height/2);
+                        document.getElementById('captchaText').value = captchaText;
+                    }
+                
+                    function generateRandomString(length) {
+                        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                        let result = '';
+                        for (let i = 0; i < length; i++) {
+                            result += chars.charAt(Math.floor(Math.random() * chars.length));
+                        }
+                        return result;
+                    }
+                    window.onload = generateCaptcha;
+                </script>
+
+
+    <!-- Message Section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="message-section" 
+                    data-is-logged-in="<%= isLoggedIn %>"
+                    data-is-agent="<%= isAgent %>"
+                    data-user-name="<%= userName %>">
+                    
+                    <% if (isLoggedIn && isAgent) { %>
+                        <!-- Agent Message Interface -->
+                        <div class="message-to-users-section">
+                            <h3><i class="fa fa-envelope"></i> Send Message to Users</h3>
+                            <form id="agentMessageForm">
+                                <div class="form-group">
+                                    <textarea id="messageContent" class="form-control" rows="4" 
+                                        placeholder="Type your message to all users"></textarea>
+                                </div>
+                                <button type="submit" class="btn" 
+                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
+                                    <i class="fa fa-paper-plane"></i> Send Message to All Users
+                                </button>
+                            </form>
+                        </div>
+                    <% } else if (isLoggedIn) { %>
+                        <!-- Regular User Message Interface -->
+                        <div class="incoming-messages-section">
+                            <h3><i class="fa fa-inbox"></i> Incoming Messages</h3>
+                            <div id="messagesList" class="messages-container" 
+                                style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replace the Socket.IO scripts section -->
+    <!-- Socket.IO scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/contact-socket.js"></script>
+    <%- include('includes/footer.ejs') %>
+    <%- include('includes/end.ejs') %>

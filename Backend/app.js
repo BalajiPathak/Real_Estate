@@ -13,19 +13,21 @@ const navbarRoutes = require('./routes/navbar');
 const companyInfoRoutes = require('./routes/companyInfo');
 const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
+const agentRoutes = require('./routes/agent');
+const UserType = require('./models/userType'); 
 const errorHandler = require('./middleware/errorHandler');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const authConfig = require('./config/auth.config');
-const User =require('./models/user');
+const User = require('./models/user');
 // Add these imports at the top
 const propertyRoutes = require('./routes/property');
 const userPropertyRoutes = require('./routes/userProperty');
-const userProfileRoutes= require('./routes/userprofile');
-const changePasswword= require('./routes/changePassword');
+const userProfileRoutes = require('./routes/userprofile');
+const changePasswword = require('./routes/changePassword');
 
-const blogRoutes=require('./routes/blog');
-const faqsRoutes= require('./routes/faqs');
+const blogRoutes = require('./routes/blog');
+const faqsRoutes = require('./routes/faqs');
 const legalRoutes = require('./routes/legal');
 
 const { graphqlHTTP } = require('express-graphql');
@@ -37,94 +39,104 @@ const morgan = require('morgan');
 
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
-  fs.mkdirSync(path.join(__dirname, 'logs'));
+    fs.mkdirSync(path.join(__dirname, 'logs'));
 }
 //socketio
 const http = require('http');
 const socketIO = require('socket.io');
 
 
-const app = express();    
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
-
-//socketio
-const server = http.createServer(app);
-const io = socketIO(server);
-
-io.on('connection', (socketIO) => {
+// Update the existing Socket.IO connection handler
+io.on('connection', (socket) => {
     console.log('New user connected');
-   
-  });
-   
-  app.use((req, res, next) => {
-  req.io = io;
+
+    socket.on('agentMessage', (data) => {
+        // Broadcast the message to all connected clients
+        io.emit('newAgentMessage', {
+            content: data.content,
+            agentName: data.agentName,
+            timestamp: new Date()
+        });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+app.use((req, res, next) => {
+    req.io = io;
     next();
-  });
-  
-  // helmet for security
-  // Apply helmet globally for overall security
- 
+});
+
+// helmet for security
+// Apply helmet globally for overall security
+
 app.use('/login',
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-"https://ajax.googleapis.com",
-"https://maxcdn.bootstrapcdn.com",
-"https://cdnjs.cloudflare.com"
-        ],
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'",
-"https://maxcdn.bootstrapcdn.com",
-"https://fonts.googleapis.com"
-        ],
-        fontSrc: [
-          "'self'",
-"https://fonts.gstatic.com"
-        ],
-        imgSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "ws:", "wss:"],
-      },
-    },
-  })
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    "https://ajax.googleapis.com",
+                    "https://maxcdn.bootstrapcdn.com",
+                    "https://cdnjs.cloudflare.com"
+                ],
+                styleSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "https://maxcdn.bootstrapcdn.com",
+                    "https://fonts.googleapis.com"
+                ],
+                fontSrc: [
+                    "'self'",
+                    "https://fonts.gstatic.com"
+                ],
+                imgSrc: ["'self'", "data:"],
+                connectSrc: ["'self'", "ws:", "wss:"],
+            },
+        },
+    })
 );
 app.use('/signup',
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-"https://ajax.googleapis.com",
-"https://maxcdn.bootstrapcdn.com",
-"https://cdnjs.cloudflare.com"
-        ],
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'",
-"https://maxcdn.bootstrapcdn.com",
-"https://fonts.googleapis.com"
-        ],
-        fontSrc: [
-          "'self'",
-"https://fonts.gstatic.com"
-        ],
-        imgSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "ws:", "wss:"],
-      },
-    },
-  })
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    "https://ajax.googleapis.com",
+                    "https://maxcdn.bootstrapcdn.com",
+                    "https://cdnjs.cloudflare.com"
+                ],
+                styleSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "https://maxcdn.bootstrapcdn.com",
+                    "https://fonts.googleapis.com"
+                ],
+                fontSrc: [
+                    "'self'",
+                    "https://fonts.gstatic.com"
+                ],
+                imgSrc: ["'self'", "data:"],
+                connectSrc: ["'self'", "ws:", "wss:"],
+            },
+        },
+    })
 );
 // Apply helmet specifically for login and signup routes
 
-  //graphQL
+//graphQL
 
 // Add after other middleware configurations
 // Configure multer for file uploads
@@ -150,9 +162,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
     secret: 'your-secret-key',
-    resave: true,  
+    resave: true,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         secure: false,
         maxAge: 24 * 60 * 60 * 1000
     }
@@ -169,12 +181,12 @@ app.use(flash());
 app.use((req, res, next) => {
     res.locals.isLoggedIn = req.session.isLoggedIn || false;
     res.locals.currentUser = req.session.user || null;
-    
+
     // Add this: Set userId in session if user exists
     if (req.session.user) {
         req.session.userId = req.session.user._id;
     }
-    
+
     next();
 });
 
@@ -184,7 +196,7 @@ const crypto = require('crypto');
 // Add Facebook Strategy import
 const FacebookStrategy = require('passport-facebook').Strategy;
 
-app.use(flash());               
+app.use(flash());
 
 
 app.use(passport.initialize());
@@ -237,17 +249,17 @@ app.use('/graphql', graphqlHTTP({
     schema: schema,
     graphiql: true,
     rootValue: resolvers
-  }));
-  
+}));
 
- 
-app.use(homeRoutes); 
+
+
+app.use(homeRoutes);
 
 app.use(navbarRoutes);
 app.use(companyInfoRoutes);
 app.use(authRoutes);
 app.use(propertyRoutes)
-
+app.use('/agent', agentRoutes);
 app.use(blogRoutes);
 app.use(faqsRoutes);
 app.use(userProfileRoutes);
@@ -261,7 +273,7 @@ app.use(errorHandler.handle500);
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.jwt;
-    
+
     if (!token) {
         return next();
     }
@@ -301,7 +313,7 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         let user = await User.findOne({ Email: profile.emails[0].value });
-        
+
         if (!user) {
             user = new User({
                 First_Name: profile.name.givenName,
@@ -338,18 +350,18 @@ passport.use(new FacebookStrategy({
     try {
         // Check if profile and email exist
         if (!profile || !profile.emails || !profile.emails[0]) {
-            return done(null, false, { 
+            return done(null, false, {
                 message: 'Email access is required for Facebook login'
             });
         }
 
-        let user = await User.findOne({ 
+        let user = await User.findOne({
             $or: [
                 { facebookId: profile.id },
                 { Email: profile.emails[0].value }
             ]
         });
-        
+
         if (user) {
             // Update existing user if needed
             if (!user.facebookId) {
@@ -373,7 +385,7 @@ passport.use(new FacebookStrategy({
             });
             await user.save();
         }
-        
+
         return done(null, user);
     } catch (error) {
         console.error('Facebook authentication error:', error);
@@ -385,15 +397,7 @@ app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
 
-server.listen(3006,()=>{
-    console.log(`Server is running on port 3006 `);
-})
-// const PORT =3006;
-// app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
-// Add this with your other route imports
+server.listen(process.env.PORT || 3006, () => {
+    console.log(`Server running on port ${process.env.PORT || 3006}`);
+});
 
-
-// Add this with your other route uses (before error handlers)
-app.use(legalRoutes);

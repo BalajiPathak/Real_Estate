@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const UserType = require('../models/userType');
 const bcrypt = require('bcryptjs');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
@@ -132,6 +133,69 @@ exports.postUserProfile = async (req, res) => {
             path: 'userprofile/userprofile',
             errorMessage: 'An error occurred while updating your profile',
             user: req.body
+        });
+    }
+};
+
+// Add these new controller methods
+exports.createUserType = async (req, res) => {
+    try {
+        const { user_type_name } = req.body;
+
+        if (!user_type_name) {
+            return res.status(400).json({
+                success: false,
+                message: 'User type name is required'
+            });
+        }
+
+        // Check if user type already exists
+        const existingUserType = await UserType.findOne({ user_type_name });
+        if (existingUserType) {
+            return res.status(400).json({
+                success: false,
+                message: 'User type already exists'
+            });
+        }
+
+        // Create new user type
+        const userType = new UserType({
+            user_type_name
+        });
+
+        await userType.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'User type created successfully',
+            data: userType
+        });
+
+    } catch (error) {
+        console.error('Error creating user type:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error creating user type',
+            error: error.message
+        });
+    }
+};
+
+exports.getUserTypes = async (req, res) => {
+    try {
+        const userTypes = await UserType.find();
+        
+        res.status(200).json({
+            success: true,
+            data: userTypes
+        });
+
+    } catch (error) {
+        console.error('Error fetching user types:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching user types',
+            error: error.message
         });
     }
 };

@@ -49,29 +49,14 @@ const getAllNavbars = async (req, res) => {
 
 const getContact = async (req, res) => {
     try {
-        const navbar = await Navbar.find();
         const companyInfo = await CompanyInfo.findOne();
-        const blog = await Blog.find({});
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
+
         res.render('contact', {
-            navbar: navbar,          
-            companyInfo: companyInfo,
-            isLoggedIn: req.session.isLoggedIn || false,  // Use session status consistently
-            pageTitle: 'Contact Us',
+            pageTitle: 'Contact',
+            path: '/contact',
             errorMessage: null,
-            validationErrors: [], 
-            blogs:blog,
-            oldInput: {
-                First_Name: '',
-                Last_Name: '',
-                Email: '',
-                Subject: '',
-                Message: ''
-            }
-        });
-    } catch (error) {
-        console.error('Error loading contact page:', error);
-        res.status(500).render('contact', {
-            errorMessage: 'An error occurred while loading the page',
             validationErrors: [],
             oldInput: {
                 First_Name: '',
@@ -80,7 +65,18 @@ const getContact = async (req, res) => {
                 Subject: '',
                 Message: ''
             },
-            isLoggedIn: req.session.isLoggedIn || false  // Add isLoggedIn here too
+            companyInfo,
+            navbar,
+            blogs,
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent || false,
+            userName: req.session.user ? `${req.session.user.First_Name} ${req.session.user.Last_Name}` : ''
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('500', {
+            pageTitle: 'Error',
+            path: '/500'
         });
     }
 };

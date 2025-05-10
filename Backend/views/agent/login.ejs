@@ -1,0 +1,56 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+    <%- include('../includes/header.ejs') %>
+    <%- include('../includes/navbar.ejs') %>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">Agent Login</h2>
+                    </div>
+                    <div class="card-body">
+                        <% if (errorMessage) { %>
+                            <div class="alert alert-danger"><%= errorMessage %></div>
+                        <% } %>
+                        <form action="/agent/login" method="POST" novalidate>
+                            <div class="form-group mb-3">
+                                <label for="Email">Email</label>
+                                <input 
+                                    type="email" 
+                                    class="form-control <%= validationErrors.find(e => e.param === 'Email') ? 'is-invalid' : '' %>"
+                                    id="Email"
+                                    name="Email"
+                                    value="<%= oldInput.Email %>"
+                                    required
+                                >
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="Password">Password</label>
+                                <input 
+                                    type="password" 
+                                    class="form-control <%= validationErrors.find(e => e.param === 'Password') ? 'is-invalid' : '' %>"
+                                    id="Password"
+                                    name="Password"
+                                    required
+                                >
+                            </div>
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-primary btn-block w-100">Login as Agent</button>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p>Don't have an agent account? <a href="/agent/signup">Register here</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../includes/footer.ejs') %>
+    <%- include('../includes/end.ejs') %>
+</body>
+</html>
