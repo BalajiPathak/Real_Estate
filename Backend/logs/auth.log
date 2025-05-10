@@ -212,3 +212,8 @@
 ::1 - - [10/May/2025:07:57:03 +0000] "POST /agent/login HTTP/1.1" 302 34 "http://localhost:3006/agent/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [10/May/2025:07:57:12 +0000] "GET /login HTTP/1.1" 200 61499 "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
 ::1 - - [10/May/2025:07:57:20 +0000] "POST /login HTTP/1.1" 302 34 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+::1 - - [10/May/2025:07:59:04 +0000] "GET /faqs HTTP/1.1" 200 65048 "http://localhost:3006/blog" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [10/May/2025:07:59:08 +0000] "GET /agent/login HTTP/1.1" 200 59338 "http://localhost:3006/faqs" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [10/May/2025:08:00:29 +0000] "GET /agent/login HTTP/1.1" 200 59449 "http://localhost:3006/faqs" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [10/May/2025:08:00:58 +0000] "GET /agent/login HTTP/1.1" 304 - "http://localhost:3006/faqs" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [10/May/2025:08:01:20 +0000] "GET /agent/login HTTP/1.1" 200 59438 "http://localhost:3006/faqs" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
