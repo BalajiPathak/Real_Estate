@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
 // Add flash import
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
@@ -30,9 +31,14 @@ const legalRoutes = require('./routes/legal');
 const { graphqlHTTP } = require('express-graphql');
 const { schema } = require('./graphql/schema');
 const resolvers = require('./graphql/resolvers');
-
+const fs = require('fs');
 const multer = require('multer');
+const morgan = require('morgan');
 
+
+if (!fs.existsSync(path.join(__dirname, 'logs'))) {
+  fs.mkdirSync(path.join(__dirname, 'logs'));
+}
 //socketio
 const http = require('http');
 const socketIO = require('socket.io');
@@ -55,6 +61,68 @@ io.on('connection', (socketIO) => {
     next();
   });
   
+  // helmet for security
+  // Apply helmet globally for overall security
+ 
+app.use('/login',
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+"https://ajax.googleapis.com",
+"https://maxcdn.bootstrapcdn.com",
+"https://cdnjs.cloudflare.com"
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+"https://maxcdn.bootstrapcdn.com",
+"https://fonts.googleapis.com"
+        ],
+        fontSrc: [
+          "'self'",
+"https://fonts.gstatic.com"
+        ],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'", "ws:", "wss:"],
+      },
+    },
+  })
+);
+app.use('/signup',
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+"https://ajax.googleapis.com",
+"https://maxcdn.bootstrapcdn.com",
+"https://cdnjs.cloudflare.com"
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+"https://maxcdn.bootstrapcdn.com",
+"https://fonts.googleapis.com"
+        ],
+        fontSrc: [
+          "'self'",
+"https://fonts.gstatic.com"
+        ],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'", "ws:", "wss:"],
+      },
+    },
+  })
+);
+// Apply helmet specifically for login and signup routes
 
   //graphQL
 
@@ -70,7 +138,7 @@ const storage = multer.diskStorage({
 });
 
 // Create uploads directory if it doesn't exist
-const fs = require('fs');
+
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
@@ -172,7 +240,7 @@ app.use('/graphql', graphqlHTTP({
   }));
   
 
-  
+ 
 app.use(homeRoutes); 
 
 app.use(navbarRoutes);

@@ -4,7 +4,17 @@ const { check, body } = require('express-validator');
 const router = express.Router();
 const propertyController = require('../controllers/property');
 const upload = require('../middleware/uploads');
-
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
+ 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, '../logs/property.log'),
+  { flags: 'a' }
+);
+ 
+// Apply morgan only to property submission routes
+router.use('/property', morgan('combined', { stream: accessLogStream }));
 // Match the lowercase route from navbar
 router.get('/properties', propertyController.getAllProperties);
 router.get('/property/new',

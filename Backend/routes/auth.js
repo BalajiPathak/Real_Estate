@@ -6,6 +6,21 @@ const { check, body } = require('express-validator');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth.config');
+
+
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
+ 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, '../logs/auth.log'),
+  { flags: 'a' }
+);
+ 
+// Apply morgan only to auth routes
+router.use(morgan('combined', { stream: accessLogStream }));
+
+
 router.get('/signup', authController.getSignup);
 router.get('/login', authController.getLogin);
 router.post('/login', [
