@@ -30,3 +30,4 @@
 ::1 - - [10/May/2025:05:48:50 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [10/May/2025:05:49:26 +0000] "POST /property HTTP/1.1" 200 57871 "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [10/May/2025:05:49:28 +0000] "GET /properties? HTTP/1.1" 200 93636 "http://localhost:3006/property" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [10/May/2025:06:00:41 +0000] "GET /login HTTP/1.1" 304 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
