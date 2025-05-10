@@ -120,79 +120,43 @@ async function loadUserProfile() {
 
 document.addEventListener('DOMContentLoaded', loadUserProfile);
 
-document.getElementById('profileForm').addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const form = event.target;
-  const formData = new FormData(form);
-  const file = formData.get('user_Image');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
-  let imageName = "";
-
-  if (file && file.name) {
-    try {
-      const uploadForm = new FormData();
-      uploadForm.append('user_Image', file);
-
-      const uploadRes = await fetch('/userprofile', {
-        method: 'POST',
-        body: uploadForm
-      });
-
-      const uploadData = await uploadRes.json();
-
-      if (!uploadRes.ok) {
-        throw new Error(uploadData.error || 'Image upload failed');
-      }
-
-      imageName = uploadData.filename;
-    } catch (err) {
-      alert("Failed to upload image: " + err.message);
-      return;
-    }
-  }
-
-  const input = Object.fromEntries(formData.entries());
-
-  const query = `
-    mutation {
-      updateUserProfile(data: {
-        First_Name: "${input.First_Name}",
-        Last_Name: "${input.Last_Name}",
-        Email: "${input.Email}",
-        Phone: "${input.Phone}",
-        Facebook: "${input.Facebook}",
-        Twitter: "${input.Twitter}",
-        Website: "${input.Website}",
-        Public_email: "${input.Public_email}",
-        FAX: "${input.FAX}",
-        user_image: "${imageName}"
-      }) {
-        id
-        First_Name
-        Last_Name
-        Email
-      }
-    }
-  `;
-
+app.post('/userprofile', upload.single('user_Image'), async (req, res) => {
   try {
-    const res = await fetch("/userprofile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query })
-    });
+    const { First_Name, Last_Name, Email, Phone, Facebook, Twitter, Website, Public_email, FAX } = req.body;
+    const user_image = req.file ? req.file.filename : null; 
 
-    const result = await res.json();
+   
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,  
+      {
+        First_Name,
+        Last_Name,
+        Email,
+        Phone,
+        Facebook,
+        Twitter,
+        Website,
+        Public_email,
+        FAX,
+        user_image,  
+      },
+      { new: true }
+    );
 
-    if (result.errors) {
-      console.log("Failed to update profile: " + result.errors[0].message);
-      return;
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
     }
-    console.log("Profile updated successfully");
+
+    res.json(updatedUser);
   } catch (error) {
-    console.log("Failed to update profile: " + error.message);
+    console.error(error);
+    res.status(400).json({ error: 'Failed to update profile' });
   }
 });
+
 </script>
 
 <%- include('../includes/end.ejs') %>
