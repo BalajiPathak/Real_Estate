@@ -102,6 +102,9 @@ exports.postPassword = async (req, res) => {
     user.Password = await bcrypt.hash(password, 12);
     await user.save();
 
+    //body-parser
+    console.log('Text Fields:', req.body); 
+    
     return res.json(
       { success: true, message: 'Password updated successfully' }
     );

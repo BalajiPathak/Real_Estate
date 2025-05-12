@@ -37,6 +37,7 @@ const fs = require('fs');
 const multer = require('multer');
 const morgan = require('morgan');
 const compression =require('compression');
+const bodyParser=require('body-parser');
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));
@@ -73,8 +74,14 @@ app.use((req, res, next) => {
     next();
 });
 
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+ 
+
+
 // helmet for security
-// Apply helmet globally for overall security
+//  helmet globally for overall security
 
 app.use('/login',
     helmet({
@@ -255,6 +262,9 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true,
     rootValue: resolvers
 }));
+
+
+//body-parser
 
 
 
