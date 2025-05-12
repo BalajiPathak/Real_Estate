@@ -61,16 +61,24 @@ exports.postAgentLogin = async (req, res) => {
             });
         }
 
+            // Find agent type first
+        const agentType = await UserType.findOne({ user_type_name: 'agent' });
+        
+        if (!agentType) {
+            throw new Error('Agent user type not found');
+        }
+
+        // Find user with matching email and agent type ID
         const user = await User.findOne({ 
             Email,
-            user_type_id: { $exists: true } // Check if user is an agent
+            user_type_id: agentType._id
         });
 
         if (!user) {
             return res.status(401).render('agent/login', {
                 pageTitle: 'Agent Login',
                 path: '/agent/login',
-                errorMessage: 'Invalid email or password',
+                errorMessage: 'No account exists with this email',
                 validationErrors: [{ param: 'Email' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
@@ -79,12 +87,11 @@ exports.postAgentLogin = async (req, res) => {
         }
 
         const isValidPassword = await bcrypt.compare(Password, user.Password);
-
         if (!isValidPassword) {
             return res.status(401).render('agent/login', {
                 pageTitle: 'Agent Login',
                 path: '/agent/login',
-                errorMessage: 'Invalid email or password',
+                errorMessage: 'Password didn\'t match',
                 validationErrors: [{ param: 'Password' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
@@ -92,6 +99,7 @@ exports.postAgentLogin = async (req, res) => {
             });
         }
 
+        // If everything is valid, set up the session
         req.session.isLoggedIn = true;
         req.session.isAgent = true;
         req.session.user = user;
@@ -112,7 +120,9 @@ exports.postAgentLogin = async (req, res) => {
             path: '/agent/login',
             errorMessage: 'An error occurred during login',
             validationErrors: [],
-            oldInput: { Email: '', Password: '' }
+            oldInput: { Email, Password },
+            companyInfo, navbar, blogs,
+            isLoggedIn: false
         });
     }
 };
@@ -217,90 +227,6 @@ exports.postAgentSignup = async (req, res) => {
             errorMessage: 'An error occurred during signup',
             validationErrors: [],
             oldInput: { First_Name: '', Last_Name: '', Email: '', Password: '' }
-        });
-    }
-};
-
-exports.postAgentLogin = async (req, res) => {
-    try {
-        const { Email, Password } = req.body;
-        const errors = validationResult(req);
-        const companyInfo = await CompanyInfo.findOne();
-        const navbar = await Navbar.find();
-        const blogs = await Blog.find();
-
-        if (!errors.isEmpty()) {
-            return res.status(422).render('agent/login', {
-                pageTitle: 'Agent Login',
-                path: '/agent/login',
-                errorMessage: errors.array()[0].msg,
-                validationErrors: errors.array(),
-                oldInput: { Email, Password },
-                companyInfo, navbar, blogs,
-                isLoggedIn: false
-            });
-        }
-
-        // Find agent type first
-        const agentType = await UserType.findOne({ user_type_name: 'agent' });
-        
-        if (!agentType) {
-            throw new Error('Agent user type not found');
-        }
-
-        // Find user with matching email and agent type ID
-        const user = await User.findOne({ 
-            Email,
-            user_type_id: agentType._id
-        });
-
-        if (!user) {
-            return res.status(401).render('agent/login', {
-                pageTitle: 'Agent Login',
-                path: '/agent/login',
-                errorMessage: 'Invalid email or password',
-                validationErrors: [{ param: 'Email' }],
-                oldInput: { Email, Password },
-                companyInfo, navbar, blogs,
-                isLoggedIn: false
-            });
-        }
-
-        // Rest of the login logic remains the same
-        const isValidPassword = await bcrypt.compare(Password, user.Password);
-        if (!isValidPassword) {
-            return res.status(401).render('agent/login', {
-                pageTitle: 'Agent Login',
-                path: '/agent/login',
-                errorMessage: 'Invalid email or password',
-                validationErrors: [{ param: 'Password' }],
-                oldInput: { Email, Password },
-                companyInfo, navbar, blogs,
-                isLoggedIn: false
-            });
-        }
-
-        req.session.isLoggedIn = true;
-        req.session.isAgent = true;
-        req.session.user = user;
-        req.session.userId = user._id;
-
-        return req.session.save(err => {
-            if (err) {
-                console.error('Session save error:', err);
-                return next(err);
-            }
-            res.redirect('/home'); 
-        });
-
-    } catch (err) {
-        console.error('Agent Login error:', err);
-        res.status(500).render('agent/login', {
-            pageTitle: 'Agent Login',
-            path: '/agent/login',
-            errorMessage: 'An error occurred during login',
-            validationErrors: [],
-            oldInput: { Email: '', Password: '' }
         });
     }
 };
