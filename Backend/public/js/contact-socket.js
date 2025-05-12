@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear the input and show confirmation
             document.getElementById('messageContent').value = '';
-            alert('Message sent successfully!');
+            console.log('Message sent successfully!');
         });
     } else if (isLoggedIn) {
         const messagesList = document.getElementById('messagesList');
