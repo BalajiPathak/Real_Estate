@@ -120,6 +120,28 @@ async function loadUserProfile() {
 
 document.addEventListener('DOMContentLoaded', loadUserProfile);
 
+document.getElementById('profileForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+ 
+    try {
+      const res = await fetch('/userprofile', {
+        method: 'POST',
+        body: formData
+      });
+ 
+      const result = await res.json();
+      if (res.ok) {
+       console.log("hello");
+      } else {
+        console.log("hello");
+      }
+    } catch (err) {
+      console.error(err);
+     console.log("hello");
+    }
+  });
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 

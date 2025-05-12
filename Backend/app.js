@@ -36,7 +36,7 @@ const resolvers = require('./graphql/resolvers');
 const fs = require('fs');
 const multer = require('multer');
 const morgan = require('morgan');
-
+const compression =require('compression');
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));
@@ -136,8 +136,13 @@ app.use('/signup',
 );
 // Apply helmet specifically for login and signup routes
 
-//graphQL
+//compression
+app.use(compression());
 
+// app.get('/login', (req, res) => {
+//       const data = 'Large string data...'.repeat(1000);
+//       console.log(data);
+//     });
 // Add after other middleware configurations
 // Configure multer for file uploads
 const storage = multer.diskStorage({
