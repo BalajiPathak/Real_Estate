@@ -56,8 +56,13 @@
                                     <div class="invalid-feedback">
                                         <% if (errorMessage === 'Password didn\'t match') { %>
                                             Password didn't match
-                                        <% } else if (validationErrors.find(e => e.param === 'Password' && e.msg.includes('5 characters'))) { %>
-                                            Password must be at least 5 characters long
+                                        <% } else { %>
+                                            <% const passwordError = validationErrors.find(e => e.param === 'Password'); %>
+                                            <% if (passwordError && passwordError.msg) { %>
+                                                <%= passwordError.msg %>
+                                            <% } else { %>
+                                                Invalid password
+                                            <% } %>
                                         <% } %>
                                     </div>
                                 <% } %>
