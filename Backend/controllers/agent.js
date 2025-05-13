@@ -24,7 +24,8 @@ exports.getAgentLogin = async (req, res) => {
             companyInfo,
             navbar,
             blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent || false
         });
     } catch (err) {
         console.error('Agent Login error:', err);
@@ -57,19 +58,20 @@ exports.postAgentLogin = async (req, res) => {
                 validationErrors: errors.array(),
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
-                isLoggedIn: false
+                isLoggedIn: false,
+                isAgent: false
             });
         }
 
-            // Find agent type first
+        // Find agent type first
         const agentType = await UserType.findOne({ user_type_name: 'agent' });
-        
+
         if (!agentType) {
             throw new Error('Agent user type not found');
         }
 
         // Find user with matching email and agent type ID
-        const user = await User.findOne({ 
+        const user = await User.findOne({
             Email,
             user_type_id: agentType._id
         });
@@ -82,7 +84,8 @@ exports.postAgentLogin = async (req, res) => {
                 validationErrors: [{ param: 'Email' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
-                isLoggedIn: false
+                isLoggedIn: false,
+                isAgent: false
             });
         }
 
@@ -95,7 +98,8 @@ exports.postAgentLogin = async (req, res) => {
                 validationErrors: [{ param: 'Password' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
-                isLoggedIn: false
+                isLoggedIn: false,
+                isAgent: false
             });
         }
 
@@ -105,12 +109,13 @@ exports.postAgentLogin = async (req, res) => {
         req.session.user = user;
         req.session.userId = user._id;
 
-        return req.session.save(err => {
+
+        req.session.save(err => {
             if (err) {
                 console.error('Session save error:', err);
-                return next(err);
+                return res.redirect('/agent/login');
             }
-            res.redirect('/home'); 
+            res.redirect('/home');
         });
 
     } catch (err) {
@@ -122,7 +127,8 @@ exports.postAgentLogin = async (req, res) => {
             validationErrors: [],
             oldInput: { Email, Password },
             companyInfo, navbar, blogs,
-            isLoggedIn: false
+            isLoggedIn: false,
+            isAgent: false
         });
     }
 };

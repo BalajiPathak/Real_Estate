@@ -14,14 +14,16 @@ const createNavbar = async (req, res) => {
         res.status(201).json({
             message: 'Navbar created successfully',
             navbar: savedNavbar,
-            isLoggedIn: req.isLoggedIn || false
+            isLoggedIn: req.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,
         });
     } catch (error) {
         console.error('Error creating navbar:', error);
         res.status(500).json({
             message: 'Error creating navbar',
             error: error.message,
-            isLoggedIn: req.isLoggedIn || false
+            isLoggedIn: req.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,
         });
     }
 };
@@ -30,11 +32,13 @@ const getAllNavbars = async (req, res) => {
     try {
         const navbar = await Navbar.find();
         const companyInfo = await CompanyInfo.findOne();
-        
+        req.session.isAgent = true;
+
         res.render('index', {
             navbar: navbar,          
             companyInfo: companyInfo,
             isLoggedIn: req.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,
             pageTitle: 'Real Estate'
         });
     } catch (error) {
@@ -42,7 +46,8 @@ const getAllNavbars = async (req, res) => {
         res.status(500).json({
             message: 'Error fetching navbars',
             error: error.message,
-            isLoggedIn: req.isLoggedIn || false
+            isLoggedIn: req.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,
         });
     }
 };
@@ -76,7 +81,8 @@ const getContact = async (req, res) => {
         console.error(err);
         res.status(500).render('500', {
             pageTitle: 'Error',
-            path: '/500'
+            path: '/500',
+             isAgent: req.session.isAgent || false,
         });
     }
 };
@@ -104,7 +110,8 @@ const postContact = async (req, res) => {
                     Subject,
                     Message
                 },
-                isLoggedIn: req.session.isLoggedIn || false  // Use session status
+                isLoggedIn: req.session.isLoggedIn || false ,
+                 isAgent: req.session.isAgent || false, // Use session status
             });
         }
 
@@ -133,7 +140,7 @@ const postContact = async (req, res) => {
                 Subject: '',
                 Message: ''
             },
-            isLoggedIn: req.session.isLoggedIn || false  // Use session status
+            isLoggedIn: req.session.isLoggedIn || false , // Use session status
         });
 
     } catch (error) {
