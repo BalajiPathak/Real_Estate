@@ -172,7 +172,7 @@ exports.postSignup = async (req, res) => {
         });
  
         await user.save();
-        res.redirect('/login');
+        res.redirect('/auth/welcome');  // Changed from 'auth/welcome' to '/auth/welcome'
  
     } catch (err) {
         console.error('Signup error:', err);
@@ -488,3 +488,25 @@ exports.postNewPassword = async (req, res) => {
     }
 };
  
+
+// Add this new controller method
+exports.getWelcome = async (req, res) => {
+    try {
+        const companyInfo = await CompanyInfo.findOne();
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
+
+        res.render('auth/welcome', {
+            pageTitle: 'Welcome',
+            path: '/auth/welcome',  // Changed from 'auth/welcome' to '/auth/welcome'
+            companyInfo,
+            navbar,
+            blogs,
+            isLoggedIn: false,
+            isAgent: false
+        });
+    } catch (err) {
+        console.error('Welcome page error:', err);
+        res.redirect('/login');
+    }
+};
