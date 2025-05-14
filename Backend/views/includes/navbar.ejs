@@ -30,6 +30,9 @@
                     <form action="/logout" method="post" style="display: inline;">
                         <button type="submit" class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.45s">Logout</button>
                     </form>
+                     <a href="/purchase-history"> 
+                        <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">See Your Purchase History</button>
+                    </a>
                     <% if (isLoggedIn && isAgent) { %>
                     <a href="/property/new"> 
                         <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">Submit Your Property</button>
