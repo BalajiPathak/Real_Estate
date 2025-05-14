@@ -147,25 +147,39 @@
         </div>
     </div>
     <%- include('../includes/footer.ejs') %>
-    <% if (!isLoggedIn) { %>
-  <script>
-    setTimeout(() => {
+   <% if (!isLoggedIn) { %>
+<script>
+  setTimeout(() => {
+    if (!document.getElementById('login-popup')) {
       const popup = document.createElement('div');
+popup.id = 'login-popup';
       popup.innerHTML = `
-        <div style="
-          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background-color: rgba(0,0,0,0.5); display: flex;
-          align-items: center; justify-content: center; z-index: 1000;">
-          <div class="col-sm-12 m-2" style="
-            background: white; padding: 30px; border-radius: 8px;
-            text-align: center; max-width: 400px;">
-            <h4>Please Login to see more properties</h4>
-            <a href="/login" class="btn " style="margin-top: 15px; background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Login</a>
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    background-color: rgba(0,0,0,0.5); display: flex;
+                    align-items: center; justify-content: center; z-index: 1000;">
+          <div class="popup-content" style="
+              background: white; padding: 20px 15px; border-radius: 8px;
+              text-align: center; max-width: 400px; width: 90%;
+              position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+              
+            <button onclick="document.getElementById('login-popup').remove()"
+                    style="position: absolute; top: -10px; right: -10px;
+                    background: #fff; border: 1px solid #ccc; border-radius: 50%;
+                    width: 30px; height: 30px; font-weight: bold; cursor: pointer;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);">×</button>
+                    
+            <h4 style="margin-top: 10px;">Please Login to see more properties</h4>
+            <a href="/login" class="btn" style="
+                margin-top: 15px; background-image: linear-gradient(to bottom, #fad609, #fad609);
+                color: white; font-weight: bold; padding: 10px 20px; border-radius: 4px;
+                display: inline-block;">Login</a>
           </div>
-        </div>`;
+        </div>
+      `;
       document.body.appendChild(popup);
-    }, 25000);
-  </script>
+    }
+  }, 25000);
+</script>
 <% } %>
 </body>
 
