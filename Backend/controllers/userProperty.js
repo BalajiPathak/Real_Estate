@@ -16,45 +16,59 @@ const { PropertyFeature } = require('../models/propertyFeature'); // Correct imp
 const FilterProperty = require('../models/filterProperty'); // Add FilterProperty import
 
 exports.getUserProperties = async (req, res) => {
-    try {
-        if (!req.session.isLoggedIn) {
-            return res.redirect('/login');
-        }
-
-        // Get user data from session
-        const user = req.session.user;
-        
-        // Normalize user data structure
-        const userData = {
-            First_Name: user.First_Name || user.firstName || user.given_name || 'User',
-            // Add other user fields if needed
-        };
-
-        const properties = await Property.find({ userId: user._id })
-            .populate('categoryId stateId statusId');
-
-        const companyInfo = await CompanyInfo.findOne();
-        const navbar = await Navbar.find();
-        const blogs = await Blog.find();
-
-        res.render('userProperty/userProperty', {
-            pageTitle: 'My Properties',
-            path: '/myproperties',
-            properties: properties,
-            user: userData, // Pass normalized user data
-            isLoggedIn: req.session.isLoggedIn,
-            companyInfo: companyInfo || [],
-            navbar: navbar || [],
-            blogs: blogs || []
-        });
-
-    } catch (error) {
-        console.error('Error in getUserProperties:', error);
-        res.status(500).redirect('/home');
+  try {
+    if (!req.session.isLoggedIn) {
+      return res.redirect('/login');
     }
+ 
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
+    const searchQuery = req.query.search || '';
+ 
+    const user = req.session.user;
+    const userData = {
+      First_Name: user.First_Name || user.firstName || user.given_name || 'User',
+    };
+ 
+    // Filter object
+    const finalFilter = {
+      userId: user._id,
+      name: { $regex: searchQuery, $options: 'i' }, // Search by name
+    };
+ 
+    const totalPropertie = await Property.countDocuments(finalFilter);
+    const totalPages = Math.ceil(totalPropertie / limit);
+ 
+    const propertie = await Property.find(finalFilter)
+      .populate('categoryId stateId statusId')
+      .skip(skip)
+      .limit(limit);
+ 
+    const companyInfo = await CompanyInfo.findOne();
+    const navbar = await Navbar.find();
+    const blogs = await Blog.find();
+ 
+    res.render('userProperty/userProperty', {
+      pageTitle: 'My Properties',
+      path: '/myproperties',
+      properties: propertie,
+      user: userData,
+      isLoggedIn: req.session.isLoggedIn,
+      isAgent: req.session.isAgent,
+      currentPage: page,
+      totalPages,
+      searchQuery, // pass to view
+      companyInfo: companyInfo || [],
+      navbar: navbar || [],
+      blogs: blogs || [],
+    });
+  } catch (error) {
+    console.error('Error in getUserProperties:', error);
+    res.status(500).redirect('/home');
+  }
 };
-
-
+ 
 exports.getEditProperty = async (req, res) => {
     try {
         const propertyId = req.params.id;
@@ -95,6 +109,7 @@ exports.getEditProperty = async (req, res) => {
             navbar: navbars,
             user: req.user || req.session.user,
             isLoggedIn: req.isAuthenticated() || !!req.session.user,
+            isAgent: req.session.isAgent || false,
             cities: cities,
             states: states,
             propertyCategory: categories,

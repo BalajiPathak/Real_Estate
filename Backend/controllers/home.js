@@ -164,7 +164,8 @@ exports.getHome = async (req, res) => {
             statusId: '',
             errorMessage: null,
             validationErrors: [],
-            isLoggedIn: req.session.isLoggedIn || false
+            isLoggedIn: req.session.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,
         });
     } catch (error) {
         console.error('Error:', error);

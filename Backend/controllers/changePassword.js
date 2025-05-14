@@ -29,6 +29,7 @@ exports.getPassword = async (req, res) => {
         navbar: navbar || [],
         blogs: blogs || [],
         isLoggedIn: req.session.isLoggedIn,
+        isAgent: req.session.isAgent || false,
       });
     }
 
@@ -42,6 +43,7 @@ exports.getPassword = async (req, res) => {
       navbar: navbar || [],
       blogs: blogs || [],
       isLoggedIn: req.session.isLoggedIn,
+      isAgent: req.session.isAgent || false,
     });
   } catch (err) {
     console.error('Error in getPassword:', err);
@@ -55,6 +57,7 @@ exports.getPassword = async (req, res) => {
       navbar: [],
       blogs: [],
       isLoggedIn: req.session.isLoggedIn,
+      isAgent: req.session.isAgent || false,
     });
   }
 };

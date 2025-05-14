@@ -133,6 +133,7 @@ exports.getAllProperties = async (req, res) => {
     res.render('property/property', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session && req.session.isLoggedIn || false,
+       isAgent: req.session.isAgent || false,
       properties,
       state,
       propertyFeatures,
@@ -212,6 +213,7 @@ const property = await PropertyData.findById(req.params.id)
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session?.isLoggedIn || false,
+       isAgent: req.session.isAgent || false,
       path: '/property/property-details',
       property,
       features: featureNames,
@@ -230,7 +232,7 @@ const property = await PropertyData.findById(req.params.id)
 
 exports.renderSubmitForm = async (req, res) => {
   try {
-    if (!req.session.isLoggedIn) {
+    if (!req.session.isLoggedIn || !req.session.isAgent ) {
       return res.redirect('/login');
   }
   const PropertyCategory = mongoose.model('PropertyCategory');
@@ -249,6 +251,7 @@ exports.renderSubmitForm = async (req, res) => {
   res.render('property/new', {
     pageTitle: 'Real Estate',
     isLoggedIn: req.session && req.session.isLoggedIn || false,  
+     isAgent: req.session.isAgent || false,
     path: '/property/new',
     categories,
     states,
@@ -389,6 +392,7 @@ exports.submitProperty = async (req, res, next) => {
     res.render('property/welcome', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session && req.session.isLoggedIn || false,  
+      isAgent: req.session.isAgent || false,
       path: '/property/welcome',
       successMessage:'You have successfully submitted the Property',
       companyInfo:companyInfo||[],

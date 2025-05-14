@@ -32,7 +32,10 @@ const getAllNavbars = async (req, res) => {
     try {
         const navbar = await Navbar.find();
         const companyInfo = await CompanyInfo.findOne();
+        req.session.isLoggedIn = true;
         req.session.isAgent = true;
+        req.session.user = user;
+        req.session.userId = user._id;
 
         res.render('index', {
             navbar: navbar,          
@@ -46,7 +49,7 @@ const getAllNavbars = async (req, res) => {
         res.status(500).json({
             message: 'Error fetching navbars',
             error: error.message,
-            isLoggedIn: req.isLoggedIn || false,
+            isLoggedIn: req.session.isLoggedIn || false,
             isAgent: req.session.isAgent || false,
         });
     }

@@ -4,7 +4,7 @@ const { check, body } = require('express-validator');
 const router = express.Router();
 const propertyController = require('../controllers/property');
 const upload = require('../middleware/uploads');
-
+const isAgent=require('../middleware/isAgent');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
@@ -18,7 +18,7 @@ const accessLogStream = fs.createWriteStream(
 router.use('/property', morgan('combined', { stream: accessLogStream }));
 // Match the lowercase route from navbar
 router.get('/properties', propertyController.getAllProperties);
-router.get('/property/new',
+router.get('/property/new',isAgent,
     
  propertyController.renderSubmitForm);
 router.post('/property', upload.fields([
@@ -27,7 +27,7 @@ router.post('/property', upload.fields([
 ]),[ check('phone')
     .isLength({ min: 10, max: 10 })
     .withMessage('Mobile number should contains 10 digits')
-   ], propertyController.submitProperty);
+   ],isAgent, propertyController.submitProperty);
 router.get('/property/:id', propertyController.getPropertyById);
 router.get('/welcome',propertyController.submitProperty);
 module.exports = router;

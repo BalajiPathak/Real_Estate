@@ -13,6 +13,7 @@ exports.getAllFaqs = async (req, res) => {
   console.log(faqs);
   res.render('faqs/faqs', { pageTitle: 'Real Estate', faqs,companyInfo: companyInfo || [],
     navbar: navbar || [],
-    blogs: blogs || [], });
+    blogs: blogs || [], 
+  isAgent: req.session.isAgent || false,});
 };
  

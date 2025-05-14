@@ -11,7 +11,8 @@ exports.getAllBlogs = async (req, res) => {
   const blogs = await Blog.find();
   res.render('blog/blog', { pageTitle: 'Real Estate', blogs,  companyInfo: companyInfo || [],
     navbar: navbar || [],
-    blogs: blogs || [], });
+    blogs: blogs || [],
+  isAgent: req.session.isAgent || false, });
 };
  
 exports.getBlogDetails = async (req, res) => {
@@ -27,6 +28,7 @@ const blog = await Blog.findById(req.params.id);
     companyInfo: companyInfo || [],
     navbar: navbar || [],
     blogs: blogs || [],
+    isAgent: req.session.isAgent || false,
   });
 };
 exports.submitComment = async (req, res) => {

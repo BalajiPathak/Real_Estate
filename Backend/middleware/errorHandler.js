@@ -41,6 +41,7 @@ exports.handle500 = async (err, req, res, next) => {
             navbar: navbar,
             blogs:blogs,
             isLoggedIn: req.session && req.session.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,
             error: process.env.NODE_ENV === 'production' ? err : {} ///for future reference 
         });
     } catch (fetchError) {
@@ -51,6 +52,7 @@ exports.handle500 = async (err, req, res, next) => {
             companyInfo: null,
             navbar: null,
             isLoggedIn: req.session && req.session.isLoggedIn || false,
+                isAgent: req.session.isAgent || false,
             error: process.env.NODE_ENV === 'production' ? err : {}
         });
     }
