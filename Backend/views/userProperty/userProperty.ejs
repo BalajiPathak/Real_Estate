@@ -79,6 +79,13 @@
                                                             <p style="display: none;">
                                                                 <%= property.description %>
                                                             </p>
+                                                             <% if (isAgent && property.saleStatus === 'sold') { %>
+                                        <div class="text-center" style="clear: both; padding-top: 10px;">
+                                            <button class="btn" style="background-color: #808080; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; cursor: not-allowed;" disabled>
+                                                SOLD OUT
+                                            </button>
+                                        </div>
+                                    <% } %>
                                                             <div class="property-icon">
 
                                                                 <img src="/assets/img/icon/bed.png">(<%= property.beds
