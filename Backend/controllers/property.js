@@ -22,9 +22,14 @@ exports.getAllProperties = async (req, res) => {
   try {
     console.log('Features in query:', req.query);
  
-    const page = parseInt(req.query.page) || 1;
-    const limit = 12;
-    const skip = (page - 1) * limit;
+    const isLoggedIn = req.session && req.session.isLoggedIn || false;
+const isAgent = isLoggedIn && req.session.user?.user_type_id
+  ? (await UserType.findById(req.session.user.user_type_id))?.user_type_name === 'agent'
+  : false;
+ const page = parseInt(req.query.page) || 1;
+const limit = isLoggedIn || isAgent ? 12 : 8;
+const skip = (page - 1) * limit;
+   
  
     const state = await State.find();
     const propertyFeatures = await PropertyFeature.find();
@@ -91,12 +96,14 @@ exports.getAllProperties = async (req, res) => {
  
     const finalFilter = filters.length > 0 ? { $and: filters } : {};
  
+    
     const totalProperties = await PropertyData.countDocuments(finalFilter);
-    const totalPages = Math.ceil(totalProperties / limit);
-    const properties = await PropertyData.find(finalFilter)
+const totalPages = Math.ceil(totalProperties / limit);
+const properties = await PropertyData.find(finalFilter).skip(skip).limit(limit)
       .skip(skip)
       .limit(limit);
  
+      const disablePagination = !(isLoggedIn || isAgent);
     const selectedFilters = [];
     console.log('selctd features',selectedFilters);
     if (req.query.keyword) selectedFilters.push(`Keyword: "${req.query.keyword}"`);
@@ -132,9 +139,7 @@ exports.getAllProperties = async (req, res) => {
     }
  
     // Add this before the render call
-    const isAgent = req.session?.user?.user_type_id ? 
-      (await UserType.findById(req.session.user.user_type_id))?.user_type_name === 'agent' 
-      : false;
+    
 
     res.render('property/property', {
       pageTitle: 'Real Estate',
@@ -160,6 +165,7 @@ exports.getAllProperties = async (req, res) => {
       blogs: blogs || [],
       features: req.query.features || [],
       selectedFilters,
+      disablePagination
     });
  
   } catch (error) {

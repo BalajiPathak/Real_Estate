@@ -18,6 +18,11 @@
 <div class="properties-area recent-property" style="background-color: #FFF;">
    
     <div class="container">
+        <!-- <% if (!isLoggedIn) { %>
+  <div class="alert alert-warning text-center mt-3">
+    Only 8 properties visible. <a href="/login">Login</a> to view more.
+  </div>
+<% } %> -->
         <div class="row  pr0 padding-top-40 properties-page">
           
         <%- include('../includes/filterProperty.ejs') %>
@@ -102,33 +107,55 @@
                 </div>
 
                 <div class="col-md-12 clear"> 
+                    <% if (!disablePagination) { %>
                     <div class="pull-right">
                         <div class="pagination">
                             <ul>
-                                <% if (currentPage > 1) { %>
-                                    <li><a href="?page=<%= currentPage - 1 %>">Prev</a></li>
-                                <% } else { %>
-                                    <li class="disabled"><a href="#">Prev</a></li>
-                                <% } %>
-    
-                                <% for (let i = 1; i <= totalPages; i++) { %>
-                                    <li class="<%= currentPage === i ? 'active' : '' %>">
-                                        <a href="?page=<%= i %>"><%= i %></a>
-                                    </li>
-                                <% } %>
-    
-                                <% if (currentPage < totalPages) { %>
-                                    <li><a href="?page=<%= currentPage + 1 %>">Next</a></li>
-                                <% } else { %>
-                                    <li class="disabled"><a href="#">Next</a></li>
-                                <% } %>
+                             <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } %>
+ 
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+ 
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } %>
                             </ul>
                         </div>
-                    </div>                
+                    </div> 
+                   <% } %>              
                 </div>
             </div>
         </div>
     </div>
     <%- include('../includes/footer.ejs') %>
+    <% if (!isLoggedIn) { %>
+  <script>
+    setTimeout(() => {
+      const popup = document.createElement('div');
+      popup.innerHTML = `
+        <div style="
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background-color: rgba(0,0,0,0.5); display: flex;
+          align-items: center; justify-content: center; z-index: 1000;">
+          <div class="col-sm-12 m-2" style="
+            background: white; padding: 30px; border-radius: 8px;
+            text-align: center; max-width: 400px;">
+            <h4>Please LogIn to see more properties</h4>
+            <a href="/login" class="btn " style="margin-top: 15px; background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Login</a>
+          </div>
+        </div>`;
+      document.body.appendChild(popup);
+    }, 25000);
+  </script>
+<% } %>
 </body>
 
