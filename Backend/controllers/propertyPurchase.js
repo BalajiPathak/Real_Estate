@@ -28,6 +28,7 @@ exports.getPropertyPurchase = async (req, res) => {
             pageTitle: 'Purchase Property',
             path: '/property/purchase',
             property: property,
+            user: req.session.user,
             companyInfo: companyInfo,
             navbar: navbar,
             blogs: blogs,
@@ -50,39 +51,27 @@ exports.postPropertyPurchase = async (req, res) => {
             return res.status(404).json({ error: 'Property not found' });
         }
 
-        // Check if property price exceeds Stripe's limit
         if (property.price > 999999.99) {
             return res.status(400).json({ 
                 error: 'Property price exceeds online payment limit. Please contact our sales team for alternative payment methods.'
             });
         }
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'usd',
-                        product_data: {
-                            name: property.name,
-                            description: property.description,
-                        },
-                        unit_amount: Math.round(property.price * 100), // Ensure amount is rounded
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: 'payment',
-            success_url: `${process.env.BASE_URL}/property/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.BASE_URL}/property/purchase/cancel`,
-            customer_email: req.session.user.Email,
-            client_reference_id: propertyId,
+        // Create PaymentIntent instead of Checkout Session
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(property.price * 100),
+            currency: 'usd',
+            metadata: {
+                propertyId: propertyId,
+                propertyName: property.name,
+                userEmail: req.session.user.Email
+            }
         });
 
-        res.json({ id: session.id });
+        res.json({ clientSecret: paymentIntent.client_secret });
     } catch (err) {
-        console.error('Stripe session error:', err);
-        res.status(500).json({ error: 'Payment session creation failed' });
+        console.error('Stripe payment intent error:', err);
+        res.status(500).json({ error: 'Payment initialization failed' });
     }
 };
 
@@ -92,26 +81,28 @@ exports.getSuccess = async (req, res) => {
         if (!sessionId) {
             return res.redirect('/properties');
         }
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        // Retrieve PaymentIntent instead of Session
+        const paymentIntent = await stripe.paymentIntents.retrieve(sessionId);
         
-        // Create purchase record
         const purchase = new UserPurchaseProperty({
             userId: req.session.user._id,
-            propertyId: session.client_reference_id,
-            transactionId: session.payment_intent,
-            amount: session.amount_total / 100
+            propertyId: paymentIntent.metadata.propertyId,
+            transactionId: paymentIntent.id,
+            amount: paymentIntent.amount / 100,
+            status: 'completed'
         });
         
         await purchase.save();
 
-        // Get and update property status to sold
-        const property = await PropertyData.findById(session.client_reference_id);
+        // Update property status
+        const property = await PropertyData.findById(paymentIntent.metadata.propertyId);
         if (property) {
             property.saleStatus = 'sold';
             await property.save();
         }
 
-        // Send confirmation email
+        // Updated email template to use paymentIntent instead of session
         await transporter.sendMail({
             to: req.session.user.Email,
             from: 'balajipathak@startbitsolutions.com',
@@ -125,8 +116,8 @@ exports.getSuccess = async (req, res) => {
                     <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #333;">Property Details:</h3>
                         <p><strong>Property Name:</strong> ${property.name}</p>
-                        <p><strong>Transaction ID:</strong> ${session.payment_intent}</p>
-                        <p><strong>Amount Paid:</strong> $${(session.amount_total / 100).toLocaleString()}</p>
+                        <p><strong>Transaction ID:</strong> ${paymentIntent.id}</p>
+                        <p><strong>Amount Paid:</strong> $${(paymentIntent.amount / 100).toLocaleString()}</p>
                     </div>
 
                     <p>If you have any questions about your purchase, please don't hesitate to contact us.</p>

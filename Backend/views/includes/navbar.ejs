@@ -12,41 +12,49 @@
                 <a class="navbar-brand" href="/home" style="height:65px !important;">
                     <img src="<%= companyInfo.Logo %>" alt="Company Logo">
                 </a>
-            <% } %>
+                <% } %>
         </div>
         <div class="collapse navbar-collapse yamm" id="navigation">
             <div class="button navbar-right">
                 <% if (!isLoggedIn) { %>
-                    <a href="/agent/login"> 
-                        <button class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.42s">Agent Login</button>
+                    <a href="/agent/login">
+                        <button class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.42s">Agent
+                            Login</button>
                     </a>
-                    <a href="/login"> 
-                        <button class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.45s">Login</button>
+                    <a href="/login">
+                        <button class="navbar-btn nav-button wow bounceInRight login"
+                            data-wow-delay="0.45s">Login</button>
                     </a>
-                    <a href="/signup"> 
+                    <a href="/signup">
                         <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">Signup</button>
                     </a>
-                <% } else { %>
-                    <form action="/logout" method="post" style="display: inline;">
-                        <button type="submit" class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.45s">Logout</button>
-                    </form>
-                     <a href="/purchase-history"> 
-                        <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">See Your Purchase History</button>
-                    </a>
-                    <% if (isLoggedIn && isAgent) { %>
-                    <a href="/property/new"> 
-                        <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">Submit Your Property</button>
-                    </a>
-                     <% } %>
-                <% } %>
-                
+                    <% } else { %>
+                        <form action="/logout" method="post" style="display: inline;">
+                            <button type="submit" class="navbar-btn nav-button wow bounceInRight login"
+                                data-wow-delay="0.45s">Logout</button>
+                        </form>
+                        <% if (!isAgent) { %>
+                            <a href="/purchase-history">
+                                <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">See Your
+                                    Purchase History</button>
+                            </a>
+                            <% } %>
+                                <% if (isLoggedIn && isAgent) { %>
+                                    <a href="/property/new">
+                                        <button class="navbar-btn nav-button wow fadeInRight"
+                                            data-wow-delay="0.48s">Submit Your Property</button>
+                                    </a>
+                                    <% } %>
+                                        <% } %>
+
             </div>
             <ul class="main-nav nav navbar-nav navbar-right">
-                <% if (navbar && navbar.length > 0) { %>
+                <% if (navbar && navbar.length> 0) { %>
                     <% navbar.forEach(function(nav) { %>
-                        <% if (nav.Navbar_Name === 'Template') { %>
+                        <% if (nav.Navbar_Name==='Template' ) { %>
                             <li class="dropdown yamm-fw" data-wow-delay="0.1s">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="200">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                                    data-delay="200">
                                     <%= nav.Navbar_Name %> <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -71,18 +79,18 @@
                                                     <h5>Property</h5>
                                                     <ul>
                                                         <li><a href="/properties">Properties</a></li>
-                                                       
+
                                                     </ul>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <h5>User account</h5>
                                                     <ul>
-                                                         <% if (isLoggedIn && isAgent) { %>
-                                                        <li><a href="/myproperties">Your properties</a></li>
-                                                        <li><a href="/property/new">Submit property</a></li>
-                                                         <% } %>
-                                                        <li><a href="/changePassword">Change Password</a></li>
-                                                        <li><a href="/userprofile">Your profile</a></li>
+                                                        <% if (isLoggedIn && isAgent) { %>
+                                                            <li><a href="/myproperties">Your properties</a></li>
+                                                            <li><a href="/property/new">Submit property</a></li>
+                                                            <% } %>
+                                                                <li><a href="/changePassword">Change Password</a></li>
+                                                                <li><a href="/userprofile">Your profile</a></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -90,17 +98,17 @@
                                     </li>
                                 </ul>
                             </li>
-                        <% } else { %>
-                            <li class="dropdown ymm-sw" data-wow-delay="0.1s">
-                                <a href="/<%= nav.Navbar_Name.toLowerCase() %>">
-                                    <%= nav.Navbar_Name %>
-                                </a>
-                            </li>
-                        <% } %>
-                    <% }); %>
-                <% } else { %>
-                    <li><a href="#">No items available</a></li>
-                <% } %>
+                            <% } else { %>
+                                <li class="dropdown ymm-sw" data-wow-delay="0.1s">
+                                    <a href="/<%= nav.Navbar_Name.toLowerCase() %>">
+                                        <%= nav.Navbar_Name %>
+                                    </a>
+                                </li>
+                                <% } %>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <li><a href="#">No items available</a></li>
+                                            <% } %>
             </ul>
         </div>
     </div>
