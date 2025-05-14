@@ -25,6 +25,7 @@ exports.getPropertyPurchase = async (req, res) => {
             navbar: navbar,
             blogs: blogs,
             isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent || false,
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY
         });
     } catch (err) {
@@ -108,7 +109,8 @@ exports.getSuccess = async (req, res) => {
             companyInfo: companyInfo,
             navbar: navbar,
             blogs: blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent || false,
         });
     } catch (err) {
         console.error('Purchase record error:', err);
@@ -129,7 +131,8 @@ exports.getCancel = async (req, res) => {
             companyInfo: companyInfo,
             navbar: navbar,
             blogs: blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent || false,
         });
     } catch (err) {
         res.redirect('/properties');

@@ -36,13 +36,10 @@ const resolvers = require('./graphql/resolvers');
 const fs = require('fs');
 const multer = require('multer');
 const morgan = require('morgan');
-<<<<<<< HEAD
-const AgentMessage = require('./models/agentMessage'); // Add this import
-
-=======
 const compression =require('compression');
 const bodyParser=require('body-parser');
->>>>>>> dca7baf29534994b28a393bfbebff3c526f0a168
+const AgentMessage = require('./models/agentMessage'); 
+
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));

@@ -25,13 +25,8 @@ exports.getAgentLogin = async (req, res) => {
             companyInfo,
             navbar,
             blogs,
-<<<<<<< HEAD
             isLoggedIn: req.session.isLoggedIn || false,
             isAgent: req.session.isAgent || false  // Add this line
-=======
-            isLoggedIn: req.session.isLoggedIn,
-            isAgent: req.session.isAgent || false
->>>>>>> dca7baf29534994b28a393bfbebff3c526f0a168
         });
     } catch (err) {
         console.error('Agent Login error:', err);
