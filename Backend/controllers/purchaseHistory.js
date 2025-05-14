@@ -6,8 +6,11 @@ const Blog = require('../models/blog');
 
 exports.getPurchaseHistory = async (req, res) => {
     try {
+        if (!req.session || !req.session.user) {
+            return res.redirect('/login');
+        }
         const page = parseInt(req.query.page) || 1;
-        const limit = 10;
+        const limit = 3;
         const searchQuery = req.query.search || '';
         const isAjax = req.query.ajax === 'true';
 
@@ -60,8 +63,8 @@ exports.getPurchaseHistory = async (req, res) => {
             companyInfo: await CompanyInfo.findOne(),
             navbar: await Navbar.find(),
             blogs: await Blog.find(),
-            isLoggedIn: req.session.isLoggedIn,
-            isAgent: req.session.isAgent
+            isLoggedIn: req.session.isLoggedIn||false,
+            isAgent: req.session.isAgent||false
         });
     } catch (error) {
         console.error('Purchase history error:', error);

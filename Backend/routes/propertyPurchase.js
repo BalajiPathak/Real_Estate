@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const propertyPurchaseController = require('../controllers/propertyPurchase');
 const purchaseHistoryController = require('../controllers/purchaseHistory');
-
 const isAuth = require('../middleware/is-auth');
 
 // Property purchase routes
