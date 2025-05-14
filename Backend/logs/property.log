@@ -127,7 +127,6 @@
 ::1 - - [14/May/2025:05:39:29 +0000] "POST /property HTTP/1.1" 200 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:05:39:53 +0000] "GET /property/edit/68242c91142a94341dc1cf38 HTTP/1.1" 200 - "http://localhost:3006/myproperties?page=2&search=" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:05:40:00 +0000] "GET /property/68242c91142a94341dc1cf38 HTTP/1.1" 200 - "http://localhost:3006/myproperties?page=2&search=" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
-
 ::1 - - [14/May/2025:05:50:08 +0000] "GET /property/buy/68198ceab801a92cb8e9c08a HTTP/1.1" 500 - "http://localhost:3006/properties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:05:52:21 +0000] "GET /property/buy/68198ceab801a92cb8e9c08a HTTP/1.1" 200 - "http://localhost:3006/properties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:05:52:23 +0000] "POST /property/buy/68198ceab801a92cb8e9c08a HTTP/1.1" 200 75 "http://localhost:3006/property/buy/68198ceab801a92cb8e9c08a" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
@@ -140,3 +139,4 @@
 ::1 - - [14/May/2025:07:23:30 +0000] "GET /property/682420ababa7e35920cce3e0 HTTP/1.1" 304 - "http://localhost:3006/myproperties" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36"
 ::1 - - [14/May/2025:07:24:33 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/myproperties?search=mouse" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:07:25:26 +0000] "POST /property HTTP/1.1" 200 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [14/May/2025:08:35:11 +0000] "GET /property/purchase/success?session_id=cs_test_a1K6o3e9NE4eh6LjqKA5js9kmGxNNOPe4jzAWhkfNv3MlqSa2OHDHaHaWD HTTP/1.1" 302 40 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
