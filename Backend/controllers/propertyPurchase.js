@@ -93,6 +93,8 @@ exports.getSuccess = async (req, res) => {
             return res.redirect('/properties');
         }
         const session = await stripe.checkout.sessions.retrieve(sessionId);
+        
+        // Create purchase record
         const purchase = new UserPurchaseProperty({
             userId: req.session.user._id,
             propertyId: session.client_reference_id,
@@ -102,11 +104,17 @@ exports.getSuccess = async (req, res) => {
         
         await purchase.save();
 
-        // Get property details for the email
+        // Get and update property status to sold
         const property = await PropertyData.findById(session.client_reference_id);
+        if (property) {
+            property.saleStatus = 'sold';
+            await property.save();
+        }
+
+        // Send confirmation email
         await transporter.sendMail({
             to: req.session.user.Email,
-            from: '	balajipathak@startbitsolutions.com',
+            from: 'balajipathak@startbitsolutions.com',
             subject: 'Property Purchase Confirmation',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -132,16 +140,18 @@ exports.getSuccess = async (req, res) => {
             `
         });
 
-        const companyInfo = await CompanyInfo.findOne();
-        const navbar = await Navbar.find();
-        const blogs = await Blog.find();
+        const [companyInfo, navbar, blogs] = await Promise.all([
+            CompanyInfo.findOne(),
+            Navbar.find(),
+            Blog.find()
+        ]);
 
         res.render('property/success', {
             pageTitle: 'Purchase Successful',
             path: '/property/success',
-            companyInfo: companyInfo,
-            navbar: navbar,
-            blogs: blogs,
+            companyInfo,
+            navbar,
+            blogs,
             isLoggedIn: req.session.isLoggedIn,
             isAgent: req.session.isAgent || false,
         });

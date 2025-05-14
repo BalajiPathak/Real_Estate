@@ -15,328 +15,327 @@
             <div class="properties-area recent-property" style="background-color: #FFF;">
                 <div class="container">
                     <div class="row">
-
-
-                        <!-- Replace the search form with this updated version -->
-                        <div class="col-md-12">
-                            <div class="search-container">
-                                <form action="/purchase-history" method="GET">
-                                    <div class="search-input-group">
-                                        <input type="text" name="search" class="search-input"
-                                            placeholder="Search by property name" value="<%= searchQuery %>">
-                                        <button type="submit" class="search-button">
-                                            <i class="fa fa-search"></i> Search
-                                        </button>
-                                    </div>
-                                </form>
+                        <% if (purchases.length > 0) { %>
+                            <!-- Search Form -->
+                            <div class="col-md-12">
+                                <div class="search-container">
+                                    <form action="/purchase-history" method="GET">
+                                        <div class="search-input-group">
+                                            <input type="text" name="search" class="search-input"
+                                                placeholder="Search by property name" value="<%= searchQuery %>">
+                                            <button type="submit" class="search-button">
+                                                <i class="fa fa-search"></i> Search
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                        <!-- Update the table with new classes -->
-                        <div class="col-md-12">
-                            <div class="table-responsive purchase-table">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Property</th>
-                                            <th>Transaction ID</th>
-                                            <th>Amount</th>
-                                            <th>Purchase Date</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% if (purchases.length> 0) { %>
-                                            <% purchases.forEach(purchase=> { %>
+
+                            <!-- Purchase Table -->
+                            <div class="col-md-12">
+                                <div class="table-responsive purchase-table">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Property</th>
+                                                <th>Transaction ID</th>
+                                                <th>Amount</th>
+                                                <th>Purchase Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% purchases.forEach(purchase => { %>
                                                 <tr>
                                                     <td>
                                                         <a href="/property/<%= purchase.propertyId._id %>">
                                                             <%= purchase.propertyId.name %>
                                                         </a>
                                                     </td>
+                                                    <td><%= purchase.transactionId %></td>
+                                                    <td>$<%= purchase.amount.toLocaleString() %></td>
                                                     <td>
-                                                        <%= purchase.transactionId %>
-                                                    </td>
-                                                    <td>
-                                                        $<%= purchase.amount.toLocaleString() %>
-                                                    </td>
-                                                    <td>
-                                                        <%= purchase.createdAt ? purchase.createdAt.toLocaleDateString()
-                                                            : 'N/A' %>
+                                                        <%= purchase.createdAt ? purchase.createdAt.toLocaleDateString() : 'N/A' %>
                                                     </td>
                                                     <td>
                                                         <a href="/property/<%= purchase.propertyId._id %>"
-                                                            class="btn btn-sm"
-                                                            style="background-color: #d3a033; color: white;">
+                                                           class="btn btn-sm"
+                                                           style="background-color: #d3a033; color: white;">
                                                             View Property
                                                         </a>
                                                     </td>
                                                 </tr>
-                                                <% }) %>
-                                                    <% } else { %>
-                                                        <tr>
-                                                            <td colspan="5" class="text-center">No purchases found</td>
-                                                        </tr>
-                                                        <% } %>
-                                    </tbody>
-                                </table>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Update the pagination with new classes -->
-                        <div class="col-md-12">
-                            <div class="custom-pagination">
-                                <ul>
-                                    <% if (currentPage> 1) { %>
-                                        <li><a
-                                                href="/purchase-history?page=<%= currentPage - 1 %><%= searchQuery ? '&search=' + searchQuery : '' %>">Prev</a>
-                                        </li>
+                            <!-- Pagination -->
+                            <div class="col-md-12">
+                                <div class="custom-pagination">
+                                    <ul>
+                                        <% if (currentPage > 1) { %>
+                                            <li><a href="/purchase-history?page=<%= currentPage - 1 %><%= searchQuery ? '&search=' + searchQuery : '' %>">Prev</a></li>
                                         <% } else { %>
                                             <li class="disabled"><a href="#">Prev</a></li>
-                                            <% } %>
+                                        <% } %>
 
-                                                <% for (let i=1; i <=totalPages; i++) { %>
-                                                    <li class="<%= currentPage === i ? 'active' : '' %>">
-                                                        <a
-                                                            href="/purchase-history?page=<%= i %><%= searchQuery ? '&search=' + searchQuery : '' %>">
-                                                            <%= i %>
-                                                        </a>
-                                                    </li>
-                                                    <% } %>
+                                        <% for (let i = 1; i <= totalPages; i++) { %>
+                                            <li class="<%= currentPage === i ? 'active' : '' %>">
+                                                <a href="/purchase-history?page=<%= i %><%= searchQuery ? '&search=' + searchQuery : '' %>"><%= i %></a>
+                                            </li>
+                                        <% } %>
 
-                                                        <% if (currentPage < totalPages) { %>
-                                                            <li><a
-                                                                    href="/purchase-history?page=<%= currentPage + 1 %><%= searchQuery ? '&search=' + searchQuery : '' %>">Next</a>
-                                                            </li>
-                                                            <% } else { %>
-                                                                <li class="disabled"><a href="#">Next</a></li>
-                                                                <% } %>
-                                </ul>
+                                        <% if (currentPage < totalPages) { %>
+                                            <li><a href="/purchase-history?page=<%= currentPage + 1 %><%= searchQuery ? '&search=' + searchQuery : '' %>">Next</a></li>
+                                        <% } else { %>
+                                            <li class="disabled"><a href="#">Next</a></li>
+                                        <% } %>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-
-                        <style>
-                            /* Search Area Styles */
-                            .search-container {
-                                background: #fff;
-                                padding: 30px;
-                                border-radius: 8px;
-                                box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-                                margin: 20px 0;
-                            }
-
-                            .search-input-group {
-                                display: flex;
-                                align-items: center;
-                                max-width: 800px;
-                                margin: 0 auto;
-                            }
-
-                            .search-input {
-                                flex: 1;
-                                height: 50px;
-                                padding: 10px 20px;
-                                font-size: 16px;
-                                border: 2px solid #e0e0e0;
-                                border-right: none;
-                                border-radius: 8px 0 0 8px;
-                                transition: all 0.3s ease;
-                            }
-
-                            .search-input:focus {
-                                border-color: #d3a033;
-                                outline: none;
-                                box-shadow: 0 0 0 3px rgba(211, 160, 51, 0.2);
-                            }
-
-                            .search-button {
-                                height: 50px;
-                                padding: 0 30px;
-                                background: #d3a033;
-                                color: white;
-                                border: none;
-                                border-radius: 0 8px 8px 0;
-                                font-size: 16px;
-                                font-weight: 500;
-                                cursor: pointer;
-                                transition: all 0.3s ease;
-                            }
-
-                            .search-button:hover {
-                                background: #c19023;
-                                transform: translateY(-1px);
-                            }
-
-                            .search-button i {
-                                margin-right: 8px;
-                            }
-
-                            /* Pagination Styles */
-                            .custom-pagination {
-                                display: flex;
-                                justify-content: center;
-                                margin: 40px 0;
-                            }
-
-                            .custom-pagination ul {
-                                display: flex;
-                                list-style: none;
-                                padding: 0;
-                                margin: 0;
-                                gap: 8px;
-                                flex-wrap: wrap;
-                            }
-
-                            .custom-pagination li a {
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                min-width: 40px;
-                                height: 40px;
-                                padding: 0 15px;
-                                background: #fff;
-                                border: 2px solid #e0e0e0;
-                                border-radius: 6px;
-                                color: #333;
-                                font-weight: 500;
-                                text-decoration: none;
-                                transition: all 0.3s ease;
-                            }
-
-                            .custom-pagination li:not(.disabled) a:hover {
-                                border-color: #d3a033;
-                                color: #d3a033;
-                                transform: translateY(-1px);
-                            }
-
-                            .custom-pagination li.active a {
-                                background: #d3a033;
-                                border-color: #d3a033;
-                                color: white;
-                            }
-
-                            .custom-pagination li.disabled a {
-                                background: #f5f5f5;
-                                border-color: #e0e0e0;
-                                color: #999;
-                                cursor: not-allowed;
-                                pointer-events: none;
-                            }
-
-                            /* Responsive */
-                            @media (max-width: 768px) {
-                                .search-container {
-                                    padding: 20px;
-                                }
-
-                                .search-input-group {
-                                    flex-direction: column;
-                                    gap: 10px;
-                                }
-
-                                .search-input,
-                                .search-button {
-                                    width: 100%;
-                                    border-radius: 8px;
-                                }
-                            }
-                        </style>
-
+                        <% } else { %>
+                            <!-- No Purchases Message -->
+                            <div class="col-md-12">
+                                <div class="alert alert-info text-center" style="margin: 50px auto; max-width: 600px; padding: 30px;">
+                                    <h4 style="color: #333; margin-bottom: 20px;">No Purchase History</h4>
+                                    <p style="font-size: 16px; margin-bottom: 20px;">
+                                        You haven't purchased any properties yet.
+                                    </p>
+                                    <a href="/properties" 
+                                       class="btn" 
+                                       style="background-color: #d3a033; 
+                                              color: white; 
+                                              padding: 10px 30px; 
+                                              border-radius: 5px; 
+                                              text-decoration: none; 
+                                              font-weight: 500;">
+                                        Browse Properties
+                                    </a>
+                                </div>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
 
             <%- include('../includes/footer.ejs') %>
+            <style>
+                /* Search Area Styles */
+                .search-container {
+                    background: #fff;
+                    padding: 30px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+                    margin: 20px 0;
+                }
 
-                <!-- After the table and before the pagination -->
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const searchInput = document.querySelector('input[name="search"]');
-                        const tbody = document.querySelector('tbody');
-                        let typingTimer;
-                        const doneTypingInterval = 500; // Wait for 500ms after user stops typing
+                .search-input-group {
+                    display: flex;
+                    align-items: center;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
 
-                        searchInput.addEventListener('input', function () {
-                            clearTimeout(typingTimer);
-                            typingTimer = setTimeout(performSearch, doneTypingInterval);
-                        });
+                .search-input {
+                    flex: 1;
+                    height: 50px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    border: 2px solid #e0e0e0;
+                    border-right: none;
+                    border-radius: 8px 0 0 8px;
+                    transition: all 0.3s ease;
+                }
 
-                        async function performSearch() {
-                            const searchValue = searchInput.value;
-                            try {
-                                const response = await fetch(`/purchase-history?search=${encodeURIComponent(searchValue)}&ajax=true`);
-                                const data = await response.json();
+                .search-input:focus {
+                    border-color: #d3a033;
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(211, 160, 51, 0.2);
+                }
 
-                                if (data.purchases) {
-                                    updateTable(data.purchases);
-                                    updatePagination(data.currentPage, data.totalPages, searchValue);
-                                }
-                            } catch (error) {
-                                console.error('Search error:', error);
-                            }
-                        }
+                .search-button {
+                    height: 50px;
+                    padding: 0 30px;
+                    background: #d3a033;
+                    color: white;
+                    border: none;
+                    border-radius: 0 8px 8px 0;
+                    font-size: 16px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
 
-                        function updateTable(purchases) {
-                            if (purchases.length === 0) {
-                                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center">No purchases found</td>
-                    </tr>`;
-                                return;
-                            }
+                .search-button:hover {
+                    background: #c19023;
+                    transform: translateY(-1px);
+                }
 
-                            tbody.innerHTML = purchases.map(purchase => `
-                <tr>
-                    <td>
-                        <a href="/property/${purchase.propertyId._id}">
-                            ${purchase.propertyId.name}
-                        </a>
-                    </td>
-                    <td>${purchase.transactionId}</td>
-                    <td>$${Number(purchase.amount).toLocaleString()}</td>
-                    <td>${purchase.createdAt ? new Date(purchase.createdAt).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                        <a href="/property/${purchase.propertyId._id}" 
-                           class="btn btn-sm" 
-                           style="background-color: #d3a033; color: white;">
-                            View Property
-                        </a>
-                    </td>
-                </tr>
-            `).join('');
-                        }
+                .search-button i {
+                    margin-right: 8px;
+                }
 
-                        function updatePagination(currentPage, totalPages, searchQuery) {
-                            const paginationUl = document.querySelector('.pagination ul');
-                            if (!paginationUl) return;
+                /* Pagination Styles */
+                .custom-pagination {
+                    display: flex;
+                    justify-content: center;
+                    margin: 40px 0;
+                }
 
-                            let paginationHtml = '';
+                .custom-pagination ul {
+                    display: flex;
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                }
 
-                            // Previous button
-                            if (currentPage > 1) {
-                                paginationHtml += `<li><a href="/purchase-history?page=${currentPage - 1}&search=${searchQuery}">Prev</a></li>`;
-                            } else {
-                                paginationHtml += `<li class="disabled"><a href="#">Prev</a></li>`;
-                            }
+                .custom-pagination li a {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 40px;
+                    height: 40px;
+                    padding: 0 15px;
+                    background: #fff;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 6px;
+                    color: #333;
+                    font-weight: 500;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                }
 
-                            // Page numbers
-                            for (let i = 1; i <= totalPages; i++) {
-                                paginationHtml += `
-                    <li class="${currentPage === i ? 'active' : ''}">
-                        <a href="/purchase-history?page=${i}&search=${searchQuery}">${i}</a>
-                    </li>`;
-                            }
+                .custom-pagination li:not(.disabled) a:hover {
+                    border-color: #d3a033;
+                    color: #d3a033;
+                    transform: translateY(-1px);
+                }
 
-                            // Next button
-                            if (currentPage < totalPages) {
-                                paginationHtml += `<li><a href="/purchase-history?page=${currentPage + 1}&search=${searchQuery}">Next</a></li>`;
-                            } else {
-                                paginationHtml += `<li class="disabled"><a href="#">Next</a></li>`;
-                            }
+                .custom-pagination li.active a {
+                    background: #d3a033;
+                    border-color: #d3a033;
+                    color: white;
+                }
 
-                            paginationUl.innerHTML = paginationHtml;
-                        }
+                .custom-pagination li.disabled a {
+                    background: #f5f5f5;
+                    border-color: #e0e0e0;
+                    color: #999;
+                    cursor: not-allowed;
+                    pointer-events: none;
+                }
+
+                /* Responsive */
+                @media (max-width: 768px) {
+                    .search-container {
+                        padding: 20px;
+                    }
+
+                    .search-input-group {
+                        flex-direction: column;
+                        gap: 10px;
+                    }
+
+                    .search-input,
+                    .search-button {
+                        width: 100%;
+                        border-radius: 8px;
+                    }
+                }
+            </style>
+              <!-- Keep your existing styles and scripts -->
+              <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const searchInput = document.querySelector('input[name="search"]');
+                    const tbody = document.querySelector('tbody');
+                    let typingTimer;
+                    const doneTypingInterval = 500; // Wait for 500ms after user stops typing
+
+                    searchInput.addEventListener('input', function () {
+                        clearTimeout(typingTimer);
+                        typingTimer = setTimeout(performSearch, doneTypingInterval);
                     });
-                </script>
-            <%- include('../includes/end.ejs') %>
-                
+
+                    async function performSearch() {
+                        const searchValue = searchInput.value;
+                        try {
+                            const response = await fetch(`/purchase-history?search=${encodeURIComponent(searchValue)}&ajax=true`);
+                            const data = await response.json();
+
+                            if (data.purchases) {
+                                updateTable(data.purchases);
+                                updatePagination(data.currentPage, data.totalPages, searchValue);
+                            }
+                        } catch (error) {
+                            console.error('Search error:', error);
+                        }
+                    }
+
+                    function updateTable(purchases) {
+                        if (purchases.length === 0) {
+                            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center">No purchases found</td>
+                </tr>`;
+                            return;
+                        }
+
+                        tbody.innerHTML = purchases.map(purchase => `
+            <tr>
+                <td>
+                    <a href="/property/${purchase.propertyId._id}">
+                        ${purchase.propertyId.name}
+                    </a>
+                </td>
+                <td>${purchase.transactionId}</td>
+                <td>$${Number(purchase.amount).toLocaleString()}</td>
+                <td>${purchase.createdAt ? new Date(purchase.createdAt).toLocaleDateString() : 'N/A'}</td>
+                <td>
+                    <a href="/property/${purchase.propertyId._id}" 
+                       class="btn btn-sm" 
+                       style="background-color: #d3a033; color: white;">
+                        View Property
+                    </a>
+                </td>
+            </tr>
+        `).join('');
+                    }
+
+                    function updatePagination(currentPage, totalPages, searchQuery) {
+                        const paginationUl = document.querySelector('.pagination ul');
+                        if (!paginationUl) return;
+
+                        let paginationHtml = '';
+
+                        // Previous button
+                        if (currentPage > 1) {
+                            paginationHtml += `<li><a href="/purchase-history?page=${currentPage - 1}&search=${searchQuery}">Prev</a></li>`;
+                        } else {
+                            paginationHtml += `<li class="disabled"><a href="#">Prev</a></li>`;
+                        }
+
+                        // Page numbers
+                        for (let i = 1; i <= totalPages; i++) {
+                            paginationHtml += `
+                <li class="${currentPage === i ? 'active' : ''}">
+                    <a href="/purchase-history?page=${i}&search=${searchQuery}">${i}</a>
+                </li>`;
+                        }
+
+                        // Next button
+                        if (currentPage < totalPages) {
+                            paginationHtml += `<li><a href="/purchase-history?page=${currentPage + 1}&search=${searchQuery}">Next</a></li>`;
+                        } else {
+                            paginationHtml += `<li class="disabled"><a href="#">Next</a></li>`;
+                        }
+
+                        paginationUl.innerHTML = paginationHtml;
+                    }
+                });
+            </script>
+        <%- include('../includes/end.ejs') %>    
                 

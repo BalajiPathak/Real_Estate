@@ -139,13 +139,19 @@ const properties = await PropertyData.find(finalFilter).skip(skip).limit(limit)
     }
  
     // Add this before the render call
-    
+
+    // Add default saleStatus if not found
+    const propertiesWithStatus = properties.map(property => ({
+      ...property.toObject(),
+      saleStatus: property.saleStatus || 'available'
+    }));
+
 
     res.render('property/property', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session && req.session.isLoggedIn || false,
       isAgent, // Add this line
-      properties,
+      properties : propertiesWithStatus,
       state,
       propertyFeatures,
       filterProperties,

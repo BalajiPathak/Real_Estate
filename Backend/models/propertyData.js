@@ -13,6 +13,12 @@ const propertyDataSchema = new mongoose.Schema({
         type:Number,
         required: true
     },
+    saleStatus: {
+        type: String,
+        enum: ['available', 'sold'],
+        default: 'available',
+        required: true
+    },
     categoryId:
     {
         type: mongoose.Schema.Types.ObjectId,
