@@ -194,43 +194,113 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <div class="message-section" 
-                    data-is-logged-in="<%= locals.isLoggedIn %>"
-                    data-is-agent="<%= locals.isAgent ? isAgent : false %>"
-                    data-user-name="<%= locals.userName %>">
-                    
-                    <% if (locals.isAgent) { %>
-                        <!-- Agent Message Interface -->
-                        <div class="message-to-users-section">
-                            <h3><i class="fa fa-envelope"></i> Send Message to Users</h3>
-                            <form id="agentMessageForm">
-                                <div class="form-group">
-                                    <textarea id="messageContent" class="form-control" rows="4" 
-                                        placeholder="Type your message to all users"></textarea>
-                                </div>
-                                <button type="submit" class="btn" 
-                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
-                                    <i class="fa fa-paper-plane"></i> Send Message to All Users
-                                </button>
-                            </form>
-                        </div>
-                    <% } else { %>
-                        <!-- Regular User Message Interface -->
-                        <div class="incoming-messages-section">
-                            <h3><i class="fa fa-inbox"></i> Incoming Messages</h3>
-                            <div id="messagesList" class="messages-container" 
-                                style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
+                <% if (locals.isLoggedIn) { %>
+                    <div class="message-section" 
+                        data-is-logged-in="<%= locals.isLoggedIn %>"
+                        data-is-agent="<%= locals.isAgent %>"
+                        data-user-name="<%= locals.user ? user.First_Name + ' ' + user.Last_Name : '' %>"
+                        data-user-id="<%= locals.user ? user._id : '' %>">
+                        
+                        <% if (locals.isAgent) { %>
+                            <!-- Agent Message Interface -->
+                            <div class="agent-message-section">
+                                <h3><i class="fa fa-paper-plane"></i> Send Message to Users</h3>
+                                <form id="agentMessageForm" class="mb-4">
+                                    <div class="form-group">
+                                        <textarea id="messageContent" name="content" class="form-control" 
+                                            rows="4" placeholder="Type your message to all users" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn"
+                                        style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
+                                        <i class="fa fa-send"></i> Send Message
+                                    </button>
+                                    <div id="messageStatus" class="alert mt-3" style="display: none;"></div>
+                                </form>
                             </div>
-                        </div>
-                    <% } %>
-                </div>
+                        <% } else { %>
+                            <!-- Regular User Message Interface -->
+                            <div class="incoming-messages-section">
+                                <h3><i class="fa fa-inbox"></i> Messages from Agents</h3>
+                                <div id="messagesList" class="messages-container" 
+                                    style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
+                                    <% if (locals.messages && messages.length > 0) { %>
+                                        <% messages.forEach(function(message) { %>
+                                            <div class="message-item" style="margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;">
+                                                <strong><%= message.agentName %></strong>
+                                                <span style="color: #666; font-size: 0.9em;"> - <%= new Date(message.timestamp).toLocaleString() %></span>
+                                                <p style="margin-top: 5px;"><%= message.content %></p>
+                                            </div>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
 
-    <!-- Replace the Socket.IO scripts section -->
-    <!-- Socket.IO scripts -->
+    <!-- Socket.IO script -->
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/contact-socket.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+            const messagesList = document.getElementById('messagesList');
+            const messageForm = document.getElementById('agentMessageForm');
+            
+            // Handle existing messages
+            socket.on('existingMessages', function(messages) {
+                if (messagesList) {
+                    // Clear existing messages first
+                    messagesList.innerHTML = '';
+                    // Add all messages in reverse order (newest first)
+                    messages.forEach(message => {
+                        appendMessage(message);
+                    });
+                }
+            });
+
+            // Handle new incoming messages
+            socket.on('newMessage', function(message) {
+                if (messagesList) {
+                    appendMessage(message);
+                }
+            });
+
+            function appendMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-item';
+                messageDiv.style = 'margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;';
+                
+                const timestamp = new Date(message.timestamp).toLocaleString();
+                
+                messageDiv.innerHTML = `
+                    <strong>${message.agentName}</strong>
+                    <span style="color: #666; font-size: 0.9em;"> - ${timestamp}</span>
+                    <p style="margin-top: 5px;">${message.content}</p>
+                `;
+                
+                messagesList.insertBefore(messageDiv, messagesList.firstChild);
+            }
+
+            // Handle agent message form
+            if (messageForm) {
+                messageForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const content = document.getElementById('messageContent').value.trim();
+                    
+                    if (content) {
+                        socket.emit('sendMessage', { content });
+                        document.getElementById('messageContent').value = '';
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Remove this line -->
+    <!-- <script src="/js/contact-socket.js"></script> -->
+    
     <%- include('includes/footer.ejs') %>
     <%- include('includes/end.ejs') %>

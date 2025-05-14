@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const UserType = require('../models/userType');  
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
@@ -149,12 +150,21 @@ exports.postSignup = async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(Password, 12);
  
+        // Find local user type
+        const localType = await UserType.findOne({ user_type_name: 'local' });
+        
+        if (!localType) {
+            throw new Error('Local user type not found');
+        }
+
         // Create new user
         const user = new User({
             First_Name,
             Last_Name,
             Email,
-            Password: hashedPassword
+            Password: hashedPassword,
+            user_type_id: localType._id,
+            is_verified: false
         });
  
         await user.save();
@@ -199,7 +209,7 @@ exports.postLogin = async (req, res, next) => {
             return res.status(401).render('auth/login', {
                 pageTitle: 'Login',
                 path: '/login',
-                errorMessage: 'Invalid email or password',
+                errorMessage: 'No user found with this account ',
                 validationErrors: [{ param: 'Email' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
@@ -214,7 +224,7 @@ exports.postLogin = async (req, res, next) => {
             return res.status(401).render('auth/login', {
                 pageTitle: 'Login',
                 path: '/login',
-                errorMessage: 'Invalid email or password',
+                errorMessage: 'Password didn\t match!!! ',
                 validationErrors: [{ param: 'Password' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,

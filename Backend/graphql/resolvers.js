@@ -2,12 +2,14 @@ const {
     GraphQLObjectType,
     GraphQLNonNull,
     GraphQLSchema,
+    GraphQLList,
   } = require('graphql');
   const mongoose = require('mongoose');
    
-  const { UserType, UserProfileInputType } = require('../graphql/schema');
+  const { UserType, UserProfileInputType, PropertyType } = require('./schema');
   const User = require('../models/user');
-   
+  const Property = require('../models/propertyData');
+
   // Query
   const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -18,6 +20,14 @@ const {
           if (!req.session?.userId) throw new Error('Not authenticated');
           const user = await User.findById(req.session.userId);
           return user;
+        },
+      },
+      getUserProperties: {
+        type: new GraphQLList(PropertyType),
+        resolve: async (_, __, { req }) => {
+          if (!req.session?.userId) throw new Error('Not authenticated');
+          const properties = await Property.find({ userId: req.session.userId });
+          return properties;
         },
       },
     },

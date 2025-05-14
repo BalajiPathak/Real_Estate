@@ -25,7 +25,7 @@ const propertyRoutes = require('./routes/property');
 const userPropertyRoutes = require('./routes/userProperty');
 const userProfileRoutes = require('./routes/userprofile');
 const changePasswword = require('./routes/changePassword');
-
+const propertyPurchaseRoutes = require('./routes/propertyPurchase');
 const blogRoutes = require('./routes/blog');
 const faqsRoutes = require('./routes/faqs');
 const legalRoutes = require('./routes/legal');
@@ -36,6 +36,7 @@ const resolvers = require('./graphql/resolvers');
 const fs = require('fs');
 const multer = require('multer');
 const morgan = require('morgan');
+const AgentMessage = require('./models/agentMessage'); // Add this import
 
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
@@ -47,24 +48,59 @@ const socketIO = require('socket.io');
 
 
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
 
-// Update the existing Socket.IO connection handler
+// Create server and socket.io instance
+const server = http.createServer(app);
+const io = socketIO(server);
+const sessionMiddleware = session({
+    secret:  'your-secret-key',
+    resave: true,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+});
+
+app.use(sessionMiddleware);
+
+// Socket.IO middleware
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, socket.request.res || {}, next);
+});
 io.on('connection', (socket) => {
-    console.log('New user connected');
+     console.log('New user connected');
 
-    socket.on('agentMessage', (data) => {
-        // Broadcast the message to all connected clients
-        io.emit('newAgentMessage', {
-            content: data.content,
-            agentName: data.agentName,
-            timestamp: new Date()
-        });
-    });
+    AgentMessage.find()
+        .sort({ timestamp: -1 })
+        .limit(50)
+        .then(messages => {
+            socket.emit('existingMessages', messages);
+        })
+        .catch(err => console.error('Error fetching messages:', err));
 
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
+    // Handle new messages
+    socket.on('sendMessage', async (data) => {
+        try {
+            const user = socket.request.session.user;
+            if (!user) return;
+
+            const message = new AgentMessage({
+                content: data.content,
+                agentName: `${user.First_Name} ${user.Last_Name}`,
+                agentId: user._id,
+                timestamp: new Date()
+            });
+
+            await message.save();
+            
+            // Broadcast to all clients
+            io.emit('newMessage', {
+                content: message.content,
+                agentName: message.agentName,
+                timestamp: message.timestamp,
+                _id: message._id
+            });
+        } catch (error) {
+            console.error('Message error:', error);
+        }
     });
 });
 
@@ -266,6 +302,7 @@ app.use(userProfileRoutes);
 app.use(userPropertyRoutes);
 app.use(changePasswword);
 app.use(legalRoutes);
+app.use(propertyPurchaseRoutes);
 
 app.use(errorHandler.handle404);
 

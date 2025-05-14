@@ -5,6 +5,7 @@ const Blog = require('../models/blog');
 const UserType = require('../models/userType'); // Add this import
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const AgentMessage = require('../models/agentMessage');
 
 exports.getAgentLogin = async (req, res) => {
     try {
@@ -24,7 +25,8 @@ exports.getAgentLogin = async (req, res) => {
             companyInfo,
             navbar,
             blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn || false,
+            isAgent: req.session.isAgent || false  // Add this line
         });
     } catch (err) {
         console.error('Agent Login error:', err);
@@ -36,7 +38,9 @@ exports.getAgentLogin = async (req, res) => {
             oldInput: {
                 Email: '',
                 Password: ''
-            }
+            },
+            isLoggedIn: false,
+            isAgent: false  // Add this line
         });
     }
 };
@@ -114,6 +118,9 @@ exports.postAgentLogin = async (req, res) => {
         });
 
     } catch (err) {
+         const companyInfo = await CompanyInfo.findOne();
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
         console.error('Agent Login error:', err);
         res.status(500).render('agent/login', {
             pageTitle: 'Agent Login',
@@ -147,7 +154,8 @@ exports.getAgentSignup = async (req, res) => {
             companyInfo,
             navbar,
             blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn || false,
+            isAgent: req.session.isAgent || false  // Add this line
         });
     } catch (err) {
         console.error('Agent Signup error:', err);
@@ -161,7 +169,9 @@ exports.getAgentSignup = async (req, res) => {
                 Last_Name: '',
                 Email: '',
                 Password: ''
-            }
+            },
+            isLoggedIn: false,
+            isAgent: false  // Add this line
         });
     }
 };
@@ -227,6 +237,93 @@ exports.postAgentSignup = async (req, res) => {
             errorMessage: 'An error occurred during signup',
             validationErrors: [],
             oldInput: { First_Name: '', Last_Name: '', Email: '', Password: '' }
+        });
+    }
+};
+
+exports.getMessages = async (req, res) => {
+    try {
+        const messages = await AgentMessage.find()
+            .sort({ timestamp: -1 })
+            .limit(50);
+            const companyInfo = await CompanyInfo.findOne();
+            const navbar = await Navbar.find();
+            const blogs = await Blog.find();
+        res.render('contact', {
+            pageTitle: 'Messages',
+            path: '/contact',
+            messages,
+            companyInfo,
+            navbar,
+            blogs,
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent,
+            user: req.session.user,
+            errorMessage: null
+        });
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ success: false, message: 'Error fetching messages' });
+    }
+};
+
+exports.postMessage = async (req, res) => {
+    try {
+        if (!req.session.isAgent) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Only agents can send messages' 
+            });
+        }
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ 
+                success: false, 
+                message: errors.array()[0].msg 
+            });
+        }
+
+        const { content } = req.body;
+        
+        if (!req.session.user || !req.session.userId) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'User session not found' 
+            });
+        }
+
+        const message = new AgentMessage({
+            content,
+            agentName: `${req.session.user.First_Name} ${req.session.user.Last_Name}`,
+            agentId: req.session.userId,
+            timestamp: new Date()
+        });
+
+        await message.save();
+
+        // Get the Socket.IO instance and emit the message
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('newAgentMessage', {
+                content: message.content,
+                agentName: message.agentName,
+                timestamp: message.timestamp,
+                _id: message._id
+            });
+        }
+
+        res.status(201).json({ 
+            success: true, 
+            message: 'Message sent successfully',
+            data: message 
+        });
+
+    } catch (err) {
+        console.error('Post Message Error:', err);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error sending message' 
         });
     }
 };

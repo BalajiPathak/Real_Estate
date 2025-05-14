@@ -149,6 +149,8 @@ exports.getHome = async (req, res) => {
         res.render('index', {
             pageTitle: 'Real Estate',
             path: '/',
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent,  // Add this line
             companyInfo: companyInfo || {},
             navbar: navbar || [],
             banners: banners || [],

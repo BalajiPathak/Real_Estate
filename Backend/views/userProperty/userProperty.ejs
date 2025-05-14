@@ -119,3 +119,83 @@
     <%- include('../includes/footer.ejs') %>
 
     <%- include('../includes/end.ejs') %>
+
+<script>
+async function loadUserProperties() {
+  const query = `
+    query {
+      getUserProperties {
+        _id
+        image
+        name
+        price
+        description
+        area
+        beds
+        baths
+      }
+    }
+  `;
+
+  try {
+    const response = await fetch('/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await response.json();
+    if (data.errors) {
+      console.error('GraphQL Errors:', data.errors);
+      return;
+    }
+
+    const properties = data.data.getUserProperties;
+    const container = document.getElementById('list-type');
+    
+    if (properties && properties.length > 0) {
+      container.innerHTML = properties.map(property => `
+        <div class="col-md-4 p0">
+          <div class="box-two proerty-item">
+            <div class="item-thumb">
+              <a href="/property/${property._id}">
+                <img src="/uploads/${property.image}" alt="Property Image">
+              </a>
+            </div>
+            <div class="item-entry overflow">
+              <h5><a href="/property/${property._id}">${property.name}</a></h5>
+              <span class="pull-left"><b>Area :</b> ${property.area}m² </span>
+              <span class="proerty-price pull-right">$ ${property.price}</span>
+              <p style="display: none;">${property.description}</p>
+              <div class="property-icon">
+                <img src="/assets/img/icon/bed.png">(${property.beds})|
+                <img src="/assets/img/icon/shawer.png">(${property.baths})|
+                <div class="dealer-action pull-right">                                        
+                  <a href="/property/edit/${property._id}" class="button">Edit</a>
+                  <form action="/property/delete/${property._id}" method="POST" style="display: inline;">
+                    <button type="submit" class="button" onclick="return confirm('Are you sure?')">Delete</button>
+                  </form>
+                  <a href="/property/${property._id}" class="button">View</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = `
+        <div class="col-md-12 text-center">
+          <h3>No properties found</h3>
+          <a href="/property/new" class="btn btn-primary">Add Your First Property</a>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadUserProperties);
+</script>

@@ -82,22 +82,21 @@
                                     <div class="dot-hr"></div>
                                     <span class="pull-left"><b> Area :</b><%= property.area %>m² </span>
                                     <span class="proerty-price pull-right">$ <%= property.price.toLocaleString() %></span>
+                                    <% if (isLoggedIn && !isAgent) { %>
+                                        <div class="text-center" style="clear: both; padding-top: 10px;">
+                                            <a href="/property/buy/<%= property._id %>" class="btn" style="background-color: #d3a033; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; display: block;">Buy Now</a>
+                                        </div>
+                                    <% } %>
                                     <p style="display: none;"><%= property.description %>...</p>
                                     <div class="property-icon">
                                         <img src="/assets/img/icon/bed.png">(<%= property.beds %>) |
                                         <img src="/assets/img/icon/shawer.png">(<%= property.baths %>) 
-                                       
-                                        
                                     </div>
                                 </div>
 
 
                             </div>
                         </div>
-
-
-
-
                         <% }) %>
                     </div>
                 </div>

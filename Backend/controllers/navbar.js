@@ -34,7 +34,8 @@ const getAllNavbars = async (req, res) => {
         res.render('index', {
             navbar: navbar,          
             companyInfo: companyInfo,
-            isLoggedIn: req.isLoggedIn || false,
+            isLoggedIn: req.session.isLoggedIn || false,
+            isAgent: req.session.isAgent || false,  // Add this line
             pageTitle: 'Real Estate'
         });
     } catch (error) {

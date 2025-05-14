@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-
+ 
 const PropertyData = require('../models/propertyData');
 const { PropertyCategory } = require('../models/propertyCategory');
-
+ 
 // const { StatusCategory } = require('../models/statusCategory');
 const { PropertyFeature } = require('../models/propertyFeature');
 const PropertyImages = require('../models/propertyImage');
@@ -10,13 +10,14 @@ const { PropertyDataFeature } = require('../models/propertyFeature');
 const City = require('../models/city');
 const PropertyVideo = require('../models/propertyVideo');  
 const State = require('../models/state');
-const FilterProperty = require('../models/filterProperty'); 
+const FilterProperty = require('../models/filterProperty');
 const StatusCategory = require('../models/statusCategory');
 const crypto = require('crypto');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar')
 const Blog = require('../models/blog');
-
+const UserType = require('../models/userType');
+ 
 exports.getAllProperties = async (req, res) => {
   try {
     console.log('Features in query:', req.query);
@@ -48,7 +49,7 @@ exports.getAllProperties = async (req, res) => {
       if (selectedState) {
         filters.push({ stateId: selectedState._id });
       } else {
-        filters.push({ _id: null }); 
+        filters.push({ _id: null });
       }
     }
  
@@ -130,9 +131,15 @@ exports.getAllProperties = async (req, res) => {
       selectedFilters.push(`Features: ${featuresArray.join(', ')}`);
     }
  
+    // Add this before the render call
+    const isAgent = req.session?.user?.user_type_id ? 
+      (await UserType.findById(req.session.user.user_type_id))?.user_type_name === 'agent' 
+      : false;
+
     res.render('property/property', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session && req.session.isLoggedIn || false,
+      isAgent, // Add this line
       properties,
       state,
       propertyFeatures,
@@ -180,19 +187,19 @@ const property = await PropertyData.findById(req.params.id)
     if (!property) {
       return res.status(404).send('Property not found');
     }
-    
-    
+   
+   
     const propertyFeatureMappings = await PropertyDataFeature.find({ propertyId: property._id })
       .populate('featureId')
       .lean();
  
     const featureNames = propertyFeatureMappings.map(f => f.featureId?.name || 'Unknown');
  
-    
+   
     const images = await PropertyImages.find({ propertyId: property._id }).lean();
     const videos = await PropertyVideo.find({ propertyId: property._id }).lean();
  
-    
+   
     const relatedProperties = await PropertyData.find({
       categoryId: property.categoryId,
       _id: { $ne: property._id }
@@ -201,14 +208,14 @@ const property = await PropertyData.findById(req.params.id)
       .populate('categoryId stateId statusId userId')
       .lean();
  
-    
+   
     for (let related of relatedProperties) {
       const relFeatures = await PropertyDataFeature.find({ propertyId: related._id })
         .populate('featureId')
         .lean();
       related.features = relFeatures.map(f => f.featureId?.name || 'Unknown');
     }
-  console.log('featureNamesfeatureNamesfeatureNames',featureNames)
+  // console.log('featureNamesfeatureNamesfeatureNames',featureNames)
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session?.isLoggedIn || false,
@@ -227,7 +234,7 @@ const property = await PropertyData.findById(req.params.id)
     res.status(500).send('Server Error');
   }
 };
-
+ 
 exports.renderSubmitForm = async (req, res) => {
   try {
     if (!req.session.isLoggedIn) {
@@ -236,7 +243,7 @@ exports.renderSubmitForm = async (req, res) => {
   const PropertyCategory = mongoose.model('PropertyCategory');
   const State = mongoose.model('State');
   const StatusCategory = mongoose.model('StatusCategory');
-
+ 
   const categories = await PropertyCategory.find();
   const states = await State.find();
   const statuses = await StatusCategory.find();
@@ -264,27 +271,27 @@ blogs:blogs ||[],
   res.status(500).json({ error: error.message });
 }
 };
-
+ 
 exports.submitProperty = async (req, res, next) => {
-    
-  
+   
+ 
   console.log('Session:', req.session);
   console.log('User ID in session:', req.session.userId);
   console.log('Is logged in:', req.session.isLoggedIn);
-
+ 
   if (!req.session.isLoggedIn) {
       return res.redirect('/login');
   }
-
+ 
   if (!req.session.userId) {
       console.log('User ID missing in session');
       return res.status(401).json({ error: 'User not authenticated' });
   }
-
+ 
   const companyInfo = await CompanyInfo.findOne();  
   const navbar = await Navbar.find();  
   const blogs = await Blog.find();
-
+ 
  
   try {
     const {
@@ -301,23 +308,23 @@ exports.submitProperty = async (req, res, next) => {
       area,
       userId,
       termsAndConditions,
-      videoLink, 
-      featureIds 
+      videoLink,
+      featureIds
     } = req.body;
-
-    
+ 
+   
     const mainImage = req.files['mainImage']?.[0]?.filename || 'default.jpg';
     const galleryImages = req.files['galleryImages']?.map((file) => file.filename) || [];
-
-    
+ 
+   
     let videoLinkString = null;
     if (videoLink && Array.isArray(videoLink)) {
       videoLinkString = videoLink.find(link => link.trim() !== '') || null;
     } else {
       videoLinkString = videoLink?.trim() || null;
     }
-
-    
+ 
+   
     const newProperty = new PropertyData({
       name,
       price,
@@ -331,38 +338,38 @@ exports.submitProperty = async (req, res, next) => {
       baths,
       area,
       userId: req.session.userId,
-      termsAndConditions: termsAndConditions === 'on', 
+      termsAndConditions: termsAndConditions === 'on',
       image: mainImage,
       galleryImages,
       videoLink: videoLinkString,
     });
-
+ 
    
     await newProperty.save();
     console.log('Property saved:', newProperty);
-
-    
+ 
+   
     const propertyId = newProperty._id;
-
-    
+ 
+   
     const mainImageDoc = new PropertyImages({
       propertyId,
       image: mainImage,
-      isMainImage: true, 
+      isMainImage: true,
     });
     await mainImageDoc.save();
-
+ 
     for (let image of galleryImages) {
       const galleryImageDoc = new PropertyImages({
         propertyId,
         image,
-        isMainImage: false, 
+        isMainImage: false,
       });
       await galleryImageDoc.save();
     }
-
+ 
     console.log('Images saved to PropertyImages');
-
+ 
    
     if (videoLinkString) {
       const videoDoc = new PropertyVideo({
@@ -372,8 +379,8 @@ exports.submitProperty = async (req, res, next) => {
       await videoDoc.save();
       console.log('Video saved to PropertyVideos');
     }
-
-    
+ 
+   
     if (featureIds && featureIds.length > 0) {
       for (let featureId of featureIds) {
         const propertyFeature = new PropertyDataFeature({
@@ -384,7 +391,7 @@ exports.submitProperty = async (req, res, next) => {
       }
       console.log('Features saved to PropertyDataFeature');
     }
-
+ 
    
     res.render('property/welcome', {
       pageTitle: 'Real Estate',

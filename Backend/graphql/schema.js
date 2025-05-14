@@ -2,6 +2,9 @@ const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLInputObjectType,
+    GraphQLList,
+    GraphQLInt,
+    GraphQLFloat,
   } = require('graphql');
    
   // User Output Type
@@ -39,4 +42,23 @@ const {
     },
   });
    
-  module.exports = { UserType, UserProfileInputType };
+  const PropertyType = new GraphQLObjectType({
+    name: 'Property',
+    fields: () => ({
+      _id: { type: GraphQLString },
+      image: { type: GraphQLString },
+      name: { type: GraphQLString },
+      price: { type: GraphQLFloat },
+      description: { type: GraphQLString },
+      area: { type: GraphQLFloat },
+      beds: { type: GraphQLInt },
+      baths: { type: GraphQLInt },
+      userId: { type: GraphQLString },
+    })
+  });
+  
+  module.exports = { 
+    UserType, 
+    UserProfileInputType,
+    PropertyType 
+  };

@@ -6,58 +6,94 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const isLoggedIn = messageSection.dataset.isLoggedIn === 'true';
     const isAgent = messageSection.dataset.isAgent === 'true';
-    const userName = messageSection.dataset.userName;
+    const messagesList = document.getElementById('messagesList');
 
-    if (isLoggedIn && isAgent) {
-        const agentMessageForm = document.getElementById('agentMessageForm');
-        if (!agentMessageForm) return;
+    // Request existing messages when connecting
+    socket.emit('getExistingMessages');
 
-        agentMessageForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const messageContent = document.getElementById('messageContent').value;
-            
-            if (!messageContent.trim()) {
-                alert('Please enter a message');
-                return;
-            }
-
-            // Emit the message
-            socket.emit('agentMessage', {
-                content: messageContent,
-                agentName: userName
+    // Handle existing messages
+    socket.on('existingMessages', function(messages) {
+        if (!isAgent && messagesList) {
+            messages.forEach(message => {
+                appendMessage(message);
             });
+        }
+    });
 
-            // Clear the input and show confirmation
-            document.getElementById('messageContent').value = '';
-            alert('Message sent successfully!');
-        });
-    } else if (isLoggedIn) {
-        const messagesList = document.getElementById('messagesList');
-        if (!messagesList) return;
+    // Handle new messages for all users
+    socket.on('newAgentMessage', function(message) {
+        if (!isAgent && messagesList) {
+            appendMessage(message);
+            // Scroll to the newest message
+            messagesList.scrollTop = 0;
+        }
+    });
 
-        // Listen for new messages
-        socket.on('newAgentMessage', function(data) {
-            console.log('Received message:', data);
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-item';
-            messageDiv.style.cssText = 'border-bottom: 1px solid #eee; padding: 10px 0; margin-bottom: 10px;';
-            
-            messageDiv.innerHTML = `
-                <p style="margin: 0;"><strong>From Agent:</strong> ${data.agentName}</p>
-                <p style="margin: 5px 0;">${data.content}</p>
-                <small style="color: #666;">${new Date(data.timestamp).toLocaleString()}</small>
-            `;
-            
-            messagesList.insertBefore(messageDiv, messagesList.firstChild);
-        });
+    function appendMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-item';
+        messageDiv.style = 'margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;';
+        
+        const timestamp = new Date(message.timestamp).toLocaleString();
+        
+        messageDiv.innerHTML = `
+            <strong>${message.agentName}</strong>
+            <span style="color: #666; font-size: 0.9em;"> - ${timestamp}</span>
+            <p style="margin-top: 5px;">${message.content}</p>
+        `;
+
+        messagesList.insertBefore(messageDiv, messagesList.firstChild);
     }
 
-    // Debug connection status
-    socket.on('connect', () => {
-        console.log('Connected to Socket.IO server');
-    });
+    // Agent message form handling
+    if (isLoggedIn && isAgent) {
+        const agentMessageForm = document.getElementById('agentMessageForm');
+        const messageStatus = document.getElementById('messageStatus');
+        
+        if (agentMessageForm) {
+            agentMessageForm.addEventListener('submit', async function(e) {
+                e.preventDefault(); // Prevent form submission
 
-    socket.on('connect_error', (error) => {
-        console.error('Socket.IO connection error:', error);
-    });
+                const messageContent = document.getElementById('messageContent').value.trim();
+                
+                if (!messageContent) {
+                    showStatus('Please enter a message', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/agent/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content: messageContent })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.getElementById('messageContent').value = '';
+                        showStatus('Message sent successfully!', 'success');
+                    } else {
+                        showStatus(data.message || 'Failed to send message', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showStatus('Error sending message', 'error');
+                }
+            });
+        }
+
+        function showStatus(message, type) {
+            if (messageStatus) {
+                messageStatus.textContent = message;
+                messageStatus.style.display = 'block';
+                messageStatus.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+                setTimeout(() => {
+                    messageStatus.style.display = 'none';
+                }, 3000);
+            }
+        }
+    }
 });

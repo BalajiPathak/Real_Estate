@@ -28,20 +28,23 @@ exports.handle404 = async (req, res, next) => {
 
 exports.handle500 = async (err, req, res, next) => {
     try {
-        const companyInfo = await CompanyInfo.findOne();  
-        const navbar = await Navbar.find();  
-        const blogs = await Navbar.find({});  
+        const [companyInfo, navbar, blogs] = await Promise.all([
+            CompanyInfo.findOne(),
+            Navbar.find(),
+            Blog.find({})
+        ]);
 
-        console.error(err.stack); 
+        console.error(err.stack);
 
         res.status(500).render('pages/500', {
             pageTitle: 'Error',
             path: '/500',
             companyInfo: companyInfo,
             navbar: navbar,
-            blogs:blogs,
+            blogs: blogs,
             isLoggedIn: req.session && req.session.isLoggedIn || false,
-            error: process.env.NODE_ENV === 'production' ? err : {} ///for future reference 
+            isAgent: req.session && req.session.isAgent || false,  // Add this line
+            error: process.env.NODE_ENV === 'production' ? err : {}
         });
     } catch (fetchError) {
         console.error('Error fetching companyInfo or navbar in 500 handler:', fetchError);
@@ -50,7 +53,9 @@ exports.handle500 = async (err, req, res, next) => {
             path: '/500',
             companyInfo: null,
             navbar: null,
+            blogs: null,
             isLoggedIn: req.session && req.session.isLoggedIn || false,
+            isAgent: req.session && req.session.isAgent || false,  // Add this line
             error: process.env.NODE_ENV === 'production' ? err : {}
         });
     }

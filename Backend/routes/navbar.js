@@ -11,10 +11,10 @@ router.get('/contact', navController.getContact);
 router.post(
     '/contact',
     [
-        check('firstname').trim().notEmpty().withMessage('First name is required'),
-        check('lastname').trim().notEmpty().withMessage('Last name is required'),
+        check('firstname').trim().notEmpty().isLength({ min:5 }).withMessage('First name must be at least 5 characters long'),
+        check('lastname').trim().notEmpty().isLength({ min:5 }).withMessage('Last name must be at least 5 characters long'),
         check('email').isEmail().withMessage('Please enter a valid email'),
-        check('subject').trim().notEmpty().withMessage('Subject is required'),
+        check('subject').trim().notEmpty().isLength({ min:5 }).withMessage('Subject  must be at least 5 characters long'),
         check('message')
             .trim()
             .notEmpty()

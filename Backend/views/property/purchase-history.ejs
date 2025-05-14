@@ -1,0 +1,369 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
+<div class="page-head"> 
+    <div class="container">
+        <div class="row">
+            <div class="page-head-content">
+                <h1 class="page-title">Purchase History</h1>               
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="properties-area recent-property" style="background-color: #FFF;">
+    <div class="container">
+        <div class="row">
+            <!-- Move all styles to a single style block at the top -->
+            <style>
+                /* Search Area Styles */
+                .purchase-history-search {
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #fff;
+                    border-radius: 4px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                }
+            
+                .purchase-history-search:focus-within {
+                    box-shadow: 0 2px 6px rgba(211, 160, 51, 0.2);
+                }
+            
+                .purchase-history-search .form-control {
+                    height: 45px;
+                    border-radius: 4px 0 0 4px;
+                    border: 1px solid #ddd;
+                }
+            
+                .purchase-history-search .form-control:focus {
+                    border-color: #d3a033;
+                    box-shadow: none;
+                    outline: none;
+                }
+            
+                .purchase-history-search .search-btn {
+                    height: 45px;
+                    padding: 0 20px;
+                    background-color: #d3a033;
+                    color: white;
+                    border: none;
+                    border-radius: 0 4px 4px 0;
+                    transition: background-color 0.3s ease;
+                }
+            
+                .purchase-history-search .search-btn:hover {
+                    background-color: #c19023;
+                }
+            
+                /* Table Styles */
+                .purchase-table {
+                    margin-top: 20px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+            
+                .purchase-table th {
+                    background-color: #f8f9fa;
+                    border-bottom: 2px solid #dee2e6;
+                    padding: 12px;
+                }
+            
+                .purchase-table .btn-view {
+                    background-color: #d3a033;
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    transition: background-color 0.3s ease;
+                }
+            
+                .purchase-table .btn-view:hover {
+                    background-color: #c19023;
+                    color: white;
+                    text-decoration: none;
+                }
+            
+                /* Pagination Styles */
+                .pagination-container {
+                    margin: 20px 0;
+                    display: flex;
+                    justify-content: flex-end;
+                }
+            
+                .pagination ul {
+                    display: flex;
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    gap: 5px;
+                }
+            
+                .pagination li a {
+                    padding: 8px 16px;
+                    border: 1px solid #ddd;
+                    color: #333;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    transition: all 0.3s ease;
+                }
+            
+                .pagination li.active a {
+                    background-color: #d3a033;
+                    color: white;
+                    border-color: #d3a033;
+                }
+            
+                .pagination li.disabled a {
+                    color: #999;
+                    pointer-events: none;
+                    background-color: #f8f9fa;
+                }
+            
+                .pagination li:not(.disabled):not(.active) a:hover {
+                    background-color: #f8f9fa;
+                    border-color: #d3a033;
+                }
+            
+                /* Responsive Styles */
+                @media (max-width: 768px) {
+                    .purchase-history-search {
+                        padding: 15px;
+                    }
+                    .purchase-table {
+                        overflow-x: auto;
+                    }
+            
+                    .pagination ul {
+                        flex-wrap: wrap;
+                        justify-content: center;
+                    }
+                }
+            </style>
+
+            <!-- Update the search form with new classes -->
+            <div class="col-md-12">
+                <div class="purchase-history-search">
+                    <form action="/purchase-history" method="GET">
+                        <div class="input-group">
+                            <input type="text" 
+                                   name="search" 
+                                   class="form-control" 
+                                   placeholder="Search by property name or transaction ID" 
+                                   value="<%= searchQuery %>">
+                            <span class="input-group-btn">
+                                <button type="submit" class="search-btn">
+                                    <i class="fa fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Update the table with new classes -->
+            <div class="col-md-12">
+                <div class="table-responsive purchase-table">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Transaction ID</th>
+                                <th>Amount</th>
+                                <th>Purchase Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (purchases.length > 0) { %>
+                                <% purchases.forEach(purchase => { %>
+                                    <tr>
+                                        <td>
+                                            <a href="/property/<%= purchase.propertyId._id %>">
+                                                <%= purchase.propertyId.name %>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <%= purchase.transactionId %>
+                                        </td>
+                                        <td>
+                                            $<%= purchase.amount.toLocaleString() %>
+                                        </td>
+                                        <td>
+                                            <%= purchase.createdAt ? purchase.createdAt.toLocaleDateString() : 'N/A' %>
+                                        </td>
+                                        <td>
+                                            <a href="/property/<%= purchase.propertyId._id %>" 
+                                               class="btn btn-sm" 
+                                               style="background-color: #d3a033; color: white;">
+                                                View Property
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="text-center">No purchases found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Update the pagination with new classes -->
+            <div class="col-md-12">
+                <div class="pagination-container">
+                    <ul>
+                        <% if (currentPage > 1) { %>
+                            <li><a href="/purchase-history?page=<%= currentPage - 1 %><%= searchQuery ? '&search=' + searchQuery : '' %>">Prev</a></li>
+                        <% } else { %>
+                            <li class="disabled"><a href="#">Prev</a></li>
+                        <% } %>
+
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="<%= currentPage === i ? 'active' : '' %>">
+                                <a href="/purchase-history?page=<%= i %><%= searchQuery ? '&search=' + searchQuery : '' %>"><%= i %></a>
+                            </li>
+                        <% } %>
+
+                        <% if (currentPage < totalPages) { %>
+                            <li><a href="/purchase-history?page=<%= currentPage + 1 %><%= searchQuery ? '&search=' + searchQuery : '' %>">Next</a></li>
+                        <% } else { %>
+                            <li class="disabled"><a href="#">Next</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Add some CSS for better pagination styling -->
+            <style>
+                .pagination ul {
+                    display: flex;
+                    list-style: none;
+                    padding: 0;
+                    margin: 20px 0;
+                }
+                .pagination ul li {
+                    margin: 0 5px;
+                }
+                .pagination ul li a {
+                    padding: 8px 16px;
+                    border: 1px solid #ddd;
+                    color: #333;
+                    text-decoration: none;
+                    border-radius: 4px;
+                }
+                .pagination ul li.active a {
+                    background-color: #d3a033;
+                    color: white;
+                    border-color: #d3a033;
+                }
+                .pagination ul li.disabled a {
+                    color: #999;
+                    pointer-events: none;
+                    background-color: #f8f9fa;
+                }
+                .input-group {
+                    display: flex;
+                    width: 100%;
+                }
+                .input-group-btn {
+                    margin-left: 10px;
+                }
+            </style>
+        </div>
+    </div>
+</div>
+
+<%- include('../includes/footer.ejs') %>
+
+<!-- After the table and before the pagination -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('input[name="search"]');
+        const tbody = document.querySelector('tbody');
+        let typingTimer;
+        const doneTypingInterval = 500; // Wait for 500ms after user stops typing
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(performSearch, doneTypingInterval);
+        });
+
+        async function performSearch() {
+            const searchValue = searchInput.value;
+            try {
+                const response = await fetch(`/purchase-history?search=${encodeURIComponent(searchValue)}&ajax=true`);
+                const data = await response.json();
+                
+                if (data.purchases) {
+                    updateTable(data.purchases);
+                    updatePagination(data.currentPage, data.totalPages, searchValue);
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        function updateTable(purchases) {
+            if (purchases.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center">No purchases found</td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = purchases.map(purchase => `
+                <tr>
+                    <td>
+                        <a href="/property/${purchase.propertyId._id}">
+                            ${purchase.propertyId.name}
+                        </a>
+                    </td>
+                    <td>${purchase.transactionId}</td>
+                    <td>$${Number(purchase.amount).toLocaleString()}</td>
+                    <td>${purchase.createdAt ? new Date(purchase.createdAt).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                        <a href="/property/${purchase.propertyId._id}" 
+                           class="btn btn-sm" 
+                           style="background-color: #d3a033; color: white;">
+                            View Property
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updatePagination(currentPage, totalPages, searchQuery) {
+            const paginationUl = document.querySelector('.pagination ul');
+            if (!paginationUl) return;
+
+            let paginationHtml = '';
+
+            // Previous button
+            if (currentPage > 1) {
+                paginationHtml += `<li><a href="/purchase-history?page=${currentPage - 1}&search=${searchQuery}">Prev</a></li>`;
+            } else {
+                paginationHtml += `<li class="disabled"><a href="#">Prev</a></li>`;
+            }
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `
+                    <li class="${currentPage === i ? 'active' : ''}">
+                        <a href="/purchase-history?page=${i}&search=${searchQuery}">${i}</a>
+                    </li>`;
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                paginationHtml += `<li><a href="/purchase-history?page=${currentPage + 1}&search=${searchQuery}">Next</a></li>`;
+            } else {
+                paginationHtml += `<li class="disabled"><a href="#">Next</a></li>`;
+            }
+
+            paginationUl.innerHTML = paginationHtml;
+        }
+    });
+</script>

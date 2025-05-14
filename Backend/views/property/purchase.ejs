@@ -1,0 +1,143 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
+<style>
+    .purchase-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+    }
+    .purchase-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .purchase-card {
+        width: 600px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+    .purchase-header {
+        text-align: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #d3a033;
+        border-radius: 8px 8px 0 0;
+    }
+    .purchase-title {
+        color: #2c3e50;
+        margin: 0;
+        font-size: 24px;
+    }
+    .purchase-body {
+        padding: 30px;
+    }
+    .property-name {
+        color: #34495e;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+    }
+    .property-description {
+        color: #576574;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+    .property-price {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .price-text {
+        font-size: 24px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    .button-wrapper {
+        text-align: center;
+    }
+    .checkout-button {
+        background-color: #d3a033;
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .checkout-button:hover {
+        background-color: #b88928;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="purchase-container">
+    <div class="purchase-wrapper">
+        <div class="purchase-card">
+            <div class="purchase-header">
+                <h3 class="purchase-title">Purchase Property</h3>
+            </div>
+            <div class="purchase-body">
+                <h5 class="property-name"><%= property.name %></h5>
+                <p class="property-price">
+                    <strong class="price-text">
+                        Price: $<%= property.price.toLocaleString() %>
+                    </strong>
+                </p>
+                <div class="button-wrapper">
+                    <button id="checkout-button" class="checkout-button">
+                        Proceed to Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe('<%= stripePublicKey %>');
+    const checkoutButton = document.getElementById('checkout-button');
+
+    checkoutButton.addEventListener('click', async () => {
+        try {
+            // Get the property ID from the current URL
+            const pathParts = window.location.pathname.split('/');
+            const propertyId = pathParts[pathParts.length - 1];
+
+            // Call your server to create a Checkout Session
+            const response = await fetch(`/property/buy/${propertyId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const session = await response.json();
+
+            if (session.error) {
+                alert(session.error);
+                return;
+            }
+
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({
+                sessionId: session.id
+            });
+
+            if (result.error) {
+                alert(result.error.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    });
+</script>
+<%- include('../includes/footer.ejs') %>

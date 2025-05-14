@@ -1,0 +1,78 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
+<style>
+    .cancel-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+    }
+    .cancel-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+    .cancel-card {
+        width: 600px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 40px;
+    }
+    .cancel-icon {
+        color: #e74c3c;
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+    .cancel-title {
+        color: #2c3e50;
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+    .cancel-message {
+        color: #576574;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    .retry-button {
+        background-color: #d3a033;
+        color: white;
+        text-decoration: none;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin: 0 10px;
+    }
+    .retry-button:hover {
+        background-color: #b88928;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="cancel-container">
+    <div class="cancel-wrapper">
+        <div class="cancel-card">
+            <div class="cancel-icon">
+                <i class="fa fa-times-circle"></i>
+            </div>
+            <h2 class="cancel-title">Payment Cancelled</h2>
+            <p class="cancel-message">
+                Your property purchase has been cancelled. If you experienced any issues
+                during the payment process, please feel free to try again or contact our support team.
+            </p>
+            <div>
+                <a href="/properties" class="retry-button">Back to Properties</a>
+                <a href="/contact" class="retry-button">Contact Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../includes/footer.ejs') %>
