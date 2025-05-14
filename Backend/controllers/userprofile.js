@@ -27,7 +27,8 @@ exports.getUserProfile = async (req, res) => {
                 companyInfo: companyInfo || {},
                 navbar: navbar || [],
                 blogs: blogs || [],
-                isLoggedIn: req.session.isLoggedIn
+                isLoggedIn: req.session.isLoggedIn,
+                 isAgent: req.session.isAgent || false,
             });
         }
 
@@ -38,7 +39,8 @@ exports.getUserProfile = async (req, res) => {
             companyInfo: companyInfo || {}, 
             navbar: navbar || [],
             blogs: blogs || [],
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn,
+             isAgent: req.session.isAgent || false,
         });
     } catch (err) {
         console.error('Error in getUserProfile:', err);
@@ -55,7 +57,7 @@ exports.postUserProfile = async (req, res) => {
     try {
         console.log('Form Data:', req.body); 
         console.log('File Upload:', req.file);  
-        if (!req.session.isLoggedIn) {
+        if (!req.session.isLoggedIn || !req.session.isAgent ) {
             return res.redirect('/login');
         }
 

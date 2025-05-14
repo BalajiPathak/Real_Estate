@@ -1,122 +1,173 @@
 <%- include('../includes/head.ejs') %>
-<body>
-    <%- include('../includes/header.ejs') %>
-    <%- include('../includes/navbar.ejs', { isLoggedIn: isLoggedIn }) %>
 
-    <div class="page-head"> 
-        <div class="container">
-            <div class="row">
-                <div class="page-head-content">
-                    <h1 class="page-title">List Layout With Sidebar</h1>               
-                </div>
-            </div>
-        </div>
-    </div>
+    <body>
+        <%- include('../includes/header.ejs') %>
+            <%- include('../includes/navbar.ejs', { isLoggedIn: isLoggedIn }) %>
 
-    <div class="content-area recent-property" style="background-color: #FFF;">
-        <div class="container">   
-            <div class="row">
-                <div class="col-md-9 pr-30 padding-top-40 properties-page user-properties">
-                    <div class="section"> 
-                        <div class="page-subheader sorting pl0 pr-10">
-                            <ul class="sort-by-list pull-left">
-                                <li class="active">
-                                    <a href="javascript:void(0);" class="order_by_date" data-orderby="property_date" data-order="ASC">
-                                        Property Date <i class="fa fa-sort-amount-asc"></i>					
-                                    </a>
-                                </li>
-                                <li class="">
-                                    <a href="javascript:void(0);" class="order_by_price" data-orderby="property_price" data-order="DESC">
-                                        Property Price <i class="fa fa-sort-numeric-desc"></i>						
-                                    </a>
-                                </li>
-                            </ul>
+                <div class="page-head">
+                    <div class="container">
+                        <div class="row">
+                            <div class="page-head-content">
+                                <h1 class="page-title">List Layout With Sidebar</h1>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="section"> 
-                        <div id="list-type" class="proerty-th-list">
-                            <% if (properties && properties.length > 0) { %>
-                                <% properties.forEach(property => { %>
-                                    <div class="col-md-4 p0">
-                                        <div class="box-two proerty-item">
-                                            <div class="item-thumb">
-                                                <a href="/property/<%= property._id %>">
-                                                    <img src="/uploads/<%= property.image %>" alt="Property Image">
+                <div class="content-area recent-property" style="background-color: #FFF;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-9 pr-30 padding-top-40 properties-page user-properties">
+                                <div class="section">
+                                    <form class="form-inline mb-3" method="GET" action="/myproperties">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" name="search"
+                                                placeholder="Search by Property Name" value="<%= searchQuery %>"/>
+                                        </div>
+                                        <button type="submit" class="btn " style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Search</button>
+                                    </form>
+                                </div>
+                                <div class="section">
+                                    <div class="page-subheader sorting pl0 pr-10">
+                                        <ul class="sort-by-list pull-left">
+                                            <li class="active">
+                                                <a href="javascript:void(0);" class="order_by_date"
+                                                    data-orderby="property_date" data-order="ASC">
+                                                    Property Date <i class="fa fa-sort-amount-asc"></i>
                                                 </a>
-                                            </div>
-                                            <div class="item-entry overflow">
-                                                <h5><a href="/property/<%= property._id %>"><%= property.title %></a></h5>
-                                                <span class="pull-left"><b>Name :</b> <%= property.name %> </span>
-                                                <br>
-                                                <span class="pull-left"><b>Area :</b> <%= property.area %>m² </span>
-                                                <span class="proerty-price pull-right">$ <%= property.price %></span>
-                                                <p style="display: none;"><%= property.description %></p>
-                                                <div class="property-icon">
-                                                         
-                                            <img src="/assets/img/icon/bed.png">(<%= property.beds %>)|
-                                                    <img src="/assets/img/icon/shawer.png">(<%= property.baths %>)|
-                                                      
-                                                    <div class="dealer-action pull-right">                                        
-                                                        <a href="/property/edit/<%= property._id %>" class="button">Edit</a>
-                                                        <form action="/property/delete/<%= property._id %>" method="POST" style="display: inline;">
-                                                            <button type="submit" class="button " onclick="return confirm('Are you sure?')">Delete</button>
-                                                        </form>
-                                                        <a href="/property/<%= property._id %>" class="button">View</a>
+                                            </li>
+                                            <li class="">
+                                                <a href="javascript:void(0);" class="order_by_price"
+                                                    data-orderby="property_price" data-order="DESC">
+                                                    Property Price <i class="fa fa-sort-numeric-desc"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="section">
+                                    <div id="list-type" class="proerty-th-list">
+                                        <% if (properties && properties.length> 0) { %>
+                                            <% properties.forEach(property=> { %>
+                                                <div class="col-md-4 p0">
+                                                    <div class="box-two proerty-item">
+                                                        <div class="item-thumb">
+                                                            <a href="/property/<%= property._id %>">
+                                                                <img src="/uploads/<%= property.image %>"
+                                                                    alt="Property Image">
+                                                            </a>
+                                                        </div>
+                                                        <div class="item-entry overflow">
+                                                            <h5><a href="/property/<%= property._id %>">
+                                                                    <%= property.title %>
+                                                                </a></h5>
+                                                            <span class="pull-left"><b>Name :</b>
+                                                                <%= property.name %>
+                                                            </span>
+                                                            <br>
+                                                            <span class="pull-left"><b>Area :</b>
+                                                                <%= property.area %>m²
+                                                            </span>
+                                                            <span class="proerty-price pull-right">$ <%= property.price
+                                                                    %></span>
+                                                            <p style="display: none;">
+                                                                <%= property.description %>
+                                                            </p>
+                                                            <div class="property-icon">
+
+                                                                <img src="/assets/img/icon/bed.png">(<%= property.beds
+                                                                    %>)|
+                                                                    <img src="/assets/img/icon/shawer.png">(<%=
+                                                                        property.baths %>)|
+
+                                                                        <div class="dealer-action pull-right">
+                                                                            <a href="/property/edit/<%= property._id %>"
+                                                                                class="button">Edit</a>
+                                                                            <form
+                                                                                action="/property/delete/<%= property._id %>"
+                                                                                method="POST" style="display: inline;">
+                                                                                <button type="submit" class="button "
+                                                                                    onclick="return confirm('Are you sure?')">Delete</button>
+                                                                            </form>
+                                                                            <a href="/property/<%= property._id %>"
+                                                                                class="button">View</a>
+                                                                        </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <div class="col-md-12 text-center">
+                                                            <h3>No properties found</h3>
+                                                            <a href="/property/new" class="btn " style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Add Your
+                                                                First Property</a>
+                                                        </div>
+                                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 clear">
+                                    <div class="pull-right">
+                                        <div class="pagination">
+                                            
+                                            <ul>
+                                                <% if (currentPage> 1) { %>
+                                                    <li><a
+                                                            href="?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">Prev</a>
+                                                    </li>
+                                                    <% } else { %>
+                                                        <li class="disabled"><a href="#">Prev</a></li>
+                                                        <% } %>
+
+                                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                                <li class="<%= currentPage === i ? 'active' : '' %>">
+                                                                    <a href="?page=<%= i %>&search=<%= searchQuery %>">
+                                                                        <%= i %>
+                                                                    </a>
+                                                                </li>
+                                                                <% } %>
+
+                                                                    <% if (currentPage < totalPages) { %>
+                                                                        <li><a
+                                                                                href="?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">Next</a>
+                                                                        </li>
+                                                                        <% } else { %>
+                                                                            <li class="disabled"><a href="#">Next</a>
+                                                                            </li>
+                                                                            <% } %>
+                                            </ul>
+
                                         </div>
                                     </div>
-                                <% }); %>
-                            <% } else { %>
-                                <div class="col-md-12 text-center">
-                                    <h3>No properties found</h3>
-                                    <a href="/property/new" class="btn btn-primary">Add Your First Property</a>
                                 </div>
-                            <% } %>
-                        </div>
-                    </div>
-                    <% if (properties && properties.length > 5) { %>
-                    <div class="section"> 
-                        <div class="pull-right">
-                            <div class="pagination">
-                                <ul>
-                                    <li><a href="#">Prev</a></li>
-                                    <li><a href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li><a href="#">Next</a></li>
-                                </ul>
                             </div>
-                        </div>                
-                    </div>
-                    <% } %>
-                </div>
 
-                <div class="col-md-3 p0 padding-top-40">
-                    <div class="blog-asside-right">
-                        <div class="panel panel-default sidebar-menu wow fadeInRight animated">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Welcome <%= user.First_Name %></h3>
-                            </div>
-                            <div class="panel-body search-widget">
-                            </div>
-                        </div>
-                        <div class="panel panel-default sidebar-menu wow fadeInRight animated">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Recommended</h3>
-                            </div>
-                            <div class="panel-body recent-property-widget">
+                            <div class="col-md-3 p0 padding-top-40">
+                                <div class="blog-asside-right">
+                                    <div class="panel panel-default sidebar-menu wow fadeInRight animated">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Welcome <%= user.First_Name %>
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body search-widget">
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default sidebar-menu wow fadeInRight animated">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Recommended</h3>
+                                        </div>
+                                        <div class="panel-body recent-property-widget">
 
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <%- include('../includes/footer.ejs') %>
+                <%- include('../includes/footer.ejs') %>
 
     <%- include('../includes/end.ejs') %>
 

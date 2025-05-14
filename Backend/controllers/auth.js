@@ -34,7 +34,8 @@ exports.getLogin = async (req, res) => {
             companyInfo: companyInfo,
             navbar: navbar,
             blogs:blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn,
+             isAgent: req.session.isAgent || false,
         });
     } catch (err) {
         console.error('Login error:', err);
@@ -71,7 +72,8 @@ exports.getSignup = async (req, res) => {
             companyInfo: companyInfo,
             navbar: navbar,
             blogs:blogs,
-            isLoggedIn: req.session.isLoggedIn
+            isLoggedIn: req.session.isLoggedIn,
+             isAgent: req.session.isAgent || false,
         });
     } catch (err) {
         console.error(err);
@@ -115,7 +117,8 @@ exports.postSignup = async (req, res) => {
                 companyInfo,
                 navbar,
                 blogs,  // Add blogs
-                isLoggedIn: req.session.isLoggedIn
+                isLoggedIn: req.session.isLoggedIn,
+                 isAgent: req.session.isAgent || false,
             });
         }
  
@@ -135,7 +138,8 @@ exports.postSignup = async (req, res) => {
                 companyInfo: companyInfo,
                 navbar: navbar,
                 blogs,
-                isLoggedIn: req.session.isLoggedIn
+                isLoggedIn: req.session.isLoggedIn,
+                 isAgent: req.session.isAgent || false,
             });
         }
  
@@ -197,7 +201,8 @@ exports.postLogin = async (req, res, next) => {
                 validationErrors: errors.array(),
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
-                isLoggedIn: false
+                isLoggedIn: false,
+                 isAgent: false,
             });
         }
 
@@ -213,7 +218,8 @@ exports.postLogin = async (req, res, next) => {
                 validationErrors: [{ param: 'Email' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
-                isLoggedIn: false
+                isLoggedIn: false,
+                 isAgent: false,
             });
         }
 
@@ -228,12 +234,14 @@ exports.postLogin = async (req, res, next) => {
                 validationErrors: [{ param: 'Password' }],
                 oldInput: { Email, Password },
                 companyInfo, navbar, blogs,
-                isLoggedIn: false
+                isLoggedIn: false,
+                 isAgent: false,
             });
         }
 
         // Login successful - set session
         req.session.isLoggedIn = true;
+        req.session.isAgent = false;
         req.session.user = user;
         req.session.userId = user._id;
 
@@ -271,7 +279,8 @@ exports.postLogin = async (req, res, next) => {
             companyInfo: null,
             navbar: [],
             blogs: [],
-            isLoggedIn: false
+            isLoggedIn: false,
+             isAgent: false,
         });
     }
 };
@@ -306,7 +315,8 @@ exports.getReset = async(req, res) => {
             companyInfo: companyInfo,
             navbar: navbar,
             blogs: blogs,
-            isLoggedIn: req.session ? req.session.isLoggedIn : false
+            isLoggedIn: req.session ? req.session.isLoggedIn : false,
+             isAgent: false,
         });
     } catch (err) {
         console.error('Reset page error:', err);
@@ -317,7 +327,8 @@ exports.getReset = async(req, res) => {
             companyInfo: null,
             navbar: [],
             blogs: [],
-            isLoggedIn: false
+            isLoggedIn: false,
+             isAgent: false,
         });
     }
 };
