@@ -2,6 +2,7 @@
 ::1 - - [10/May/2025:05:47:00 +0000] "POST /property HTTP/1.1" 200 57871 "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [10/May/2025:05:48:50 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [10/May/2025:05:49:26 +0000] "POST /property HTTP/1.1" 200 57871 "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+<<<<<<< HEAD
 ::1 - - [12/May/2025:10:34:48 +0000] "GET /property/new HTTP/1.1" 200 101381 "http://localhost:3006/myproperties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [12/May/2025:10:36:17 +0000] "POST /property HTTP/1.1" 200 57871 "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [12/May/2025:10:36:40 +0000] "GET /property/edit/6821cf2159c63d0b16c4c10f HTTP/1.1" 200 84956 "http://localhost:3006/myproperties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
@@ -95,3 +96,16 @@
 ::1 - - [14/May/2025:05:15:47 +0000] "POST /property/buy/68198d58b801a92cb8e9c0af HTTP/1.1" 200 75 "http://localhost:3006/property/buy/68198d58b801a92cb8e9c0af" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:05:21:49 +0000] "GET /property/new HTTP/1.1" 200 101381 "http://localhost:3006/myproperties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [14/May/2025:05:23:18 +0000] "POST /property HTTP/1.1" 500 21 "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+=======
+::1 - - [12/May/2025:03:58:58 +0000] "GET /property/new HTTP/1.1" 200 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:04:00:03 +0000] "POST /property HTTP/1.1" 200 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:10:31:37 +0000] "GET /property/new HTTP/1.1" 302 35 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:10:31:45 +0000] "GET /property/new HTTP/1.1" 302 35 "http://localhost:3006/properties?keyword=&stateId=680a234354b8090dd83e500f&statusId=&priceRange=&minBaths=&maxBaths=&minBeds=&areaRange=&features=Laundry+Room" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:10:32:07 +0000] "GET /property/new HTTP/1.1" 200 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:10:32:15 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:11:55:41 +0000] "GET /property/68217243221ea35f468ff9d5 HTTP/1.1" 200 - "http://localhost:3006/properties?page=4" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [12/May/2025:11:57:34 +0000] "GET /property/68217243221ea35f468ff9d5 HTTP/1.1" 304 - "http://localhost:3006/properties?page=4" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [13/May/2025:06:13:46 +0000] "GET /property/681989431c1afa4ca70361bb HTTP/1.1" 200 - "http://localhost:3006/properties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [13/May/2025:09:57:07 +0000] "GET /property/new HTTP/1.1" 302 35 "http://localhost:3006/properties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [13/May/2025:10:02:50 +0000] "GET /property/681989431c1afa4ca70361bb HTTP/1.1" 200 - "http://localhost:3006/properties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+>>>>>>> dca7baf29534994b28a393bfbebff3c526f0a168

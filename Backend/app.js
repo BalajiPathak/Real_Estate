@@ -36,8 +36,13 @@ const resolvers = require('./graphql/resolvers');
 const fs = require('fs');
 const multer = require('multer');
 const morgan = require('morgan');
+<<<<<<< HEAD
 const AgentMessage = require('./models/agentMessage'); // Add this import
 
+=======
+const compression =require('compression');
+const bodyParser=require('body-parser');
+>>>>>>> dca7baf29534994b28a393bfbebff3c526f0a168
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));
@@ -109,8 +114,14 @@ app.use((req, res, next) => {
     next();
 });
 
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+ 
+
+
 // helmet for security
-// Apply helmet globally for overall security
+//  helmet globally for overall security
 
 app.use('/login',
     helmet({
@@ -172,8 +183,13 @@ app.use('/signup',
 );
 // Apply helmet specifically for login and signup routes
 
-//graphQL
+//compression
+app.use(compression());
 
+// app.get('/login', (req, res) => {
+//       const data = 'Large string data...'.repeat(1000);
+//       console.log(data);
+//     });
 // Add after other middleware configurations
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -286,6 +302,9 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true,
     rootValue: resolvers
 }));
+
+
+//body-parser
 
 
 

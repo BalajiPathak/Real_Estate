@@ -30,9 +30,11 @@
                     <form action="/logout" method="post" style="display: inline;">
                         <button type="submit" class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.45s">Logout</button>
                     </form>
+                    <% if (locals.isAgent) { %>
                     <a href="/property/new"> 
                         <button class="navbar-btn nav-button wow fadeInRight" data-wow-delay="0.48s">Submit Your Property</button>
                     </a>
+                     <% } %>
                 <% } %>
             </div>
             <ul class="main-nav nav navbar-nav navbar-right">
@@ -71,8 +73,10 @@
                                                 <div class="col-sm-3">
                                                     <h5>User account</h5>
                                                     <ul>
+                                                         <% if (locals.isAgent) { %>
                                                         <li><a href="/myproperties">Your properties</a></li>
                                                         <li><a href="/property/new">Submit property</a></li>
+                                                           <% } %>
                                                         <li><a href="/changePassword">Change Password</a></li>
                                                         <li><a href="/userprofile">Your profile</a></li>
                                                     </ul>

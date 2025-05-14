@@ -4,6 +4,7 @@ const { check, body } = require('express-validator');
 const router = express.Router();
 const propertyController = require('../controllers/property');
 const upload = require('../middleware/uploads');
+
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');

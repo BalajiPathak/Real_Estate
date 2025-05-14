@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+<<<<<<< HEAD
     // Handle new messages for all users
     socket.on('newAgentMessage', function(message) {
         if (!isAgent && messagesList) {
@@ -28,6 +29,15 @@ document.addEventListener('DOMContentLoaded', function() {
             messagesList.scrollTop = 0;
         }
     });
+=======
+            // Clear the input and show confirmation
+            document.getElementById('messageContent').value = '';
+            console.log('Message sent successfully!');
+        });
+    } else if (isLoggedIn) {
+        const messagesList = document.getElementById('messagesList');
+        if (!messagesList) return;
+>>>>>>> dca7baf29534994b28a393bfbebff3c526f0a168
 
     function appendMessage(message) {
         const messageDiv = document.createElement('div');
