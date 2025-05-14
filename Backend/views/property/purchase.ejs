@@ -2,6 +2,7 @@
 <%- include('../includes/header.ejs') %>
 <%- include('../includes/navbar.ejs') %>
 
+<!-- Add these additional styles -->
 <style>
     .purchase-container {
         max-width: 1200px;
@@ -75,26 +76,76 @@
         background-color: #b88928;
         transform: translateY(-2px);
     }
+    #payment-form {
+        width: 100%;
+        margin-top: 20px;
+    }
+    #card-element {
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background: white;
+        margin-bottom: 20px;
+    }
+    #card-errors {
+        color: #dc3545;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    .payment-processing {
+        display: none;
+        text-align: center;
+        margin-top: 15px;
+    }
 </style>
 
 <div class="purchase-container">
     <div class="purchase-wrapper">
         <div class="purchase-card">
             <div class="purchase-header">
-                <h3 class="purchase-title">Purchase Property</h3>
+                <h3 class="purchase-title">Secure Payment</h3>
             </div>
             <div class="purchase-body">
-                <h5 class="property-name"><%= property.name %></h5>
-                <p class="property-price">
-                    <strong class="price-text">
-                        Price: $<%= property.price.toLocaleString() %>
-                    </strong>
-                </p>
-                <div class="button-wrapper">
-                    <button id="checkout-button" class="checkout-button">
-                        Proceed to Payment
-                    </button>
+                <div class="payment-summary">
+                    <h5 class="property-name"><%= property.name %></h5>
+                    <div class="summary-row text-center">
+                        <span>Property Price:</span>
+                        <span>$<%= property.price.toLocaleString() %></span>
+                    </div>
+                    <div class="summary-row summary-total text-center">
+                        <span>Total Amount:</span>
+                        <span>$<%= property.price.toLocaleString() %></span>
+                    </div>
                 </div>
+
+                <form id="payment-form">
+                    <div class="payment-section">
+                        <div class="payment-row ">
+                            <div class="payment-field">
+                                <label class="payment-label">Email</label>
+                                <input type="email" class="payment-input" value="<%= user.Email %>" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-row">
+                            <div class="payment-field">
+                                <label class="payment-label">Card Information</label>
+                                <div id="card-element" class="payment-input"></div>
+                                <div id="card-errors" role="alert"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-wrapper">
+                        <button type="submit" id="checkout-button" class="checkout-button">
+                            Pay $<%= property.price.toLocaleString() %>
+                        </button>
+                    </div>
+                    <div class="payment-processing">
+                        <div class="spinner"></div>
+                        <p>Processing your payment...</p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -103,15 +154,64 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     const stripe = Stripe('<%= stripePublicKey %>');
-    const checkoutButton = document.getElementById('checkout-button');
+    const elements = stripe.elements();
 
-    checkoutButton.addEventListener('click', async () => {
+    // Custom styling for the card Element
+    const style = {
+        base: {
+            fontSize: '16px',
+            color: '#2c3e50',
+            '::placeholder': {
+                color: '#aab7c4'
+            },
+            iconColor: '#d3a033'
+        },
+        invalid: {
+            color: '#dc3545',
+            iconColor: '#dc3545'
+        }
+    };
+
+    // Create card Element with custom styling
+    const card = elements.create('card', {
+        style: style,
+        hidePostalCode: true
+    });
+    card.mount('#card-element');
+
+    // Show card brand icon
+    card.on('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+        
+        // Update card brand icon
+        if (event.brand) {
+            const brandIcon = document.querySelector('.card-icon');
+            if (brandIcon) {
+                brandIcon.src = `/assets/img/cards/${event.brand}.png`;
+            }
+        }
+    });
+
+    // Handle form submission
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('checkout-button');
+    
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        submitButton.disabled = true;
+        document.querySelector('.payment-processing').style.display = 'block';
+
         try {
-            // Get the property ID from the current URL
             const pathParts = window.location.pathname.split('/');
             const propertyId = pathParts[pathParts.length - 1];
 
-            // Call your server to create a Checkout Session
+            // Create payment intent
             const response = await fetch(`/property/buy/${propertyId}`, {
                 method: 'POST',
                 headers: {
@@ -122,21 +222,34 @@
             const session = await response.json();
 
             if (session.error) {
-                alert(session.error);
+                window.location.href = `/property/purchase/cancel?error=${encodeURIComponent(session.error)}`;
                 return;
             }
 
-            // Redirect to Stripe Checkout
-            const result = await stripe.redirectToCheckout({
-                sessionId: session.id
+            // Confirm card payment
+            const result = await stripe.confirmCardPayment(session.clientSecret, {
+                payment_method: {
+                    card: card,
+                }
             });
 
             if (result.error) {
-                alert(result.error.message);
+                // Redirect to cancel page with error message
+                window.location.href = `/property/purchase/cancel?error=${encodeURIComponent(result.error.message)}`;
+                return;
             }
+
+            if (result.paymentIntent.status === 'succeeded') {
+                // Payment successful
+                window.location.href = `/property/purchase/success?session_id=${result.paymentIntent.id}`;
+            } else {
+                // Payment failed or other status
+                window.location.href = `/property/purchase/cancel?status=${result.paymentIntent.status}`;
+            }
+
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            // Network or other errors - redirect to cancel page
+            window.location.href = `/property/purchase/cancel?error=${encodeURIComponent(error.message)}`;
         }
     });
 </script>
