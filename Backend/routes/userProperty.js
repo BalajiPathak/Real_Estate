@@ -1,9 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const userPropertyController = require('../controllers/userProperty');
+const PropertyVideo = require('../models/propertyVideo');
+const { PropertyFeature, PropertyDataFeature } = require('../models/propertyFeature');
+const { check, body } = require('express-validator');
 const multer = require('multer');
 const isAuth = require('../middleware/is-auth');
-const path = require('path');
+const isAgent=require('../middleware/isAgent');
+const City = require('../models/city'); // Add this at the top
+
+// Add this route to fetch cities by state
+router.get('/api/cities/:stateId', async (req, res) => {
+    try {
+        const cities = await City.find({ stateId: req.params.stateId });
+        res.json(cities);
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+        res.status(500).json({ error: 'Failed to fetch cities' });
+    }
+});
 
 // Multer configuration for image uploads
 const storage = multer.diskStorage({
@@ -35,7 +50,10 @@ router.get('/property/edit/:id',isAuth, userPropertyController.getEditProperty);
 router.post('/user/property/:id', isAuth, upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'galleryImages', maxCount: 5 }
-]), userPropertyController.postEditProperty);
+]),[ check('phone')
+    .isLength({ min: 10, max: 10 })
+    .withMessage('Mobile number should contains 10 digits')
+   ],isAgent, userPropertyController.postEditProperty);
 
 router.post('/property/delete/:id',isAuth,  userPropertyController.deleteProperty);
 

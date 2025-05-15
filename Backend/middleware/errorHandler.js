@@ -2,6 +2,7 @@
 const CompanyInfo = require('../models/companyInfo');  
 const Navbar = require('../models/navbar');
 const Blog = require('../models/blog');
+const isAgent = require('./isAgent');
 
 exports.handle404 = async (req, res, next) => {
     try {
@@ -18,6 +19,7 @@ exports.handle404 = async (req, res, next) => {
             navbar: navbar || [],
             blogs: blogs || [],
             isLoggedIn: req.session && req.session.isLoggedIn || false,
+            isAgent:eq.session && req.session.isAgent || false,  // Add this line
             validationErrors: [],
             errorMessage: null
         });
