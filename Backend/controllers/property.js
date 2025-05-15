@@ -415,7 +415,7 @@ exports.submitProperty = async (req, res, next) => {
       successMessage:'You have successfully submitted the Property',
       companyInfo:companyInfo||[],
       navbar:navbar ||[],
-      blogs:blogs ||[],
+      blogs:blogs ||[],      
     });
   } catch (error) {
     console.error('Error saving property:', error);
