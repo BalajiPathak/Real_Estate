@@ -99,9 +99,36 @@ const skip = (page - 1) * limit;
     
     const totalProperties = await PropertyData.countDocuments(finalFilter);
 const totalPages = Math.ceil(totalProperties / limit);
-const properties = await PropertyData.find(finalFilter).skip(skip).limit(limit)
-      .skip(skip)
-      .limit(limit);
+// In getAllProperties function, update the properties query
+const properties = await PropertyData.find(finalFilter)
+  .populate('categoryId stateId statusId cityId') // Add cityId to populate
+  .skip(skip)
+  .limit(limit);
+
+// In getPropertyById function, update the property query
+const property = await PropertyData.findById(req.params.id)
+  .populate([
+    { path: 'categoryId' },
+    { path: 'stateId' },
+    { path: 'statusId' },
+    { path: 'userId' },
+    { path: 'cityId' }  // Add this line
+  ])
+  .lean();
+
+// In the filters section, add cityId filter
+if (req.query.cityId) {
+  filters.push({ cityId: req.query.cityId });
+}
+
+// In the relatedProperties query
+const relatedProperties = await PropertyData.find({
+  categoryId: property.categoryId,
+  _id: { $ne: property._id }
+})
+  .limit(4)
+  .populate('categoryId stateId statusId userId cityId')  // Add cityId here
+  .lean();
  
       const disablePagination = !(isLoggedIn || isAgent);
     const selectedFilters = [];
@@ -212,16 +239,16 @@ const property = await PropertyData.findById(req.params.id)
     const videos = await PropertyVideo.find({ propertyId: property._id }).lean();
  
    
-    const relatedProperties = await PropertyData.find({
+    const relatedProperties = property.categoryId ? await PropertyData.find({
       categoryId: property.categoryId,
       _id: { $ne: property._id }
     })
-      .limit(4)
-      .populate('categoryId stateId statusId userId')
-      .lean();
- 
-   
-    for (let related of relatedProperties) {
+    .limit(4)
+    .populate('categoryId stateId statusId userId cityId')
+    .lean() : [];
+    
+    // If no related properties are found, provide an empty array
+    for (let related of relatedProperties || []) {
       const relFeatures = await PropertyDataFeature.find({ propertyId: related._id })
         .populate('featureId')
         .lean();
@@ -287,26 +314,13 @@ blogs:blogs ||[],
 };
  
 exports.submitProperty = async (req, res, next) => {
-   
- 
-  console.log('Session:', req.session);
-  console.log('User ID in session:', req.session.userId);
-  console.log('Is logged in:', req.session.isLoggedIn);
- 
-  if (!req.session.isLoggedIn) {
-      return res.redirect('/login');
+  if (!req.session.isLoggedIn || !req.session.isAgent) {
+    return res.status(403).redirect('/login');
   }
- 
-  if (!req.session.userId) {
-      console.log('User ID missing in session');
-      return res.status(401).json({ error: 'User not authenticated' });
-  }
- 
-  const companyInfo = await CompanyInfo.findOne();  
-  const navbar = await Navbar.find();  
+  const companyInfo = await CompanyInfo.findOne();
+  const navbar = await Navbar.find();
   const blogs = await Blog.find();
- 
- 
+  // const userId = req.session.user._id;
   try {
     const {
       name,
@@ -339,6 +353,16 @@ exports.submitProperty = async (req, res, next) => {
     }
  
    
+    // Verify if city belongs to selected state
+    const cityExists = await City.findOne({
+      _id: req.body.cityId,
+      stateId: req.body.stateId
+    });
+
+    if (!cityExists) {
+      return res.status(400).json({ error: 'Selected city does not belong to the selected state' });
+    }
+
     const newProperty = new PropertyData({
       name,
       price,

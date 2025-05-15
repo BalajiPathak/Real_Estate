@@ -44,7 +44,7 @@ exports.getUserProperties = async (req, res) => {
     const totalPages = Math.ceil(totalPropertie / limit);
  
     const propertie = await Property.find(finalFilter)
-      .populate('categoryId stateId statusId')
+      .populate('categoryId stateId statusId cityId') // Add cityId to populate
       .skip(skip)
       .limit(limit);
  
@@ -78,23 +78,22 @@ exports.getEditProperty = async (req, res) => {
     try {
         const propertyId = req.params.id;
         
-        // Get the base property data without cityId population
+        // Get the base property data with all necessary populations
         const property = await Property.findById(propertyId)
             .populate('stateId')
             .populate('categoryId')
-            .populate('statusId');
+            .populate('statusId')
+            .populate('cityId');
 
         if (!property) {
             return res.status(404).redirect('/myproperties');
         }
 
-        // Get all states
-        const states = await State.find();
-        
-        // Get cities based on the property's stateId
-        const cities = await City.find({ 
-            stateId: property.stateId._id 
-        });
+        // Get all states and cities for the selected state
+        const [states, cities] = await Promise.all([
+            State.find(),
+            City.find({ stateId: property.stateId._id })
+        ]);
 
         // Fetch other related data
         const [
@@ -129,7 +128,7 @@ exports.getEditProperty = async (req, res) => {
             path: '/myproperties',
             property: property,
             cities: cities,
-            states: states,
+            states: states,  // Now states is defined
             categories: categories,
             statuses: statuses,
             features: allFeatures,
@@ -195,10 +194,10 @@ exports.postEditProperty = async (req, res) => {
             saleStatus: "available",
             phone: req.body.phone,
             description: req.body.description,
-            stateId: req.body.stateId,  // Remove mongoose.Types.ObjectId conversion
-            cityId: req.body.cityId,    // Remove mongoose.Types.ObjectId conversion
-            categoryId: new mongoose.Types.ObjectId(req.body.categoryId),
-            statusId: new mongoose.Types.ObjectId(req.body.statusId),
+            stateId: req.body.stateId,
+            cityId: req.body.cityId,  // Make sure cityId is included
+            categoryId: req.body.categoryId,
+            statusId: req.body.statusId,
             beds: req.body.beds,
             baths: req.body.baths,
             area: req.body.area,

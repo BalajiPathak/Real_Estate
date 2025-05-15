@@ -120,11 +120,12 @@
                                                                 <label>Property City :</label>
                                                                 <select name="cityId" class="form-control" required>
                                                                     <option value="">Select City</option>
-                                                                    <% cities.forEach(city=> { %>
-                                                                        <option value="<%= city._id %>">
+                                                                    <% cities.forEach(city => { %>
+                                                                        <option value="<%= city._id %>" 
+                                                                            <%= city._id.toString() === property.cityId._id.toString() ? 'selected' : '' %>>
                                                                             <%= city.name %>
                                                                         </option>
-                                                                        <% }) %>
+                                                                    <% }) %>
                                                                 </select>
                                                             </div>
                                                         </div>
