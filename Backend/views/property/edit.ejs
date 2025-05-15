@@ -67,8 +67,7 @@
                                                         <div class="form-group">
                                                             <label>Property price <small>(required)</small></label>
                                                             <input name="price" type="number" class="form-control"
-                                                                value="<%= property.price %>" required min="1"
-                                                                max="50000" step="0.01"
+                                                                value="<%= property.price %>" required min="3000" max="99999" step="0.01"
                                                                 title="Price must be between 1 and 50000">
                                                         </div>
                                                         <div class="form-group">
@@ -76,10 +75,9 @@
                                                                     phone number)</small></label>
                                                             <input name="phone" type="tel" class="form-control"
                                                                 value="<%= property.phone %>"
-                                                                placeholder="+1 (XXX) XXX-XXXX" pattern="[0-9]{10}"
-                                                                maxlength="10"
-                                                                title="Phone number must be exactly 10 digits"
-                                                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+                                                                placeholder="+1 (XXX) XXX-XXXX" min="6000000000"
+                                                                max="9999999999"
+                                                                title="Telephone must be required and contains 10 digit">
                                                         </div>
                                                     </div>
                                                 </div>

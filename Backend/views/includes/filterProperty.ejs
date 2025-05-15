@@ -78,8 +78,8 @@
               <label>Price range ($):</label>
               <input type="text" id="price-range" class="span2"  style="margin-bottom: 15px;"/>
               <br />
-              <b class="pull-left color">300000$</b>
-              <b class="pull-right color">10000000$</b>
+              <b class="pull-left color">3000$</b>
+              <b class="pull-right color">99999$</b>
               <input type="hidden" name="priceRange" id="priceRangeInput" value="<%= typeof priceRange !== 'undefined' ? priceRange : '' %>" />
             </div>
 
@@ -174,10 +174,10 @@
     document.addEventListener('DOMContentLoaded', function() {
       
       var priceSlider = new Slider('#price-range', {
-        min: 3000000,
-        max: 10000000,
+        min: 3000,
+        max: 99999,
         step: 1000,
-        value: [3000000, 10000000],
+        value: [3000, 99999],
         tooltip_split: true,
         range: true
       });
