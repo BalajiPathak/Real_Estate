@@ -172,7 +172,7 @@ exports.postSignup = async (req, res) => {
         });
  
         await user.save();
-        res.redirect('/auth/welcome');  // Changed from 'auth/welcome' to '/auth/welcome'
+        res.redirect('/login');  // Changed from 'auth/welcome' to '/auth/welcome'
  
     } catch (err) {
         console.error('Signup error:', err);

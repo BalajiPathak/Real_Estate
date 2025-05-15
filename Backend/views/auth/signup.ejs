@@ -1,141 +1,145 @@
 <%- include('../includes/head.ejs') %>
-<%- include('../includes/header.ejs') %>
-<%- include('../includes/navbar.ejs') %>
+    <%- include('../includes/header.ejs') %>
+        <%- include('../includes/navbar.ejs') %>
 
-<body class="bg-gray-100">
-    <div class="page-head">
-        <div class="container">
-            <div class="row">
-                <div class="page-head-content">
-                    <h1 class="page-title">Home New account / Sign in </h1>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="register-area" style="background-color: rgb(249, 249, 249);">
-        <div class="container">
-            <div class="col-md-6">
-                <div class="box-for overflow">
-                    <style>
-                        .required-field::after {
-                            content: "*";
-                            color: #ff0000;
-                            margin-left: 4px;
-                        }
-                    </style>
-                    <div class="col-md-12 col-xs-12 register-blocks">
-                        <h2>New account : </h2>
-
-                        <% if (errorMessage && errorMessage !== null) { %>
-                            <div class="alert alert-danger">
-                                <%= errorMessage %>
+            <body class="bg-gray-100">
+                <div class="page-head">
+                    <div class="container">
+                        <div class="row">
+                            <div class="page-head-content">
+                                <h1 class="page-title">Home New account / Sign in </h1>
                             </div>
-                        <% } %>
-
-                        
-                        <form action="/signup" method="post">
-                            <div class="form-group">
-                                <label class="required-field" for="First_Name">First Name</label>
-                                <input type="text" 
-                                    class="form-control <%= validationErrors.find(e => e.param === 'First_Name') ? 'is-invalid' : '' %>"
-                                    id="First_Name"
-                                    name="First_Name"
-                                    value="<%= oldInput.First_Name %>"
-                                    required>
-                                <% if (validationErrors.find(e => e.param === 'First_Name')) { %>
-                                    <div class="invalid-feedback">
-                                        First name is required
-                                    </div>
-                                <% } %>
-                            </div>
-                            <div class="form-group">
-                                <label class="required-field" for="Last_Name">Last Name</label>
-                                <input type="text" 
-                                    class="form-control <%= validationErrors.find(e => e.param === 'Last_Name') ? 'is-invalid' : '' %>"
-                                    id="Last_Name"
-                                    name="Last_Name"
-                                    value="<%= oldInput.Last_Name %>"
-                                    required>
-                            </div>
-                            <div class="form-group">
-                                <label class="required-field" for="Email">Email</label>
-                                <input type="email" 
-                                    class="form-control <%= validationErrors.find(e => e.param === 'Email') ? 'is-invalid' : '' %>"
-                                    id="Email"
-                                    name="Email"
-                                    value="<%= oldInput.Email %>"
-                                    required>
-                            </div>
-                            <div class="form-group">
-                                <label class="required-field" for="Password">Password</label>
-                                <input type="password" 
-                                    class="form-control <%= validationErrors.find(e => e.param === 'Password') ? 'is-invalid' : '' %>"
-                                    id="Password"
-                                    name="Password"
-                                    value=""
-                                    required>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-default" style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Register</button>
-                            </div>
-                        </form>
-                        <br>
-                        <h2>Social login : </h2>
-
-                        <p>
-                            <a class="login-social" href="/auth/google" >
-                                <i class="fa fa-google-plus"></i>&nbsp;Sign up with Google
-                            </a>
-                            <a class="login-social" href="/auth/facebook" >
-                                <i class="fa fa-facebook"></i>&nbsp;Sign up with Facebook
-                            </a>
-                        </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-   <!-- Keep existing form structure, update the style section -->
+                <div class="register-area" style="background-color: rgb(249, 249, 249);">
+                    <div class="container">
+                        <div class="col-md-6">
+                            <div class="box-for overflow">
+                                <style>
+                                    .required-field::after {
+                                        content: "*";
+                                        color: #ff0000;
+                                        margin-left: 4px;
+                                    }
+                                </style>
+                                <div class="col-md-12 col-xs-12 register-blocks">
+                                    <h2>New account : </h2>
+                                    <div id="response-message"></div>
 
-<style>
-    .form-control.is-invalid {
-        border-color: #dc3545 !important;
-        background-color: #fff8f8 !important;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-    }
+                                    <% if (errorMessage && errorMessage !==null) { %>
+                                        <div class="alert alert-danger">
+                                            <%= errorMessage %>
+                                        </div>
+                                        <% } %>
 
-    .invalid-feedback {
-        display: block !important;
-        width: 100%;
-        margin-top: 0.25rem;
-        font-size: 80%;
-        color: #dc3545;
-    }
 
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-    }
+                                            <form action="/signup" method="post" id="signupForm">
+                                                <div class="form-group">
+                                                    <label class="required-field" for="First_Name">First Name</label>
+                                                    <input type="text"
+                                                        class="form-control <%= validationErrors.find(e => e.param === 'First_Name') ? 'is-invalid' : '' %>"
+                                                        id="First_Name" name="First_Name"
+                                                        value="<%= oldInput.First_Name %>" required>
+                                                    <% if (validationErrors.find(e=> e.param === 'First_Name')) { %>
+                                                        <div class="invalid-feedback">
+                                                            First name is required
+                                                        </div>
+                                                        <% } %>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="required-field" for="Last_Name">Last Name</label>
+                                                    <input type="text"
+                                                        class="form-control <%= validationErrors.find(e => e.param === 'Last_Name') ? 'is-invalid' : '' %>"
+                                                        id="Last_Name" name="Last_Name"
+                                                        value="<%= oldInput.Last_Name %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="required-field" for="Email">Email</label>
+                                                    <input type="email"
+                                                        class="form-control <%= validationErrors.find(e => e.param === 'Email') ? 'is-invalid' : '' %>"
+                                                        id="Email" name="Email" value="<%= oldInput.Email %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="required-field" for="Password">Password</label>
+                                                    <input type="password"
+                                                        class="form-control <%= validationErrors.find(e => e.param === 'Password') ? 'is-invalid' : '' %>"
+                                                        id="Password" name="Password" value="" required>
+                                                </div>
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn btn-default"
+                                                        style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Register</button>
+                                                </div>
+                                            </form>
+                                            <br>
+                                            <h2>Social login : </h2>
 
-    .alert-danger {
-        color: #721c24;
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-    }
+                                            <p>
+                                                <a class="login-social" href="/auth/google">
+                                                    <i class="fa fa-google-plus"></i>&nbsp;Sign up with Google
+                                                </a>
+                                                <a class="login-social" href="/auth/facebook">
+                                                    <i class="fa fa-facebook"></i>&nbsp;Sign up with Facebook
+                                                </a>
+                                            </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    .form-group {
-        margin-bottom: 1rem;
-    }
+                <!-- Keep existing form structure, update the style section -->
 
-    .form-control:focus.is-invalid {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-    }
-</style>
-<%- include('../includes/footer.ejs') %>
+                <style>
+                    .form-control.is-invalid {
+                        border-color: #dc3545 !important;
+                        background-color: #fff8f8 !important;
+                        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+                    }
 
-<%- include('../includes/end.ejs') %>
+                    .invalid-feedback {
+                        display: block !important;
+                        width: 100%;
+                        margin-top: 0.25rem;
+                        font-size: 80%;
+                        color: #dc3545;
+                    }
+
+                    .alert {
+                        padding: 15px;
+                        margin-bottom: 20px;
+                        border: 1px solid transparent;
+                        border-radius: 4px;
+                    }
+
+                    .alert-danger {
+                        color: #721c24;
+                        background-color: #f8d7da;
+                        border-color: #f5c6cb;
+                    }
+
+                    .form-group {
+                        margin-bottom: 1rem;
+                    }
+
+                    .form-control:focus.is-invalid {
+                        border-color: #dc3545;
+                        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+                    }
+                </style>
+                <%- include('../includes/footer.ejs') %>
+                    <script>
+                        document.getElementById('signupForm').addEventListener('submit', async function (e) {
+                          
+                                const messageDiv = document.getElementById('response-message');
+                                messageDiv.innerHTML = `<div class="alert alert-success text-center">
+                                 Your account has been created successfully</div>`;
+                                setTimeout(function () {
+                                    window.location.href = '/login';
+                                }, 5000);
+
+                        });
+                    </script>
+
+                    <%- include('../includes/end.ejs') %>

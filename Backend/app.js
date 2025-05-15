@@ -39,7 +39,7 @@ const morgan = require('morgan');
 const compression =require('compression');
 const bodyParser=require('body-parser');
 const AgentMessage = require('./models/agentMessage'); 
-
+const cors =require('cors');
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));
@@ -302,7 +302,7 @@ app.use('/graphql', graphqlHTTP({
 
 
 //body-parser
-
+app.use(cors());
 
 
 app.use(homeRoutes);

@@ -100,6 +100,6 @@ router.get('/auth/facebook/callback',
     }
 );
 // Fix the route path (add leading slash)
-router.get('/auth/welcome', authController.getWelcome);  // Changed from 'auth/welcome' to '/auth/welcome'
+// router.get('/auth/welcome', authController.getWelcome);  // Changed from 'auth/welcome' to '/auth/welcome'
 
 module.exports = router;
