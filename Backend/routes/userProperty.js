@@ -1,24 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const userPropertyController = require('../controllers/userProperty');
-const PropertyVideo = require('../models/propertyVideo');
-const { PropertyFeature, PropertyDataFeature } = require('../models/propertyFeature');
 const { check, body } = require('express-validator');
 const multer = require('multer');
 const isAuth = require('../middleware/is-auth');
-const isAgent=require('../middleware/isAgent');
-const City = require('../models/city'); // Add this at the top
-
-// Add this route to fetch cities by state
-router.get('/api/cities/:stateId', async (req, res) => {
-    try {
-        const cities = await City.find({ stateId: req.params.stateId });
-        res.json(cities);
-    } catch (error) {
-        console.error('Error fetching cities:', error);
-        res.status(500).json({ error: 'Failed to fetch cities' });
-    }
-});
+const isAgent = require('../middleware/isAgent');
 
 // Multer configuration for image uploads
 const storage = multer.diskStorage({
@@ -46,15 +32,114 @@ const upload = multer({
 router.get('/myproperties',isAuth, userPropertyController.getUserProperties);
 router.get('/property/edit/:id',isAuth, userPropertyController.getEditProperty);
 
-// Update this route to match the form action
-router.post('/user/property/:id', isAuth, upload.fields([
-    { name: 'mainImage', maxCount: 1 },
-    { name: 'galleryImages', maxCount: 5 }
-]),[ check('phone')
-    .isLength({ min: 10, max: 10 })
-    .withMessage('Mobile number should contains 10 digits')
-   ],isAgent, userPropertyController.postEditProperty);
+// Validation middleware
+const propertyValidations = [
+    body('name')
+        .trim()
+        .isLength({ min: 3, max: 100 })
+        .withMessage('Property name must be between 3 and 100 characters'),
+    
+    body('price')
+        .isFloat({ min: 1, max: 999999999 })
+        .withMessage('Price must be a valid number between 1 and 999,999,999'),
+    
+    body('phone')
+        .matches(/^\d{10}$/)
+        .withMessage('Phone number must be exactly 10 digits'),
+    
+    body('description')
+        .trim()
+        .isLength({ min: 20, max: 1000 })
+        .withMessage('Description must be between 20 and 1000 characters'),
+    
+    body('beds')
+        .isInt({ min: 1, max: 20 })
+        .withMessage('Number of beds must be between 1 and 20'),
+    
+    body('baths')
+        .isInt({ min: 1, max: 10 })
+        .withMessage('Number of baths must be between 1 and 10'),
+    
+    body('area')
+        .isFloat({ min: 1, max: 999999 })
+        .withMessage('Area must be a valid number between 1 and 999,999'),
+    
+    body('videoLink')
+        .optional({ nullable: true, checkFalsy: true })
+        .custom((value) => {
+            if (!value) return true;
+            const urlPattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+            if (!urlPattern.test(value)) {
+                throw new Error('Invalid YouTube video URL');
+            }
+            return true;
+        }),
+    
+    body('stateId')
+        .notEmpty()
+        .withMessage('State is required'),
+    
+    body('cityId')
+        .notEmpty()
+        .withMessage('City is required'),
+    
+    body('categoryId')
+        .notEmpty()
+        .withMessage('Category is required'),
+    
+    body('statusId')
+        .notEmpty()
+        .withMessage('Status is required'),
+    
+    body('termsAndConditions')
+        .toBoolean()
+        .isBoolean()
+        .equals('true')
+        .withMessage('Terms and conditions must be accepted')
+];
+
+// Image validation middleware
+const validateImages = (req, res, next) => {
+    if (req.files) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (req.files.mainImage && req.files.mainImage[0].size > maxSize) {
+            return res.status(400).json({ error: 'Main image size should not exceed 5MB' });
+        }
+        if (req.files.galleryImages) {
+            for (let file of req.files.galleryImages) {
+                if (file.size > maxSize) {
+                    return res.status(400).json({ error: 'Gallery images size should not exceed 5MB each' });
+                }
+            }
+        }
+    }
+    next();
+};
+
+// Update routes with validations
+router.post('/user/property/:id', 
+    isAuth, 
+    isAgent,
+    upload.fields([
+        { name: 'mainImage', maxCount: 1 },
+        { name: 'galleryImages', maxCount: 5 }
+    ]),
+    validateImages,
+    propertyValidations,
+    userPropertyController.postEditProperty
+);
 
 router.post('/property/delete/:id',isAuth,  userPropertyController.deleteProperty);
+const City = require('../models/city'); // Add this at the top
 
+// Add this route to fetch cities by state
+router.get('/api/cities/:stateId', async (req, res) => {
+    try {
+        const cities = await City.find({ stateId: req.params.stateId });
+        res.json(cities);
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+        res.status(500).json({ error: 'Failed to fetch cities' });
+    }
+});
 module.exports = router;

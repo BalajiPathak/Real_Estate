@@ -68,18 +68,18 @@
                                                             <label>Property price <small>(required)</small></label>
                                                             <input name="price" type="number" class="form-control"
                                                                 value="<%= property.price %>" required min="1"
-                                                                max="999999999"
-                                                                title="Please enter a valid price greater than 0">
+                                                                max="50000" step="0.01"
+                                                                title="Price must be between 1 and 50000">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Telephone <small>(empty if you wanna use default
                                                                     phone number)</small></label>
                                                             <input name="phone" type="tel" class="form-control"
                                                                 value="<%= property.phone %>"
-                                                                placeholder="+1 (XXX) XXX-XXXX"
-                                                                pattern="^\+1\s\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$"
-                                                                min="6000000000" max="9999999999"
-                                                                title="Telephone must be required and contains 10 digit">
+                                                                placeholder="+1 (XXX) XXX-XXXX" pattern="[0-9]{10}"
+                                                                maxlength="10"
+                                                                title="Phone number must be exactly 10 digits"
+                                                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -93,8 +93,8 @@
                                                         <div class="form-group">
                                                             <label>Property Description :</label>
                                                             <textarea rows="4" name="description" class="form-control"
-                                                                required minlength="20" maxlength="1000"
-                                                                title="Description must be between 20-1000 characters"><%= property.description %></textarea>
+                                                                required minlength="10" maxlength="1000"
+                                                                title="Description must be between 10-1000 characters"><%= property.description %></textarea>
                                                         </div>
 
                                                     </div>
@@ -120,12 +120,13 @@
                                                                 <label>Property City :</label>
                                                                 <select name="cityId" class="form-control" required>
                                                                     <option value="">Select City</option>
-                                                                    <% cities.forEach(city => { %>
-                                                                        <option value="<%= city._id %>" 
-                                                                            <%= city._id.toString() === property.cityId._id.toString() ? 'selected' : '' %>>
+                                                                    <% cities.forEach(city=> { %>
+                                                                        <option value="<%= city._id %>"
+                                                                            <%=city._id.toString()===property.cityId._id.toString()
+                                                                            ? 'selected' : '' %>>
                                                                             <%= city.name %>
                                                                         </option>
-                                                                    <% }) %>
+                                                                        <% }) %>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -165,8 +166,8 @@
                                                                 <label for="property-geo">Number of Bed :</label>
                                                                 <input name="beds" type="number" class="form-control"
                                                                     placeholder="Beds" value="<%= property.beds %>"
-                                                                    required min="1" max="20"
-                                                                    title="Please enter a number between 1-20">
+                                                                    min="1" max="20" step="1"
+                                                                    title="Number of beds must be between 1 and 20">
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
@@ -175,8 +176,8 @@
                                                                 <label for="price-range">Number of Bath :</label>
                                                                 <input name="baths" type="number" class="form-control"
                                                                     placeholder="Baths" value="<%= property.baths %>"
-                                                                    required min="1" max="10"
-                                                                    title="Please enter a number between 1-10">
+                                                                    min="1" max="10" step="1"
+                                                                    title="Number of baths must be between 1 and 10">
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
@@ -186,8 +187,8 @@
                                                                 <input name="area" type="number" class="form-control"
                                                                     placeholder="Area in sqft"
                                                                     value="<%= property.area %>" required min="10"
-                                                                    max="100000"
-                                                                    title="Please enter area between 10-100000 square meters">
+                                                                    max="25000"
+                                                                    title="Please enter area between 2500 square meters">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -231,10 +232,12 @@
                                                         <div class="form-group">
                                                             <label for="property-images">Choose Images:</label>
                                                             <input class="form-control" type="file" id="property-images"
-                                                                name="galleryImages" multiple>
+                                                                name="galleryImages" multiple accept="image/*"
+                                                                title="Please select valid image files.">
                                                             <p class="help-block">Select multiple images for your
                                                                 property.</p>
                                                         </div>
+
 
                                                         <!-- Display Current Images -->
                                                         <% if (galleryImages.length> 0) { %>
@@ -282,14 +285,12 @@
                                                                     <!-- Fields for Adding New Video Links -->
                                                                     <div class="form-group">
                                                                         <input class="form-control" name="videoLink"
-                                                                            placeholder="YouTube/Vimeo Link"
-                                                                            type="text">
+                                                                            placeholder="YouTube/Vimeo Link" type="url">
                                                                     </div>
 
                                                                     <div class="form-group">
                                                                         <input class="form-control" name="videoLink"
-                                                                            placeholder="YouTube/Vimeo Link"
-                                                                            type="text">
+                                                                            placeholder="YouTube/Vimeo Link" type="url">
                                                                     </div>
                                                     </div>
                                                 </div>
