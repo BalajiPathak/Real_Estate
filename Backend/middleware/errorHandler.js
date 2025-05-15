@@ -19,7 +19,7 @@ exports.handle404 = async (req, res, next) => {
             navbar: navbar || [],
             blogs: blogs || [],
             isLoggedIn: req.session && req.session.isLoggedIn || false,
-            isAgent:eq.session && req.session.isAgent || false,  // Add this line
+            isAgent:req.session && req.session.isAgent || false,  // Add this line
             validationErrors: [],
             errorMessage: null
         });
