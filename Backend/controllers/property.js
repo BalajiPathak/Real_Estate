@@ -93,6 +93,8 @@ exports.getAllProperties = async (req, res) => {
         filters.push({ _id: null });
       }
     }
+filters.push({ saleStatus: { $ne: 'sold' } });
+ 
 
     const finalFilter = filters.length > 0 ? { $and: filters } : {};
 
