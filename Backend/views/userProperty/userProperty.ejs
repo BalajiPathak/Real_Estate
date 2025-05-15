@@ -19,73 +19,60 @@
                         <div class="row">
                             <div class="col-md-9 pr-30 padding-top-40 properties-page user-properties">
                                 <div class="section">
-                                    <form class="form-inline mb-3" method="GET" action="/myproperties">
+                                    <form class="form-inline mb-3" method="GET" action="/myproperties"
+                                        style="margin-left: 16px;">
                                         <div class="form-group">
                                             <input type="text" class="form-control" name="search"
-                                                placeholder="Search by Property Name" value="<%= searchQuery %>"/>
+                                                placeholder="Search by Property Name" value="<%= searchQuery %>" />
                                         </div>
-                                        <button type="submit" class="btn " style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Search</button>
+                                        <button type="submit" class="btn "
+                                            style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Search</button>
                                     </form>
                                 </div>
-                                <div class="section">
-                                    <div class="col-md-12  clear"> 
-                    <div class="col-xs-10 page-subheader sorting pl0">
-                        <ul class="sort-by-list">
-                            <li class="active">
-                                <a href="javascript:void(0);" class="order_by_date" data-orderby="property_date" data-order="ASC">
-                                    Property Date <i class="fa fa-sort-amount-asc"></i>					
-                                </a>
-                            </li>
-                            <li class="">
-                                <a href="javascript:void(0);" class="order_by_price" data-orderby="property_price" data-order="DESC">
-                                    Property Price <i class="fa fa-sort-numeric-desc"></i>						
-                                </a>
-                            </li>
-                        </ul><!--/ .sort-by-list-->
 
-                        
-                    </div>
 
-                    
-                </div>
-                                    
-                                </div>
 
-                                <div class="section">
-                                    <div id="list-type" class="proerty-th-list">
-                                        <% if (properties && properties.length> 0) { %>
-                                            <% properties.forEach(property=> { %>
-                                                <div class="col-md-4 p0">
-                                                    <div class="box-two proerty-item">
-                                                        <div class="item-thumb">
-                                                            <a href="/property/<%= property._id %>">
-                                                                <img src="/uploads/<%= property.image %>"
-                                                                    alt="Property Image">
-                                                            </a>
+                            </div>
+
+                        </div>
+
+                        <div class="section">
+                            <div id="list-type" class="proerty-th-list">
+                                <% if (properties && properties.length> 0) { %>
+                                    <% properties.forEach(property=> { %>
+                                        <div class="col-sm-8 col-md-4 p0">
+                                            <div class="box-two proerty-item">
+                                                <div class="item-thumb">
+                                                    <a href="/property/<%= property._id %>">
+                                                        <img src="/uploads/<%= property.image %>" alt="Property Image">
+                                                    </a>
+                                                </div>
+                                                <div class="item-entry overflow">
+                                                    <h5><a href="/property/<%= property._id %>">
+                                                            <%= property.title %>
+                                                        </a></h5>
+                                                    <span class="pull-left"><b>Name :</b>
+                                                        <%= property.name %>
+                                                    </span>
+                                                    <br>
+                                                    <span class="pull-left"><b>Area :</b>
+                                                        <%= property.area %>m²
+                                                    </span>
+                                                    <span class="proerty-price pull-right">$ <%= property.price %>
+                                                            </span>
+                                                    <p style="display: none;">
+                                                        <%= property.description %>
+                                                    </p>
+                                                    <% if (isAgent && property.saleStatus==='sold' ) { %>
+                                                        <div class="text-center"
+                                                            style="clear: both; padding-top: 10px;">
+                                                            <button class="btn"
+                                                                style="background-color: #808080; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; cursor: not-allowed;"
+                                                                disabled>
+                                                                SOLD OUT
+                                                            </button>
                                                         </div>
-                                                        <div class="item-entry overflow">
-                                                            <h5><a href="/property/<%= property._id %>">
-                                                                    <%= property.title %>
-                                                                </a></h5>
-                                                            <span class="pull-left"><b>Name :</b>
-                                                                <%= property.name %>
-                                                            </span>
-                                                            <br>
-                                                            <span class="pull-left"><b>Area :</b>
-                                                                <%= property.area %>m²
-                                                            </span>
-                                                            <span class="proerty-price pull-right">$ <%= property.price
-                                                                    %></span>
-                                                            <p style="display: none;">
-                                                                <%= property.description %>
-                                                            </p>
-                                                             <% if (isAgent && property.saleStatus === 'sold') { %>
-                                        <div class="text-center" style="clear: both; padding-top: 10px;">
-                                            <button class="btn" style="background-color: #808080; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; cursor: not-allowed;" disabled>
-                                                SOLD OUT
-                                            </button>
-                                        </div>
-                                    <% } %>
+                                                        <% } %>
                                                             <div class="property-icon">
 
                                                                 <img src="/assets/img/icon/bed.png">(<%= property.beds
@@ -106,86 +93,70 @@
                                                                                 class="button">View</a>
                                                                         </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
-                                                <% }); %>
-                                                    <% } else { %>
-                                                        <div class="col-md-12 text-center">
-                                                            <h3>No properties found</h3>
-                                                            <a href="/property/new" class="btn " style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Add Your
-                                                                First Property</a>
-                                                        </div>
-                                                        <% } %>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12 clear">
-                                    <div class="pull-right">
-                                        <div class="pagination">
-                                            
-                                            <ul>
-                                                <% if (currentPage> 1) { %>
-                                                    <li><a
-                                                            href="?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">Prev</a>
-                                                    </li>
-                                                    <% } else { %>
-                                                        <li class="disabled"><a href="#">Prev</a></li>
-                                                        <% } %>
-
-                                                            <% for (let i=1; i <=totalPages; i++) { %>
-                                                                <li class="<%= currentPage === i ? 'active' : '' %>">
-                                                                    <a href="?page=<%= i %>&search=<%= searchQuery %>">
-                                                                        <%= i %>
-                                                                    </a>
-                                                                </li>
-                                                                <% } %>
-
-                                                                    <% if (currentPage < totalPages) { %>
-                                                                        <li><a
-                                                                                href="?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">Next</a>
-                                                                        </li>
-                                                                        <% } else { %>
-                                                                            <li class="disabled"><a href="#">Next</a>
-                                                                            </li>
-                                                                            <% } %>
-                                            </ul>
-
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                        <br>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <div class="col-md-12 text-center">
+                                                    <h3>No properties found</h3>
+                                                    <a href="/property/new" class="btn "
+                                                        style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Add
+                                                        Your
+                                                        First Property</a>
+                                                </div>
+                                                <% } %>
                             </div>
+                        </div>
 
-                            <div class="col-md-3 p0 padding-top-40">
-                                <div class="blog-asside-right">
-                                    <div class="panel panel-default sidebar-menu wow fadeInRight animated">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Welcome <%= user.First_Name %>
-                                            </h3>
-                                        </div>
-                                        <div class="panel-body search-widget">
-                                        </div>
-                                    </div>
-                                    <div class="panel panel-default sidebar-menu wow fadeInRight animated">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">Recommended</h3>
-                                        </div>
-                                        <div class="panel-body recent-property-widget">
+                        <div class="col-md-12 clear">
+                            <div class="pull-right">
+                                <div class="pagination">
 
-                                        </div>
-                                    </div>
+                                    <ul>
+                                        <% if (currentPage> 1) { %>
+                                            <li><a
+                                                    href="?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">Prev</a>
+                                            </li>
+                                            <% } else { %>
+                                                <li class="disabled"><a href="#">Prev</a></li>
+                                                <% } %>
+
+                                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                                        <li class="<%= currentPage === i ? 'active' : '' %>">
+                                                            <a href="?page=<%= i %>&search=<%= searchQuery %>">
+                                                                <%= i %>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+
+                                                            <% if (currentPage < totalPages) { %>
+                                                                <li><a
+                                                                        href="?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">Next</a>
+                                                                </li>
+                                                                <% } else { %>
+                                                                    <li class="disabled"><a href="#">Next</a>
+                                                                    </li>
+                                                                    <% } %>
+                                    </ul>
+
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
+                </div>
+                </div>
                 </div>
                 <%- include('../includes/footer.ejs') %>
 
-    <%- include('../includes/end.ejs') %>
+                    <%- include('../includes/end.ejs') %>
 
-<script>
-async function loadUserProperties() {
-  const query = `
+                        <script>
+                            async function loadUserProperties() {
+                                const query = `
     query {
       getUserProperties {
         _id
@@ -200,26 +171,26 @@ async function loadUserProperties() {
     }
   `;
 
-  try {
-    const response = await fetch('/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query })
-    });
+                                try {
+                                    const response = await fetch('/graphql', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({ query })
+                                    });
 
-    const data = await response.json();
-    if (data.errors) {
-      console.error('GraphQL Errors:', data.errors);
-      return;
-    }
+                                    const data = await response.json();
+                                    if (data.errors) {
+                                        console.error('GraphQL Errors:', data.errors);
+                                        return;
+                                    }
 
-    const properties = data.data.getUserProperties;
-    const container = document.getElementById('list-type');
-    
-    if (properties && properties.length > 0) {
-      container.innerHTML = properties.map(property => `
+                                    const properties = data.data.getUserProperties;
+                                    const container = document.getElementById('list-type');
+
+                                    if (properties && properties.length > 0) {
+                                        container.innerHTML = properties.map(property => `
         <div class="col-md-4 p0">
           <div class="box-two proerty-item">
             <div class="item-thumb">
@@ -247,18 +218,18 @@ async function loadUserProperties() {
           </div>
         </div>
       `).join('');
-    } else {
-      container.innerHTML = `
+                                    } else {
+                                        container.innerHTML = `
         <div class="col-md-12 text-center">
           <h3>No properties found</h3>
           <a href="/property/new" class="btn btn-primary">Add Your First Property</a>
         </div>
       `;
-    }
-  } catch (error) {
-    console.error('Error fetching properties:', error);
-  }
-}
+                                    }
+                                } catch (error) {
+                                    console.error('Error fetching properties:', error);
+                                }
+                            }
 
-document.addEventListener('DOMContentLoaded', loadUserProperties);
-</script>
+                            document.addEventListener('DOMContentLoaded', loadUserProperties);
+                        </script>

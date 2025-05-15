@@ -1,84 +1,88 @@
 <%- include('../includes/head.ejs') %>
-</head>
-<body>
-    <%- include('../includes/header.ejs') %>
-    <%- include('../includes/navbar.ejs') %>
+    </head>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="text-center">Agent Registration</h2>
-                    </div>
-                    <div class="card-body">
-                        <% if (errorMessage) { %>
-                            <div class="alert alert-danger"><%= errorMessage %></div>
-                        <% } %>
-                        <form action="/agent/signup" method="POST" novalidate>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <label for="First_Name">First Name</label>
-                                        <input 
-                                            type="text" 
-                                            class="form-control <%= validationErrors.find(e => e.param === 'First_Name') ? 'is-invalid' : '' %>"
-                                            id="First_Name"
-                                            name="First_Name"
-                                            value="<%= oldInput.First_Name %>"
-                                            required
-                                        >
-                                    </div>
+    <body>
+        <%- include('../includes/header.ejs') %>
+            <%- include('../includes/navbar.ejs') %>
+
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="text-center">Agent Registration</h2>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <label for="Last_Name">Last Name</label>
-                                        <input 
-                                            type="text" 
-                                            class="form-control <%= validationErrors.find(e => e.param === 'Last_Name') ? 'is-invalid' : '' %>"
-                                            id="Last_Name"
-                                            name="Last_Name"
-                                            value="<%= oldInput.Last_Name %>"
-                                            required
-                                        >
-                                    </div>
+                                <div class="card-body">
+                                    <div id="response-message"></div>
+
+                                    <% if (errorMessage) { %>
+                                        <div class="alert alert-danger">
+                                            <%= errorMessage %>
+                                        </div>
+                                        <% } %>
+                                            <form action="/agent/signup" method="POST" id="signupForm" novalidate>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+                                                            <label for="First_Name">First Name</label>
+                                                            <input type="text"
+                                                                class="form-control <%= validationErrors.find(e => e.param === 'First_Name') ? 'is-invalid' : '' %>"
+                                                                id="First_Name" name="First_Name"
+                                                                value="<%= oldInput.First_Name %>" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3">
+                                                            <label for="Last_Name">Last Name</label>
+                                                            <input type="text"
+                                                                class="form-control <%= validationErrors.find(e => e.param === 'Last_Name') ? 'is-invalid' : '' %>"
+                                                                id="Last_Name" name="Last_Name"
+                                                                value="<%= oldInput.Last_Name %>" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="Email">Email</label>
+                                                    <input type="email"
+                                                        class="form-control <%= validationErrors.find(e => e.param === 'Email') ? 'is-invalid' : '' %>"
+                                                        id="Email" name="Email" value="<%= oldInput.Email %>" required>
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="Password">Password</label>
+                                                    <input type="password"
+                                                        class="form-control <%= validationErrors.find(e => e.param === 'Password') ? 'is-invalid' : '' %>"
+                                                        id="Password" name="Password" required>
+                                                </div>
+                                                <div class="form-group mt-4">
+                                                    <button type="submit" class="btn btn-block w-100"
+                                                        style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">Register
+                                                        as Agent</button>
+                                                </div>
+                                                <div class="mt-3 text-center">
+                                                    <p>Already have an account? <a href="/agent/login">Login
+                                                            here</a></p>
+                                                </div>
+                                            </form>
                                 </div>
                             </div>
-                            <div class="form-group mb-3">
-                                <label for="Email">Email</label>
-                                <input 
-                                    type="email" 
-                                    class="form-control <%= validationErrors.find(e => e.param === 'Email') ? 'is-invalid' : '' %>"
-                                    id="Email"
-                                    name="Email"
-                                    value="<%= oldInput.Email %>"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group mb-3">
-                                <label for="Password">Password</label>
-                                <input 
-                                    type="password" 
-                                    class="form-control <%= validationErrors.find(e => e.param === 'Password') ? 'is-invalid' : '' %>"
-                                    id="Password"
-                                    name="Password"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group mt-4">
-                                <button type="submit" class="btn btn-block w-100" style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" >Register as Agent</button>
-                            </div>
-                            <div class="mt-3 text-center">
-                                <p>Already have an account? <a href="/agent/login">Login here</a></p>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <%- include('../includes/footer.ejs') %>
-    <%- include('../includes/end.ejs') %>
-</body>
-</html>
+                <%- include('../includes/footer.ejs') %>
+                    <script>
+                        document.getElementById('signupForm').addEventListener('submit', async function (e) {
+                    
+                                  const messageDiv = document.getElementById('response-message');
+                                    messageDiv.innerHTML = `<div class="alert alert-success text-center">
+                                    You have been sucessfully registered </div>`;
+                                setTimeout(function () {
+                                window.location.href = '/agent/login';
+                                }, 5000);          
+                        });
+                    </script>
+
+                    <%- include('../includes/end.ejs') %>
+    </body>
+
+    </html>

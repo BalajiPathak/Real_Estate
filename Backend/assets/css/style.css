@@ -1765,13 +1765,28 @@ proerty-th
 /*=====================================
 proerty-th-list
 ======================================*/
-.proerty-th-list{
-    /* margin-left: -9px; */
+/* Shared styles for layout */
+.proerty-th-list .col-md-4,
+.proerty-th-list .col-sm-8 {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
 }
-.proerty-th-list .col-md-4{
-    width: 100%;
-    padding: 15px 10px;
+ 
+/* Apply padding-bottom only on small screens for list view */
+@media (max-width: 767.98px) {
+  #list-type .col-sm-8 {
+    padding-bottom: 280px;
+  }
 }
+ 
+/* Remove padding-bottom on medium and larger screens */
+@media (min-width: 768px) {
+  #list-type .col-sm-8 {
+    padding-bottom: 20px;
+  }
+}
+ 
 .proerty-th-list .col-md-4 .item-thumb{
     width:40%;
     float: left;
@@ -2140,7 +2155,7 @@ single property page
     padding-left: 10px;
 }
 .section {
-    padding-top: 15px;
+    padding-top: 0px;
     padding-bottom: 15px;
 }
 .property-features ul {

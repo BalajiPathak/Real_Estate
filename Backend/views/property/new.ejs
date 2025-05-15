@@ -77,7 +77,7 @@
                                                         <div class="form-group">
                                                             <label>Property price <small>(required)</small></label>
                                                             <input name="price" type="number" class="form-control"
-                                                                placeholder="3330000" required>
+                                                                placeholder="3330000" min="300000" max="10000000" required>
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Telephone <small>(empty if you wanna use default
@@ -221,15 +221,15 @@
                                                         <div class="form-group">
                                                             <label for="property-video">Chose Images :</label>
                                                             <input class="form-control" type="file"
-                                                                id="property-images" name='galleryImages' multiple required/>
+                                                                id="property-images" name='galleryImages' accept="image/*" multiple required/>
 
                                                         </div>
                                                         <div class="form-group">
-                                                            <input class="form-control" type="file" id="property-images"
+                                                            <input class="form-control" type="file" accept="image/*" id="property-images"
                                                                 name='galleryImages' />
                                                         </div>
                                                         <div class="form-group">
-                                                            <input class="form-control" type="file" id="property-images"
+                                                            <input class="form-control" type="file" accept="image/*" id="property-images"
                                                                 name="galleryImages" />
                                                            
                                                         </div>
@@ -240,18 +240,21 @@
 
                                                             <label for="property-video">Property video :</label>
                                                             <input class="form-control" value="" name="videoLink"
-                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo" multiple required>
+                                                                placeholder="YouTube/Vimeo Link" type="url"  id="propertyVideo" pattern="https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+"
+       title="Please enter a valid YouTube or Vimeo video link" multiple required>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <input class="form-control" value="" name="videoLink"
-                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo">
+                                                                placeholder="YouTube/Vimeo Link" type="url" pattern="https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+"
+       title="Please enter a valid YouTube or Vimeo video link" id="propertyVideo">
                                                         </div>
 
                                                         <div class="form-group">
 
                                                             <input class="form-control" value="" name="videoLink"
-                                                                placeholder="YouTube/Vimeo Link" type="text" id="propertyVideo" >
+                                                                placeholder="YouTube/Vimeo Link" type="url" pattern="https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+"
+       title="Please enter a valid YouTube or Vimeo video link" id="propertyVideo" >
                                                         </div>
                                                         
                                                     </div>
