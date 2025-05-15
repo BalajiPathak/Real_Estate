@@ -19,8 +19,7 @@ const propertyDataSchema = new mongoose.Schema({
         default: 'available',
         required: true
     },
-    categoryId:
-    {
+    categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PropertyCategory',
         required: true
@@ -33,14 +32,17 @@ const propertyDataSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    stateId:
-    {
+    stateId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'State',
         required: true
     },
-    statusId:
-    {
+    cityId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'City',
+        required: true
+    },
+    statusId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'StatusCategory',
         required: true
@@ -67,6 +69,5 @@ const propertyDataSchema = new mongoose.Schema({
         required: true
     }
 });
-
 
 module.exports = mongoose.model('PropertyData', propertyDataSchema);
