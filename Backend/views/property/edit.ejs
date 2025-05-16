@@ -67,7 +67,8 @@
                                                         <div class="form-group">
                                                             <label>Property price <small>(required)</small></label>
                                                             <input name="price" type="number" class="form-control"
-                                                                value="<%= property.price %>" required min="3000" max="99999" step="0.01"
+                                                                value="<%= property.price %>" required min="3000"
+                                                                max="99999" step="0.01"
                                                                 title="Price must be between 1 and 50000">
                                                         </div>
                                                         <div class="form-group">
@@ -120,7 +121,9 @@
                                                                     <option value="">Select City</option>
                                                                     <% cities.forEach(city=> { %>
                                                                         <option value="<%= city._id %>"
-                                                                            <%= (property.cityId && city._id.toString() === property.cityId._id?.toString()) ? 'selected' : '' %>>
+                                                                            <%=(property.cityId &&
+                                                                            city._id.toString()===property.cityId._id?.toString())
+                                                                            ? 'selected' : '' %>>
                                                                             <%= city.name %>
                                                                         </option>
                                                                         <% }) %>
@@ -235,21 +238,20 @@
                                                                 property.</p>
                                                         </div>
 
-
                                                         <!-- Display Current Images -->
                                                         <% if (galleryImages.length> 0) { %>
                                                             <div class="form-group">
                                                                 <label>Current Images:</label>
-                                                                <% galleryImages.forEach(function(image) { %>
-                                                                    <div class="img-preview">
-                                                                        <img src="<%= uploadsPath + image %>"
-                                                                            alt="Image" class="img-thumbnail"
-                                                                            width="100">
-                                                                        <!-- Display the image URL in an input field (disabled) -->
-                                                                        <input type="text"
-                                                                            value="<%= uploadsPath + image %>"
-                                                                            name="currentImageLinks"
-                                                                            class="form-control" disabled>
+                                                                <% galleryImages.forEach(function(image, index) { %>
+                                                                    <div class="img-preview mb-2">
+                                                                        <img src="<%= image %>" alt="Image"
+                                                                            class="img-thumbnail" width="100">
+                                                                        <!-- Editable input with image link -->
+                                                                        <input type="text" name="existingImages[]"
+                                                                            class="form-control mt-1"
+                                                                            value="<%= image %>">
+                                                                        <input type="hidden" name="imageIds[]"
+                                                                            value="<%= image._id %>">
                                                                     </div>
                                                                     <% }) %>
                                                             </div>
@@ -260,18 +262,17 @@
 
                                                     <!-- Right Column for Videos -->
                                                     <div class="col-sm-6">
-                                                        <!-- Display Current Videos -->
                                                         <% if (videoLinks.length> 0) { %>
                                                             <div class="form-group">
-                                                                <label>Current Videos:</label>
-                                                                <% videoLinks.forEach(function(video) { %>
-                                                                    <div class="video-preview">
+                                                                <label>Current Video Links:</label>
+                                                                <% videoLinks.forEach(function(video, index) { %>
+                                                                    <div class="video-preview mb-2">
                                                                         <a href="<%= video %>" target="_blank">View
                                                                             Video</a>
-                                                                        <!-- Display the video URL in an input field (disabled) -->
-                                                                        <input type="text" value="<%= video %>"
-                                                                            name="currentVideoLinks"
-                                                                            class="form-control" disabled>
+                                                                        <!-- Editable video URL input -->
+                                                                        <input type="url" name="existingVideoLinks[]"
+                                                                            class="form-control mt-1"
+                                                                            value="<%= video %>">
                                                                     </div>
                                                                     <% }) %>
                                                             </div>
@@ -281,16 +282,19 @@
 
                                                                     <!-- Fields for Adding New Video Links -->
                                                                     <div class="form-group">
-                                                                        <input class="form-control" name="videoLink"
+                                                                        <label>Add Video Link:</label>
+                                                                        <input class="form-control" name="videoLink[]"
                                                                             placeholder="YouTube/Vimeo Link" type="url">
                                                                     </div>
 
                                                                     <div class="form-group">
-                                                                        <input class="form-control" name="videoLink"
+                                                                        <input class="form-control" name="videoLink[]"
                                                                             placeholder="YouTube/Vimeo Link" type="url">
                                                                     </div>
                                                     </div>
                                                 </div>
+
+
                                             </div>
 
 

@@ -77,8 +77,7 @@ exports.getUserProperties = async (req, res) => {
 exports.getEditProperty = async (req, res) => {
     try {
         const propertyId = req.params.id;
-        
-        // Get the base property data with all necessary populations
+
         const property = await Property.findById(propertyId)
             .populate('stateId')
             .populate('categoryId')
@@ -89,13 +88,11 @@ exports.getEditProperty = async (req, res) => {
             return res.status(404).redirect('/myproperties');
         }
 
-        // Get all states and cities for the selected state
-        const [states, cities] = await Promise.all([
-            State.find(),
-            City.find({ stateId: property.stateId._id })
+        const [cities, states] = await Promise.all([
+            City.find({ stateId: property.stateId._id }),
+            State.find()
         ]);
 
-        // Fetch other related data
         const [
             propertyFeatures,
             propertyVideos,
@@ -107,9 +104,9 @@ exports.getEditProperty = async (req, res) => {
             statuses,
             blogs
         ] = await Promise.all([
-            PropertyDataFeature.find({ propertyId: propertyId }),
-            PropertyVideo.find({ propertyId: propertyId }),
-            PropertyImage.find({ propertyId: propertyId }),
+            PropertyDataFeature.find({ propertyId }),
+            PropertyVideo.find({ propertyId }),
+            PropertyImage.find({ propertyId }),
             PropertyFeature.find(),
             CompanyInfo.findOne(),
             Navbar.find().sort({ _id: 1 }),
@@ -118,21 +115,33 @@ exports.getEditProperty = async (req, res) => {
             Blog.find()
         ]);
 
-        // Create arrays of IDs and data for the template
         const selectedFeatureIds = propertyFeatures.map(pf => pf.featureId.toString());
-        const videoLinks = propertyVideos.map(pv => pv.videoUrl);
-        const galleryImages = propertyImages.map(pi => pi.imagePath);
+        const videoLinks = propertyVideos.map(v => v.video);  // Extract just video URLs
+
+        // Construct full image URLs by prepending '/uploads/' to the image filename
+        let galleryImages = propertyImages.map(i => {
+            if (i.image) {
+                return '/uploads/' + i.image;  // Add /uploads/ if the image exists
+            } else {
+                return '/uploads/nothing';  // Default image if no image is found
+            }
+        });
+
+        // If there are no images, set a default "no image" path
+        if (galleryImages.length === 0) {
+            galleryImages = ['/uploads/nothing'];  // Ensure at least one placeholder image is shown
+        }
 
         res.render('property/edit', {
             pageTitle: 'Edit Property',
             path: '/myproperties',
-            property: property,
-            cities: cities,
-            states: states,  // Now states is defined
-            categories: categories,
-            statuses: statuses,
+            property,
+            cities,
+            states,
+            categories,
+            statuses,
             features: allFeatures,
-            selectedFeatureIds: selectedFeatureIds,
+            selectedFeatureIds,
             blogs: blogs || [],
             companyInfo: companyInfo || {},
             navbar: navbars || [],
@@ -140,8 +149,8 @@ exports.getEditProperty = async (req, res) => {
             isLoggedIn: req.session.isLoggedIn || false,
             isAgent: req.session.isAgent || false,
             uploadsPath: '/uploads/',
-            videoLinks: videoLinks,
-            galleryImages: galleryImages
+            videoLinks,
+            galleryImages
         });
 
     } catch (error) {
@@ -149,6 +158,8 @@ exports.getEditProperty = async (req, res) => {
         res.status(500).redirect('/myproperties');
     }
 };
+
+
 
 // Add this new function to handle city updates when state changes
 exports.getCitiesByState = async (req, res) => {
@@ -165,18 +176,26 @@ exports.getCitiesByState = async (req, res) => {
 exports.postEditProperty = async (req, res) => {
     try {
         const propertyId = req.params.id;
-        const property = await Property.findById(propertyId);
-
-        if (!property) {
-            return res.status(404).redirect('/myproperties');
+        
+        // Check if the property ID is valid
+        if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+            return res.status(400).redirect('/myproperties');
         }
 
-        // Check ownership
-        if (property.userId.toString() !== (req.user?._id || req.session.user._id).toString()) {
+        const property = await Property.findById(propertyId);
+        if (!property) return res.status(404).redirect('/myproperties');
+
+        // Ensure the user owns this property
+        const userId = req.user?._id || req.session.user?._id;
+        if (property.userId.toString() !== userId.toString()) {
             return res.status(403).redirect('/myproperties');
         }
 
-        // Verify if the city belongs to the selected state
+        // Verify city-state relationship
+        if (!mongoose.Types.ObjectId.isValid(req.body.cityId) || !mongoose.Types.ObjectId.isValid(req.body.stateId)) {
+            return res.status(400).redirect('/myproperties');
+        }
+
         const cityExists = await City.findOne({
             _id: req.body.cityId,
             stateId: req.body.stateId
@@ -187,7 +206,7 @@ exports.postEditProperty = async (req, res) => {
             return res.status(400).redirect('/myproperties');
         }
 
-        // Update basic property fields
+        // Prepare the property update data
         const updateData = {
             name: req.body.name,
             price: req.body.price,
@@ -195,7 +214,7 @@ exports.postEditProperty = async (req, res) => {
             phone: req.body.phone,
             description: req.body.description,
             stateId: req.body.stateId,
-            cityId: req.body.cityId,  // Make sure cityId is included
+            cityId: req.body.cityId,
             categoryId: req.body.categoryId,
             statusId: req.body.statusId,
             beds: req.body.beds,
@@ -209,62 +228,76 @@ exports.postEditProperty = async (req, res) => {
             updateData.image = req.files.mainImage[0].filename;
         }
 
-        // Update the main property data
         await Property.findByIdAndUpdate(propertyId, updateData);
 
-        // Update features
+        // Handle features
         if (req.body.featureIds) {
-            await PropertyDataFeature.deleteMany({ propertyId: propertyId });
+            await PropertyDataFeature.deleteMany({ propertyId });
             const featureIds = Array.isArray(req.body.featureIds) ? req.body.featureIds : [req.body.featureIds];
-            await Promise.all(featureIds.map(featureId => 
-                PropertyDataFeature.create({ propertyId, featureId })
-            ));
+            await Promise.all(featureIds.map(featureId => {
+                if (mongoose.Types.ObjectId.isValid(featureId)) {
+                    return PropertyDataFeature.create({ propertyId, featureId });
+                }
+            }));
         }
 
-        // Update videos with proper propertyId reference
-        if (req.body.videoLink) {
-            await PropertyVideo.deleteMany({ propertyId: propertyId });
-            const videoLinks = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
-            await Promise.all(videoLinks
-                .filter(link => link.trim() !== '')
-                .map(videoUrl => PropertyVideo.create({ 
-                    propertyId: new mongoose.Types.ObjectId(propertyId), // Convert to ObjectId
-                    videoUrl 
-                }))
-            );
+        // Handle existing images first
+        if (req.body.existingImages && req.body.imageIds) {
+            const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
+            const imageIds = Array.isArray(req.body.imageIds) ? req.body.imageIds : [req.body.imageIds];
+
+            await Promise.all(imageIds.map((id, index) => {
+                if (mongoose.Types.ObjectId.isValid(id)) {
+                    return PropertyImage.findByIdAndUpdate(id, {
+                        imagePath: existingImages[index].replace('/uploads/', '')
+                    });
+                }
+            }));
         }
 
-        // Handle gallery images with proper propertyId reference
+        // Handle new gallery images
         if (req.files && req.files.galleryImages) {
-            await PropertyImage.deleteMany({ propertyId: propertyId });
-            await Promise.all(req.files.galleryImages.map(file => 
-                PropertyImage.create({ 
-                    propertyId: new mongoose.Types.ObjectId(propertyId), // Convert to ObjectId
-                    imagePath: file.filename 
-                })
-            ));
+            const newImages = req.files.galleryImages.map(file => ({
+                propertyId,
+                imagePath: file.filename
+            }));
+            await PropertyImage.insertMany(newImages);
         }
 
-        // Update features with proper propertyId reference
-        if (req.body.featureIds) {
-            await PropertyDataFeature.deleteMany({ propertyId: propertyId });
-            const featureIds = Array.isArray(req.body.featureIds) ? req.body.featureIds : [req.body.featureIds];
-            await Promise.all(featureIds.map(featureId => 
-                PropertyDataFeature.create({ 
-                    propertyId: new mongoose.Types.ObjectId(propertyId), // Convert to ObjectId
-                    featureId: new mongoose.Types.ObjectId(featureId) // Convert featureId to ObjectId as well
-                })
-            ));
+        // Handle existing videos first
+        if (req.body.existingVideos && req.body.videoIds) {
+            const existingVideos = Array.isArray(req.body.existingVideos) ? req.body.existingVideos : [req.body.existingVideos];
+            const videoIds = Array.isArray(req.body.videoIds) ? req.body.videoIds : [req.body.videoIds];
+
+            await Promise.all(videoIds.map((id, index) => {
+                if (mongoose.Types.ObjectId.isValid(id)) {
+                    return PropertyVideo.findByIdAndUpdate(id, {
+                        video: existingVideos[index]
+                    });
+                }
+            }));
+        }
+
+        // Handle new video links
+        if (req.body.videoLink) {
+            const newVideoLinks = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
+            const validNewLinks = newVideoLinks.filter(link => link && link.trim());
+            
+            if (validNewLinks.length > 0) {
+                const newVideos = validNewLinks.map(video => ({
+                    propertyId,
+                    video: video.trim()
+                }));
+                await PropertyVideo.insertMany(newVideos);
+            }
         }
 
         res.redirect('/myproperties');
-
     } catch (error) {
         console.error('Error in postEditProperty:', error);
         res.status(500).redirect('/myproperties');
     }
 };
-
 
 
 // Delete property
