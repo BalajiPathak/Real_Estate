@@ -143,7 +143,8 @@ const postContact = async (req, res) => {
                 Subject: '',
                 Message: ''
             },
-            isLoggedIn: req.session.isLoggedIn || false , // Use session status
+            isLoggedIn: req.session.isLoggedIn || false ,
+             isAgent: req.session.isAgent || false, // Use session status
         });
 
     } catch (error) {
