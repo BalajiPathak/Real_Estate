@@ -228,25 +228,34 @@ exports.postEditProperty = async (req, res) => {
             updateData.image = req.files.mainImage[0].filename;
         }
 
-        // Update the property with new data
         await Property.findByIdAndUpdate(propertyId, updateData);
 
         // Handle features
         if (req.body.featureIds) {
             await PropertyDataFeature.deleteMany({ propertyId });
             const featureIds = Array.isArray(req.body.featureIds) ? req.body.featureIds : [req.body.featureIds];
-            
-            for (const featureId of featureIds) {
+            await Promise.all(featureIds.map(featureId => {
                 if (mongoose.Types.ObjectId.isValid(featureId)) {
-                    await PropertyDataFeature.create({
-                        propertyId,
-                        featureId
-                    });
+                    return PropertyDataFeature.create({ propertyId, featureId });
                 }
-            }
+            }));
         }
 
-        // Handle gallery images
+        // Handle existing images first
+        if (req.body.existingImages && req.body.imageIds) {
+            const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
+            const imageIds = Array.isArray(req.body.imageIds) ? req.body.imageIds : [req.body.imageIds];
+
+            await Promise.all(imageIds.map((id, index) => {
+                if (mongoose.Types.ObjectId.isValid(id)) {
+                    return PropertyImage.findByIdAndUpdate(id, {
+                        imagePath: existingImages[index].replace('/uploads/', '')
+                    });
+                }
+            }));
+        }
+
+        // Handle new gallery images
         if (req.files && req.files.galleryImages) {
             const newImages = req.files.galleryImages.map(file => ({
                 propertyId,
@@ -255,56 +264,34 @@ exports.postEditProperty = async (req, res) => {
             await PropertyImage.insertMany(newImages);
         }
 
-        // Handle videos
-        if (req.body.videoLink) {
-            const videoLinks = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
-            const validVideoLinks = videoLinks.filter(link => link && link.trim());
-            
-            if (validVideoLinks.length > 0) {
-                await PropertyVideo.deleteMany({ propertyId });
-                await PropertyVideo.insertMany(
-                    validVideoLinks.map(video => ({
-                        propertyId,
-                        video: video.trim()
-                    }))
-                );
-            }
-        }
-
-        // Handle existing images updates
-        if (req.body.existingImages) {
-            const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
-            const imageIds = Array.isArray(req.body.imageIds) ? req.body.imageIds : [req.body.imageIds];
-
-            // Update existing images
-            for (let i = 0; i < existingImages.length; i++) {
-                if (mongoose.Types.ObjectId.isValid(imageIds[i])) {
-                    // Check if image exists and update it
-                    const imagePath = existingImages[i] === '/uploads/nothing' ? undefined : existingImages[i];
-                    await PropertyImage.findByIdAndUpdate(imageIds[i], {
-                        imagePath: imagePath
-                    });
-                }
-            }
-        }
-
-        // Handle existing videos updates
-        if (req.body.existingVideos) {
+        // Handle existing videos first
+        if (req.body.existingVideos && req.body.videoIds) {
             const existingVideos = Array.isArray(req.body.existingVideos) ? req.body.existingVideos : [req.body.existingVideos];
             const videoIds = Array.isArray(req.body.videoIds) ? req.body.videoIds : [req.body.videoIds];
 
-            // Update existing videos
-            for (let i = 0; i < existingVideos.length; i++) {
-                if (mongoose.Types.ObjectId.isValid(videoIds[i])) {
-                    const videoUrl = existingVideos[i].trim() === '' ? undefined : existingVideos[i];
-                    await PropertyVideo.findByIdAndUpdate(videoIds[i], {
-                        video: videoUrl
+            await Promise.all(videoIds.map((id, index) => {
+                if (mongoose.Types.ObjectId.isValid(id)) {
+                    return PropertyVideo.findByIdAndUpdate(id, {
+                        video: existingVideos[index]
                     });
                 }
+            }));
+        }
+
+        // Handle new video links
+        if (req.body.videoLink) {
+            const newVideoLinks = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
+            const validNewLinks = newVideoLinks.filter(link => link && link.trim());
+            
+            if (validNewLinks.length > 0) {
+                const newVideos = validNewLinks.map(video => ({
+                    propertyId,
+                    video: video.trim()
+                }));
+                await PropertyVideo.insertMany(newVideos);
             }
         }
 
-        // Redirect to the properties page after successful update
         res.redirect('/myproperties');
     } catch (error) {
         console.error('Error in postEditProperty:', error);
