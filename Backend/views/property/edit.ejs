@@ -74,12 +74,14 @@
                                                         <div class="form-group">
                                                             <label>Telephone <small>(empty if you wanna use default
                                                                     phone number)</small></label>
-                                                            <input name="phone" type="tel" class="form-control"
-                                                                value="<%= property.phone %>"
-                                                                placeholder="+1 (XXX) XXX-XXXX" min="6000000000"
+
+                                                            <input type="number" name="phone" class="form-control"
+                                                                placeholder="+91 473 843 7436" value="<%= property.phone %>" min="6000000000"
                                                                 max="9999999999"
-                                                                title="Telephone must be required and contains 10 digit">
+                                                                title="Telephone must be required and contains 10 digit"
+                                                                required>
                                                         </div>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -232,8 +234,9 @@
                                                         <div class="form-group">
                                                             <label for="property-images">Choose Images:</label>
                                                             <input class="form-control" type="file" id="property-images"
-                                                                name="galleryImages" multiple accept="image/*"
-                                                                title="Please select valid image files.">
+                                                                name="galleryImages" accept="image/*"
+                                                                 multiple
+                                                                required >
                                                             <p class="help-block">Select multiple images for your
                                                                 property.</p>
                                                         </div>
@@ -272,7 +275,7 @@
                                                                         <!-- Editable video URL input -->
                                                                         <input type="url" name="existingVideoLinks[]"
                                                                             class="form-control mt-1"
-                                                                            value="<%= video %>">
+                                                                            value="<%= video %>" >
                                                                     </div>
                                                                     <% }) %>
                                                             </div>
@@ -284,7 +287,9 @@
                                                                     <div class="form-group">
                                                                         <label>Add Video Link:</label>
                                                                         <input class="form-control" name="videoLink[]"
-                                                                            placeholder="YouTube/Vimeo Link" type="url">
+                                                                            placeholder="YouTube/Vimeo Link" type="url"  pattern="https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+"
+                                                                title="Please enter a valid YouTube or Vimeo video link"
+                                                                multiple required>
                                                                     </div>
 
                                                                     <div class="form-group">
@@ -302,6 +307,7 @@
 
                                             <!--  End step 3 -->
 
+                                            
                                             <div class="tab-pane" id="step4">
                                                 <h4 class="info-text"> Finished and submit </h4>
                                                 <div class="row">
@@ -317,18 +323,24 @@
                                                                 in the legal proper manner
                                                             </p>
 
-                                                            <div class="checkbox ">
+                                                            <div class="checkbox">
                                                                 <label>
+
                                                                     <input type="checkbox" name="termsAndConditions"
-                                                                        required /> <strong>Accept termes and
+                                                                        id="termsCheckbox" /><strong>Accept termes and
                                                                         conditions.</strong>
+
                                                                 </label>
                                                             </div>
-
+                                                            <div id="termsError"
+                                                                style="color: red; display: none; margin-top: 5px;">
+                                                                You must accept the terms and conditions to proceed.
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+
 
                                             <!--  End step 4 -->
 
@@ -428,3 +440,17 @@
                                 }
                             });
                         </script>
+                        <script>
+                document.querySelector(".btn-finish").addEventListener("click", function (e) {
+                    const termsCheckbox = document.getElementById("termsCheckbox");
+                    const termsError = document.getElementById("termsError");
+
+                    if (!termsCheckbox.checked) {
+                        e.preventDefault();
+                        termsError.style.display = "block";
+                        termsCheckbox.focus();
+                    } else {
+                        termsError.style.display = "none";
+                    }
+                });
+            </script>
