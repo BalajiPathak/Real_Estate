@@ -52,6 +52,7 @@ exports.postAgentLogin = async (req, res) => {
         const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
         const blogs = await Blog.find();
+    
 
         if (!errors.isEmpty()) {
             return res.status(422).render('agent/login', {
@@ -65,7 +66,7 @@ exports.postAgentLogin = async (req, res) => {
                 isAgent: false
             });
         }
-
+       
         // Find agent type first
         const agentType = await UserType.findOne({ user_type_name: 'agent' });
 
@@ -76,9 +77,22 @@ exports.postAgentLogin = async (req, res) => {
         // Find user with matching email and agent type ID
         const user = await User.findOne({
             Email,
-            user_type_id: agentType._id
+            user_type_id: agentType._id,
+           
         });
-
+        if(user.is_blocked == true){
+             return res.status(401).render('agent/login', {
+                pageTitle: 'Agent Login',
+                path: '/agent/login',
+                errorMessage: 'your account has been blocked',
+                validationErrors: [{ param: 'Email' }],
+                oldInput: { Email, Password },
+                companyInfo, navbar, blogs,
+                isLoggedIn: false,
+                isAgent: false
+            });
+        }
+        
         if (!user) {
             return res.status(401).render('agent/login', {
                 pageTitle: 'Agent Login',
@@ -122,7 +136,7 @@ exports.postAgentLogin = async (req, res) => {
         });
 
     } catch (err) {
-         const companyInfo = await CompanyInfo.findOne();
+        const companyInfo = await CompanyInfo.findOne();
         const navbar = await Navbar.find();
         const blogs = await Blog.find();
         console.error('Agent Login error:', err);
@@ -251,9 +265,9 @@ exports.getMessages = async (req, res) => {
         const messages = await AgentMessage.find()
             .sort({ timestamp: -1 })
             .limit(50);
-            const companyInfo = await CompanyInfo.findOne();
-            const navbar = await Navbar.find();
-            const blogs = await Blog.find();
+        const companyInfo = await CompanyInfo.findOne();
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
         res.render('contact', {
             pageTitle: 'Messages',
             path: '/contact',
@@ -275,26 +289,26 @@ exports.getMessages = async (req, res) => {
 exports.postMessage = async (req, res) => {
     try {
         if (!req.session.isAgent) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Only agents can send messages' 
+            return res.status(403).json({
+                success: false,
+                message: 'Only agents can send messages'
             });
         }
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({ 
-                success: false, 
-                message: errors.array()[0].msg 
+            return res.status(422).json({
+                success: false,
+                message: errors.array()[0].msg
             });
         }
 
         const { content } = req.body;
-        
+
         if (!req.session.user || !req.session.userId) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'User session not found' 
+            return res.status(401).json({
+                success: false,
+                message: 'User session not found'
             });
         }
 
@@ -318,17 +332,17 @@ exports.postMessage = async (req, res) => {
             });
         }
 
-        res.status(201).json({ 
-            success: true, 
+        res.status(201).json({
+            success: true,
             message: 'Message sent successfully',
-            data: message 
+            data: message
         });
 
     } catch (err) {
         console.error('Post Message Error:', err);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error sending message' 
+        res.status(500).json({
+            success: false,
+            message: 'Error sending message'
         });
     }
 };
