@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const PropertyVideo = require('../models/propertyVideo');
 const { PropertyFeature, PropertyDataFeature } = require('../models/propertyFeature');
-
+const { validationResult } = require('express-validator');
 const Property = require('../models/propertyData');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
@@ -174,6 +174,9 @@ exports.getCitiesByState = async (req, res) => {
 };
 
 exports.postEditProperty = async (req, res) => {
+    const errors = validationResult(req);
+if (!errors.isEmpty()) {
+  console.log("Validation errors:", errors.array());
     try {
         const propertyId = req.params.id;
         
@@ -323,3 +326,4 @@ exports.deleteProperty = async (req, res) => {
     }
 };
 
+}

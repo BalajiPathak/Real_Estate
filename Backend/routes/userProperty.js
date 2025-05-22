@@ -129,7 +129,7 @@ router.post('/user/property/:id',
     userPropertyController.postEditProperty
 );
 
-router.post('/property/delete/:id',isAuth,  userPropertyController.deleteProperty);
+// router.post('/property/delete/:id',isAuth,  userPropertyController.deleteProperty);
 const City = require('../models/city'); // Add this at the top
 
 // Add this route to fetch cities by state

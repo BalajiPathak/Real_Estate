@@ -52,6 +52,9 @@
                                                                     title="" />
                                                                 <input type="file" name="mainImage" class="form-control"
                                                                     id="wizard-picture">
+                                                                <span id="mainImageError"
+                                                                    style="color: red; display: none;">Only image files
+                                                                    (jpeg, jpg, png, gif, webp) are allowed.</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -74,14 +77,13 @@
                                                         <div class="form-group">
                                                             <label>Telephone <small>(empty if you wanna use default
                                                                     phone number)</small></label>
-
-                                                            <input type="number" name="phone" class="form-control"
-                                                                placeholder="+91 473 843 7436" value="<%= property.phone %>" min="6000000000"
+                                                            <input name="phone" type="tel" class="form-control"
+                                                                value="<%= property.phone %>"
+                                                                placeholder="+1 (XXX) XXX-XXXX" min="6000000000"
                                                                 max="9999999999"
                                                                 title="Telephone must be required and contains 10 digit"
                                                                 required>
                                                         </div>
-                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -234,9 +236,8 @@
                                                         <div class="form-group">
                                                             <label for="property-images">Choose Images:</label>
                                                             <input class="form-control" type="file" id="property-images"
-                                                                name="galleryImages" accept="image/*"
-                                                                 multiple
-                                                                required >
+                                                                name="galleryImages" multiple accept="image/*"
+                                                                title="Please select valid image files.">
                                                             <p class="help-block">Select multiple images for your
                                                                 property.</p>
                                                         </div>
@@ -275,7 +276,7 @@
                                                                         <!-- Editable video URL input -->
                                                                         <input type="url" name="existingVideoLinks[]"
                                                                             class="form-control mt-1"
-                                                                            value="<%= video %>" >
+                                                                            value="<%= video %>">
                                                                     </div>
                                                                     <% }) %>
                                                             </div>
@@ -287,9 +288,7 @@
                                                                     <div class="form-group">
                                                                         <label>Add Video Link:</label>
                                                                         <input class="form-control" name="videoLink[]"
-                                                                            placeholder="YouTube/Vimeo Link" type="url"  pattern="https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+"
-                                                                title="Please enter a valid YouTube or Vimeo video link"
-                                                                multiple required>
+                                                                            placeholder="YouTube/Vimeo Link" type="url">
                                                                     </div>
 
                                                                     <div class="form-group">
@@ -307,7 +306,6 @@
 
                                             <!--  End step 3 -->
 
-                                            
                                             <div class="tab-pane" id="step4">
                                                 <h4 class="info-text"> Finished and submit </h4>
                                                 <div class="row">
@@ -323,24 +321,18 @@
                                                                 in the legal proper manner
                                                             </p>
 
-                                                            <div class="checkbox">
+                                                            <div class="checkbox ">
                                                                 <label>
-
                                                                     <input type="checkbox" name="termsAndConditions"
-                                                                        id="termsCheckbox" /><strong>Accept termes and
+                                                                        required /> <strong>Accept termes and
                                                                         conditions.</strong>
-
                                                                 </label>
                                                             </div>
-                                                            <div id="termsError"
-                                                                style="color: red; display: none; margin-top: 5px;">
-                                                                You must accept the terms and conditions to proceed.
-                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
 
                                             <!--  End step 4 -->
 
@@ -375,82 +367,178 @@
 
 
                 <%- include('../includes/footer.ejs') %>
-                    <%- include('../includes/end.ejs') %>
-                        <script>
-                            document.querySelectorAll(".btn-next").forEach(function (button) {
-                                button.addEventListener("click", function (e) {
-                                    const activeTab = document.querySelector('.tab-pane.active');
 
-                                    console.log("step2");
-                                    if (activeTab && activeTab.id === "step2") {
-                                        const featureCheckboxes = document.querySelectorAll("input[name='featureIds']:checked");
-                                        const featuresError = document.getElementById("featuresError");
+              
 
-                                        if (featureCheckboxes.length === 0) {
-                                            e.preventDefault();
-                                            featuresError.style.display = "block";
-                                            return false;
-                                        } else {
-                                            featuresError.style.display = "none";
-                                        }
-                                    }
-
-
-                                });
-                            });
-                        </script>
-                        <script>
-                            // Function to set selected city
-                            function setCitySelected(citySelect, selectedCityId) {
-                                const options = citySelect.querySelectorAll('option');
-                                options.forEach(option => {
-                                    if (option.value === selectedCityId) {
+                <script>
+                    // Set city if preloaded
+                    const selectedCityId = '<%= property.cityId?._id || "" %>';
+                
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const stateSelect = document.querySelector('select[name="stateId"]');
+                        const citySelect = document.querySelector('select[name="cityId"]');
+                        const nextButtons = document.querySelectorAll('.btn-next');
+                        const tabPanes = Array.from(document.querySelectorAll('.tab-pane'));
+                        const navLinks = Array.from(document.querySelectorAll('.wizard-card ul li a'));
+                        const form = document.querySelector('form');
+                
+                        // Load cities
+                        async function loadCities(stateId) {
+                            try {
+                                const response = await fetch(`/api/cities/${stateId}`);
+                                const cities = await response.json();
+                                citySelect.innerHTML = '<option value="">Select City</option>';
+                                cities.forEach(city => {
+                                    const option = document.createElement('option');
+                                    option.value = city._id;
+                                    option.textContent = city.name;
+                                    if (city._id === selectedCityId) {
                                         option.selected = true;
                                     }
+                                    citySelect.appendChild(option);
                                 });
+                            } catch (err) {
+                                console.error('City fetch error:', err);
                             }
-
-                            // Handle state change
-                            document.querySelector('select[name="stateId"]').addEventListener('change', async function () {
-                                const stateId = this.value;
-                                const citySelect = document.querySelector('select[name="cityId"]');
-
-                                try {
-                                    const response = await fetch(`/api/cities/${stateId}`);
-                                    const cities = await response.json();
-
-                                    citySelect.innerHTML = '<option value="">Select City</option>';
-                                    cities.forEach(city => {
-                                        const option = document.createElement('option');
-                                        option.value = city._id;
-                                        option.textContent = city.name;
-                                        citySelect.appendChild(option);
-                                    });
-                                } catch (error) {
-                                    console.error('Error loading cities:', error);
+                        }
+                
+                        if (stateSelect && selectedCityId) {
+                            loadCities(stateSelect.value);
+                        }
+                
+                        if (stateSelect) {
+                            stateSelect.addEventListener("change", function () {
+                                loadCities(this.value);
+                            });
+                        }
+                
+                        // Validate individual step
+                        function validateStep(stepId) {
+                            const currentPane = document.getElementById(stepId);
+                            const inputs = currentPane.querySelectorAll("input:not([type='hidden']):not([type='file']), select, textarea");
+                            let isValid = true;
+                
+                            inputs.forEach(input => input.classList.remove('is-invalid'));
+                
+                            inputs.forEach(input => {
+                                if (input.hasAttribute('required') && !input.value) {
+                                    input.classList.add('is-invalid');
+                                    isValid = false;
+                                }
+                
+                                if (input.type === 'number') {
+                                    const val = Number(input.value);
+                                    const min = Number(input.getAttribute('min'));
+                                    const max = Number(input.getAttribute('max'));
+                
+                                    if (isNaN(val) || val < min || val > max) {
+                                        input.classList.add('is-invalid');
+                                        isValid = false;
+                                    }
+                                }
+                
+                                if (input.name === 'phone' && input.value) {
+                                    const phoneRegex = /^\d{10}$/;
+                                    if (!phoneRegex.test(input.value.replace(/\D/g, ''))) {
+                                        input.classList.add('is-invalid');
+                                        isValid = false;
+                                    }
                                 }
                             });
-
-                            // Set initial city selection when page loads
-                            window.addEventListener('DOMContentLoaded', function () {
-                                const citySelect = document.querySelector('select[name="cityId"]');
-                                const selectedCityId = '<%= property.cityId %>'; // Get the property's cityId
-                                if (selectedCityId) {
-                                    setCitySelected(citySelect, selectedCityId);
+                
+                            // Features (step2)
+                            if (stepId === 'step2') {
+                                const featuresChecked = currentPane.querySelectorAll("input[name='featureIds']:checked");
+                                const featuresError = document.getElementById("featuresError");
+                                if (featuresChecked.length === 0) {
+                                    featuresError.style.display = "block";
+                                    isValid = false;
+                                } else {
+                                    featuresError.style.display = "none";
+                                }
+                            }
+                
+                            // Gallery image (step3)
+                            if (stepId === 'step3') {
+                                const newImages = document.querySelector('input[name="galleryImages"]');
+                                const existingImages = document.querySelectorAll('input[name="existingImages[]"]');
+                                if (existingImages.length === 0 && (!newImages || newImages.files.length === 0)) {
+                                    alert('Please upload at least one image.');
+                                    isValid = false;
+                                }
+                            }
+                
+                            return isValid;
+                        }
+                
+                        // Handle next buttons
+                        nextButtons.forEach(button => {
+                            button.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                const currentPane = tabPanes.find(p => p.classList.contains('active'));
+                
+                                if (validateStep(currentPane.id)) {
+                                    const currentIndex = tabPanes.indexOf(currentPane);
+                                    const nextIndex = currentIndex + 1;
+                                    if (tabPanes[nextIndex]) {
+                                        const nextTabLink = navLinks[nextIndex];
+                                        $(nextTabLink).tab('show');
+                                    }
                                 }
                             });
-                        </script>
-                        <script>
-                document.querySelector(".btn-finish").addEventListener("click", function (e) {
-                    const termsCheckbox = document.getElementById("termsCheckbox");
-                    const termsError = document.getElementById("termsError");
+                        });
+                
+                        // Handle form submit
+                        form.addEventListener('submit', function (e) {
+                            e.preventDefault();
+                
+                            let allValid = true;
+                            ['step1', 'step2', 'step3', 'step4'].forEach(step => {
+                                if (!validateStep(step)) {
+                                    allValid = false;
+                                }
+                            });
+                
+                            const terms = document.querySelector('input[name="termsAndConditions"]');
+                            if (!terms.checked) {
+                                alert('Please accept the terms and conditions.');
+                                allValid = false;
+                            }
+                
+                            if (allValid) {
+                                this.submit();
+                            } else {
+                                for (let i = 0; i < tabPanes.length; i++) {
+                                    if (!validateStep(tabPanes[i].id)) {
+                                        $(navLinks[i]).tab('show');
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                
+                        // Main image validation
+                        const fileInput = document.getElementById('wizard-picture');
+                        if (fileInput) {
+                            fileInput.addEventListener('change', function () {
+                                const file = this.files[0];
+                                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                                const maxSize = 5 * 1024 * 1024;
+                
+                                if (file) {
+                                    if (!allowedTypes.includes(file.type)) {
+                                        alert('Only image files allowed.');
+                                        this.value = '';
+                                    } else if (file.size > maxSize) {
+                                        alert('File must be under 5MB.');
+                                        this.value = '';
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
+                
+               
 
-                    if (!termsCheckbox.checked) {
-                        e.preventDefault();
-                        termsError.style.display = "block";
-                        termsCheckbox.focus();
-                    } else {
-                        termsError.style.display = "none";
-                    }
-                });
-            </script>
+                    <%- include('../includes/end.ejs') %>
