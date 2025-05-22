@@ -2444,3 +2444,4 @@
 ::1 - - [21/May/2025:10:13:05 +0000] "GET /logo.png HTTP/1.1" 404 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [21/May/2025:10:13:05 +0000] "GET /1747805217832-blog1.jpeg HTTP/1.1" 404 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [21/May/2025:10:13:05 +0000] "GET /1747805408919-blog2.jpg HTTP/1.1" 404 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [21/May/2025:10:27:40 +0000] "GET /logo.png HTTP/1.1" 404 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
