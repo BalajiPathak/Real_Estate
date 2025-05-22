@@ -35,6 +35,7 @@ exports.submitComment = async (req, res) => {
   try {
     const { name, BlogId, Comment } = req.body;
     const Img = req.file ? req.file.filename : 'default.jpg';
+    
     const newComment = new BlogComment({
       name,
       BlogId,
