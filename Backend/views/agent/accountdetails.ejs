@@ -1,0 +1,88 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+ 
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-center">Agent Account Details</h2>
+        </div>
+        <div class="card-body">
+            <div id="response-message"></div>
+          <% if (errorMessage) { %>
+            <div class="alert alert-danger"><%= errorMessage %></div>
+          <% } %>
+          <form action="/agent/accountdetails" method="POST" id="accountForm">
+            <div class="row">
+              <div class="form-group mb-3 col-md-6">
+                <label for="FirstName">First Name</label>
+                <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'First_Name') ? 'is-invalid' : '' %>" id="FirstName" name="First_Name" value="<%= oldInput.First_Name %>" required>
+              </div>
+              <div class="form-group mb-3 col-md-6">
+                <label for="LastName">Last Name</label>
+                <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'Last_Name') ? 'is-invalid' : '' %>" id="LastName" name="Last_Name" value="<%= oldInput.Last_Name %>" required>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label for="Email">Email</label>
+              <input type="email" class="form-control <%= validationErrors.find(e => e.param === 'Email') ? 'is-invalid' : '' %>" id="Email" name="Email" value="<%= oldInput.Email %>" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="ContactNumber">Contact Number</label>
+              <input type="text" class="form-control <%= validationErrors.find(e => e.param === 'Contact_Number') ? 'is-invalid' : '' %>" id="ContactNumber" name="Contact_Number" value="<%= oldInput.Contact_Number %>" required>
+            </div>
+            <div class="form-group mb-4">
+              <label for="accountnumber">Account Number</label>
+              <input type="number" class="form-control <%= validationErrors.find(e => e.param === 'AccountNo') ? 'is-invalid' : '' %>" id="AccountNo" name="AccountNo" value="<%= oldInput.AccountNo %>" id="accountnumber" name="AccountNo" required >
+            </div>
+            <div class="form-group mt-4">
+              <button type="submit" class="btn btn-block w-100" style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" >Save Details</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<%- include('../includes/footer.ejs') %>
+ <script>
+document.getElementById('accountForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent the default form submission
+ 
+    const form = e.target;
+    const formData = new FormData(form);
+ 
+    const response = await fetch('/agent/accountdetails', {
+        method: 'POST',
+        body: new URLSearchParams(formData),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+ 
+    const result = await response.json();
+    const messageDiv = document.getElementById('response-message');
+ 
+    if (!messageDiv) {
+        const div = document.createElement('div');
+div.id = 'response-message';
+        form.prepend(div);
+    }
+ 
+    // Show appropriate message
+    document.getElementById('response-message').innerHTML = `
+        <div class="alert ${result.success ? 'alert-success' : 'alert-danger'} text-center">
+            ${result.message}
+        </div>
+    `;
+});
+</script>
+<%- include('../includes/end.ejs') %>
+</body>
+</html>
+ 

@@ -6,6 +6,7 @@ const UserType = require('../models/userType'); // Add this import
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const AgentMessage = require('../models/agentMessage');
+const agentAccount = require('../models/agentAccount');
 
 exports.getAgentLogin = async (req, res) => {
     try {
@@ -346,3 +347,97 @@ exports.postMessage = async (req, res) => {
         });
     }
 };
+
+
+ 
+exports.getAgentAccount = async (req, res) => {
+  try {
+    if (!req.session.isAgent || !req.session.userId) {
+      return res.redirect('/agent/login');
+    }
+ 
+    const companyInfo = await CompanyInfo.findOne();
+    const navbar = await Navbar.find();
+    const blogs = await Blog.find();
+ 
+    // Load existing account info if any
+    const existingAccount = await agentAccount.findOne({ agentId: req.session.userId });
+ 
+    res.render('agent/accountdetails', {
+      pageTitle: 'Agent Account',
+      path: '/agent/accountdetails',
+      account: existingAccount,
+      errorMessage: null,
+      validationErrors: [],
+      oldInput: {
+        First_Name: existingAccount?.First_Name || '',
+        Last_Name: existingAccount?.Last_Name || '',
+        Email: existingAccount?.Email || '',
+        Contact_Number: existingAccount?.Contact_Number || '',
+        AccountNo: existingAccount?.AccountNo || ''
+      },
+      companyInfo,
+      navbar,
+      blogs,
+      isLoggedIn: req.session.isLoggedIn,
+      isAgent: req.session.isAgent
+    });
+  } catch (err) {
+    console.error('Agent Account Form error:', err);
+    res.status(500).render('agent/accountdetails', {
+      pageTitle: 'Agent Account',
+      path: '/agent/accountdetails',
+      errorMessage: 'An error occurred',
+      validationErrors: [],
+      oldInput: {},
+      isLoggedIn: false,
+      isAgent: false
+    });
+  }
+};
+ 
+exports.postAgentAccount = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    const { First_Name, Last_Name, Email, Contact_Number, AccountNo } = req.body;
+ 
+    if (!req.session.isAgent || !req.session.userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+ 
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        success: false,
+        message: errors.array()[0].msg
+      });
+    }
+ 
+    const existingAccount = await agentAccount.findOne({ agentId: req.session.userId });
+ 
+    if (existingAccount) {
+      // Update existing account
+      existingAccount.First_Name = First_Name;
+      existingAccount.Last_Name = Last_Name;
+      existingAccount.Email = Email;
+      existingAccount.Contact_Number = Contact_Number;
+      existingAccount.AccountNo = AccountNo;
+      await existingAccount.save();
+    } else {
+      const newAccount = new agentAccount({
+        agentId: req.session.userId,
+        First_Name,
+        Last_Name,
+        Email,
+        Contact_Number,
+        AccountNo
+      });
+      await newAccount.save();
+    }
+
+    return res.json({ success: true, message: 'Account details saved successfully' });
+  } catch (err) {
+    console.error('Error saving agent account details:', err);
+    return res.json({ success: false, message: 'Server error' });
+  }
+};
+ 

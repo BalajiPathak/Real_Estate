@@ -24,5 +24,12 @@ router.get('/messages', isAuth, agentController.getMessages);
 router.post('/messages', isAuth, [
     check('content').notEmpty().withMessage('Message content is required')
 ], agentController.postMessage);
+router.get('/accountDetails', isAuth, agentController.getAgentAccount);
+router.post('/accountDetails', [
+    check('First_Name').notEmpty().withMessage('First name is required'),
+    check('Last_Name').notEmpty().withMessage('Last name is required'),
+    check('Email').isEmail().withMessage('Please enter a valid email address'),
+    
+], agentController.postAgentAccount);
 
 module.exports = router;

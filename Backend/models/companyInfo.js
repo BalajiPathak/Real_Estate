@@ -53,6 +53,10 @@ const companyInfoSchema = new mongoose.Schema({
     geo_latituse: {
         type: Number,
         required: true
+    },
+    AccountNo:{
+        type :Number,
+        required: true
     }
 }, {
     collection: 'company_info'
