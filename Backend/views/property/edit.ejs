@@ -1,983 +1,544 @@
 <%- include('../includes/head.ejs') %>
-
     <%- include('../includes/header.ejs') %>
-
         <%- include('../includes/navbar.ejs') %>
 
-
-
             <body>
-
                 <div class="page-head">
-
                     <div class="container">
-
                         <div class="row">
-
                             <div class="page-head-content">
-
                                 <h1 class="page-title">Submit new property</h1>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
                 <!-- End page header -->
 
-
-
                 <!-- property area -->
-
                 <div class="content-area submit-property" style="background-color: #FCFCFC;">&nbsp;
-
                     <div class="container">
-
                         <div class="clearfix">
-
                             <div class="wizard-container">
 
-
-
                                 <div class="wizard-card ct-wizard-orange" id="wizardProperty">
-
-                                    <form action="/user/property/<%= property._id %>" method="POST"
-
+                                    <form action="/property/edit/<%= property._id %>" method="POST"
                                         enctype="multipart/form-data">
-
                                         <div class="wizard-header">
-
                                             <h3>
-
                                                 <b>Edit</b> YOUR PROPERTY <br>
-
                                                 <small>Lorem ipsum dolor sit amet, consectetur adipisicing.</small>
-
                                             </h3>
-
                                         </div>
 
-
-
                                         <ul>
-
                                             <li><a href="#step1" data-toggle="tab">Step 1 </a></li>
-
                                             <li><a href="#step2" data-toggle="tab">Step 2 </a></li>
-
                                             <li><a href="#step3" data-toggle="tab">Step 3 </a></li>
-
                                             <li><a href="#step4" data-toggle="tab">Finished </a></li>
-
                                         </ul>
-
-
 
                                         <div class="tab-content">
 
-
-
                                             <div class="tab-pane" id="step1">
-
                                                 <div class="row p-b-15">
-
                                                     <h4 class="info-text"> Let's start with the basic information (with
-
                                                         validation)</h4>
-
-                                                        <div class="col-sm-4 col-sm-offset-1">
-                                                            <div class="picture-container">
-                                                                <div class="picture">
-                                                                    <img src="/uploads/<%= property.image %>" class="picture-src" id="wizardPicturePreview" title="" />
-                                                                    <input type="file" name="mainImage" id="wizard-picture" class="form-control">
-                                                                    <span id="mainImageError" style="color: red; display: none;">Only image files (jpeg, jpg, png, gif, webp) are allowed.</span>
-                                                                </div>
+                                                    <div class="col-sm-4 col-sm-offset-1">
+                                                        <div class="picture-container">
+                                                            <div class="picture">
+                                                                <!-- Fix the image path -->
+                                                                <img src="/uploads/<%= property.image %>"
+                                                                    class="picture-src" id="wizardPicturePreview"
+                                                                    title="" />
+                                                                <input type="file" name="mainImage" class="form-control"
+                                                                    id="wizard-picture">
+                                                                <span id="mainImageError"
+                                                                    style="color: red; display: none;">Only image files
+                                                                    (jpeg, jpg, png, gif, webp) are allowed.</span>
                                                             </div>
                                                         </div>
-
-                                                    <div class="col-sm-6">
-
-                                                        <div class="form-group">
-
-                                                            <label>Property name <small>(required)</small></label>
-
-                                                            <input name="name" type="text" class="form-control"
-
-                                                                value="<%= property.name %>" required minlength="3"
-
-                                                                maxlength="100" pattern="[A-Za-z0-9\s]+"
-
-                                                                title="Name should be between 3-100 characters and can only contain letters, numbers and spaces">
-
-                                                        </div>
-
-
-
-                                                        <div class="form-group">
-
-                                                            <label>Property price <small>(required)</small></label>
-
-                                                            <input name="price" type="number" class="form-control"
-
-                                                                value="<%= property.price %>" required min="3000"
-
-                                                                max="99999" step="0.01"
-
-                                                                title="Price must be between 1 and 50000">
-
-                                                        </div>
-
-                                                        <div class="form-group">
-
-                                                            <label>Telephone <small>(empty if you wanna use default
-
-                                                                    phone number)</small></label>
-
-
-
-                                                            <input type="number" name="phone" class="form-control"
-
-                                                                placeholder="+91 473 843 7436" value="<%= property.phone %>" min="6000000000"
-
-                                                                max="9999999999"
-
-                                                                title="Telephone must be required and contains 10 digit"
-
-                                                                required>
-
-                                                        </div>
-
-                                                       
-
                                                     </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Property name <small>(required)</small></label>
+                                                            <input name="name" type="text" class="form-control"
+                                                                value="<%= property.name %>" required minlength="3"
+                                                                maxlength="100" pattern="[A-Za-z0-9\s]+"
+                                                                title="Name should be between 3-100 characters and can only contain letters, numbers and spaces">
+                                                        </div>
 
+                                                        <div class="form-group">
+                                                            <label>Property price <small>(required)</small></label>
+                                                            <input name="price" type="number" class="form-control"
+                                                                value="<%= property.price %>" required min="3000"
+                                                                max="99999" step="0.01"
+                                                                title="Price must be between 1 and 50000">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Telephone <small>(empty if you wanna use default
+                                                                    phone number)</small></label>
+                                                            <input name="phone" type="tel" class="form-control"
+                                                                value="<%= property.phone %>"
+                                                                placeholder="+1 (XXX) XXX-XXXX" min="6000000000"
+                                                                max="9999999999"
+                                                                title="Telephone must be required and contains 10 digit"
+                                                                required>
+                                                        </div>
+                                                    </div>
                                                 </div>
-
                                             </div>
-
                                             <!--  End step 1 -->
 
-
-
                                             <div class="tab-pane" id="step2">
-
                                                 <h4 class="info-text"> How much your Property is Beautiful ? </h4>
-
                                                 <div class="row">
-
                                                     <div class="col-sm-12">
-
                                                         <div class="form-group">
-
                                                             <label>Property Description :</label>
-
                                                             <textarea rows="4" name="description" class="form-control"
-
                                                                 required minlength="10" maxlength="1000"
-
                                                                 title="Description must be between 10-1000 characters"><%= property.description %></textarea>
-
                                                         </div>
-
-
 
                                                     </div>
 
 
-
-
-
                                                     <div class="col-sm-12 padding-top-15">
-
                                                         <div class="col-sm-3">
-
                                                             <div class="form-group">
-
                                                                 <label>Property State :</label>
-
                                                                 <select name="stateId" class="form-control" required>
-
                                                                     <% states.forEach(state=> { %>
-
                                                                         <option value="<%= state._id %>"
-
                                                                             <%=state._id.toString()===property.stateId._id.toString()
-
                                                                             ? 'selected' : '' %>>
-
                                                                             <%= state.name %>
-
                                                                         </option>
-
                                                                         <% }) %>
-
                                                                 </select>
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="col-sm-3">
-
                                                             <div class="form-group">
-
                                                                 <label>Property City :</label>
-
                                                                 <select name="cityId" class="form-control" required>
-
                                                                     <option value="">Select City</option>
-
                                                                     <% cities.forEach(city=> { %>
-
                                                                         <option value="<%= city._id %>"
-
                                                                             <%=(property.cityId &&
-
                                                                             city._id.toString()===property.cityId._id?.toString())
-
                                                                             ? 'selected' : '' %>>
-
                                                                             <%= city.name %>
-
                                                                         </option>
-
                                                                         <% }) %>
-
                                                                 </select>
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="col-sm-3">
-
                                                             <div class="form-group">
-
                                                                 <label>Property Status :</label>
-
                                                                 <select name="statusId" class="form-control" required>
-
                                                                     <% statuses.forEach(status=> { %>
-
                                                                         <option value="<%= status._id %>"
-
                                                                             <%=status._id.toString()===property.statusId._id.toString()
-
                                                                             ? 'selected' : '' %>>
-
                                                                             <%= status.name %>
-
                                                                         </option>
-
                                                                         <% }) %>
-
                                                                 </select>
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="col-sm-3">
-
                                                             <div class="form-group">
-
                                                                 <label>Property Category :</label>
-
                                                                 <select name="categoryId" class="form-control" required>
-
                                                                     <% categories.forEach(category=> { %>
-
                                                                         <option value="<%= category._id %>"
-
                                                                             <%=category._id.toString()===property.categoryId._id.toString()
-
                                                                             ? 'selected' : '' %>>
-
                                                                             <%= category.name %>
-
                                                                         </option>
-
                                                                         <% }) %>
-
                                                                 </select>
-
                                                             </div>
 
-
-
                                                         </div>
-
                                                     </div>
-
                                                     <div class="col-sm-12 padding-top-15">
-
                                                         <div class="col-sm-4">
-
                                                             <div class="form-group">
-
                                                                 <label for="property-geo">Number of Bed :</label>
-
                                                                 <input name="beds" type="number" class="form-control"
-
                                                                     placeholder="Beds" value="<%= property.beds %>"
-
                                                                     min="1" max="20" step="1"
-
                                                                     title="Number of beds must be between 1 and 20">
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="col-sm-4">
 
-
-
                                                             <div class="form-group">
-
                                                                 <label for="price-range">Number of Bath :</label>
-
                                                                 <input name="baths" type="number" class="form-control"
-
                                                                     placeholder="Baths" value="<%= property.baths %>"
-
                                                                     min="1" max="10" step="1"
-
                                                                     title="Number of baths must be between 1 and 10">
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="col-sm-4">
 
-
-
                                                             <div class="form-group">
-
                                                                 <label for="property-geo">Property geo (m2) :</label>
-
                                                                 <input name="area" type="number" class="form-control"
-
                                                                     placeholder="Area in sqft"
-
                                                                     value="<%= property.area %>" required min="10"
-
                                                                     max="25000"
-
                                                                     title="Please enter area between 2500 square meters">
-
                                                             </div>
-
                                                         </div>
-
                                                     </div>
-
                                                     <div class="col-sm-12 padding-top-15">
-
                                                         <!-- Keep only this features section and remove the duplicate one below -->
-
                                                         <div class="col-sm-12 padding-top-15">
-
                                                             <% features.forEach(feature=> { %>
-
                                                                 <div class="col-sm-3">
-
                                                                     <div class="form-group">
-
                                                                         <div class="checkbox">
-
                                                                             <label style="margin-right: 5px;">
-
                                                                                 <input
-
                                                                                     style="margin-left: 5px; margin-top:5px;"
-
                                                                                     type="checkbox" name="featureIds"
-
                                                                                     value="<%= feature._id %>"
-
                                                                                     <%=selectedFeatureIds.includes(feature._id.toString())
-
                                                                                     ? 'checked' : '' %>>
-
                                                                                 <%= feature.name %>
-
                                                                             </label>
-
                                                                         </div>
-
                                                                     </div>
-
                                                                 </div>
-
                                                                 <% }) %>
-
                                                                     <br>
-
                                                                     <div id="featuresError"
-
                                                                         style="color: red; display: none; margin-top: 5px; margin-left:30px;">
-
                                                                         Features are required
-
                                                                     </div>
-
                                                         </div>
-
                                                     </div>
-
                                                     <br>
-
                                                 </div>
-
                                             </div>
-
                                             <!-- End step 2 -->
 
-
-
                                             <div class="tab-pane" id="step3">
-
                                                 <h4 class="info-text">Give us some images and videos?</h4>
-
                                                 <div class="row">
-
                                                     <!-- Left Column for Images -->
-
                                                     <div class="col-sm-6">
-
                                                         <div class="form-group">
-
                                                             <label for="property-images">Choose Images:</label>
-
                                                             <input class="form-control" type="file" id="property-images"
-
-                                                                name="galleryImages" accept="image/*"
-
-                                                                 multiple
-
-                                                                required >
-
+                                                                name="galleryImages" multiple accept="image/*"
+                                                                title="Please select valid image files.">
                                                             <p class="help-block">Select multiple images for your
-
                                                                 property.</p>
-
                                                         </div>
 
-
-
                                                         <!-- Display Current Images -->
-
                                                         <% if (galleryImages.length> 0) { %>
-
                                                             <div class="form-group">
-
                                                                 <label>Current Images:</label>
-
                                                                 <% galleryImages.forEach(function(image, index) { %>
-
                                                                     <div class="img-preview mb-2">
-
                                                                         <img src="<%= image %>" alt="Image"
-
                                                                             class="img-thumbnail" width="100">
-
                                                                         <!-- Editable input with image link -->
-
                                                                         <input type="text" name="existingImages[]"
-
                                                                             class="form-control mt-1"
-
                                                                             value="<%= image %>">
-
                                                                         <input type="hidden" name="imageIds[]"
-
                                                                             value="<%= image._id %>">
-
                                                                     </div>
-
                                                                     <% }) %>
-
                                                             </div>
-
                                                             <% } else { %>
-
                                                                 <p>No images uploaded yet.</p>
-
                                                                 <% } %>
-
                                                     </div>
-
-
 
                                                     <!-- Right Column for Videos -->
-
                                                     <div class="col-sm-6">
-
                                                         <% if (videoLinks.length> 0) { %>
-
                                                             <div class="form-group">
-
                                                                 <label>Current Video Links:</label>
-
                                                                 <% videoLinks.forEach(function(video, index) { %>
-
                                                                     <div class="video-preview mb-2">
-
                                                                         <a href="<%= video %>" target="_blank">View
-
                                                                             Video</a>
-
                                                                         <!-- Editable video URL input -->
-
                                                                         <input type="url" name="existingVideoLinks[]"
-
                                                                             class="form-control mt-1"
-
-                                                                            value="<%= video %>" >
-
+                                                                            value="<%= video %>">
                                                                     </div>
-
                                                                     <% }) %>
-
                                                             </div>
-
                                                             <% } else { %>
-
                                                                 <p>No videos uploaded yet.</p>
-
                                                                 <% } %>
 
-
-
                                                                     <!-- Fields for Adding New Video Links -->
-
                                                                     <div class="form-group">
-
                                                                         <label>Add Video Link:</label>
-
                                                                         <input class="form-control" name="videoLink[]"
-
-                                                                            placeholder="YouTube/Vimeo Link" type="url"  pattern="https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/.+"
-
-                                                                title="Please enter a valid YouTube or Vimeo video link"
-
-                                                                multiple required>
-
+                                                                            placeholder="YouTube/Vimeo Link" type="url">
                                                                     </div>
-
-
 
                                                                     <div class="form-group">
-
                                                                         <input class="form-control" name="videoLink[]"
-
                                                                             placeholder="YouTube/Vimeo Link" type="url">
-
                                                                     </div>
-
                                                     </div>
-
                                                 </div>
 
 
-
-
-
                                             </div>
-
-
-
-
-
 
 
 
 
                                             <!--  End step 3 -->
 
-
-
-                                           
-
                                             <div class="tab-pane" id="step4">
-
                                                 <h4 class="info-text"> Finished and submit </h4>
-
                                                 <div class="row">
-
                                                     <div class="col-sm-12">
-
                                                         <div class="">
-
                                                             <p>
-
                                                                 <label><strong>Terms and Conditions</strong></label>
-
                                                                 By accessing or using GARO ESTATE services, such as
-
                                                                 posting your property advertisement with your personal
-
                                                                 information on our website you agree to the
-
                                                                 collection, use and disclosure of your personal
-
                                                                 information
-
                                                                 in the legal proper manner
-
                                                             </p>
 
-
-
-                                                            <div class="checkbox">
-
+                                                            <div class="checkbox ">
                                                                 <label>
-
-
-
                                                                     <input type="checkbox" name="termsAndConditions"
-
-                                                                        id="termsCheckbox" /><strong>Accept termes and
-
+                                                                        required /> <strong>Accept termes and
                                                                         conditions.</strong>
-
-
-
                                                                 </label>
-
-                                                            </div>
-
-                                                            <div id="termsError"
-
-                                                                style="color: red; display: none; margin-top: 5px;">
-
-                                                                You must accept the terms and conditions to proceed.
-
                                                             </div>
 
                                                         </div>
-
                                                     </div>
-
                                                 </div>
-
                                             </div>
-
-
-
-
 
                                             <!--  End step 4 -->
 
-
-
                                         </div>
-
-
 
                                         <div class="wizard-footer">
-
                                             <div class="pull-right">
-
                                                 <input type='button' class='btn btn-next ' name='next' value='Next'
-
                                                     style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
-
                                                 <input type='submit' class='btn btn-finish  ' name='finish'
-
                                                     value='Finish'
-
                                                     style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
-
                                             </div>
-
-
 
                                             <div class="pull-left">
-
                                                 <input type='button' class='btn btn-previous btn-default'
-
                                                     name='previous' value='Previous'
-
                                                     style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;" />
-
                                             </div>
-
                                             <div class="clearfix"></div>
-
                                         </div>
-
                                     </form>
-
                                 </div>
-
                                 <!-- End submit form -->
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
-
 
                 <!-- Footer area-->
 
 
 
-
-
-
-
                 <%- include('../includes/footer.ejs') %>
-                <div class="modal fade" id="cropperModal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Crop Image</h4>
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="img-container">
-                                    <img id="cropperImage" src="" style="max-width: 100%;">
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Add this script before closing body tag -->
+
+              
+
                 <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const wizardPicture = document.getElementById('wizard-picture');
-                    const wizardPicturePreview = document.getElementById('wizardPicturePreview');
-                    const cropperModal = document.getElementById('cropperModal');
-                    const cropperImage = document.getElementById('cropperImage');
-                    const errorMsg = document.getElementById('mainImageError');
-                    let cropper;
+                    // Set city if preloaded
+                    const selectedCityId = '<%= property.cityId?._id || "" %>';
                 
-                    wizardPicture.addEventListener('change', function(e) {
-                        const file = this.files[0];
-                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const stateSelect = document.querySelector('select[name="stateId"]');
+                        const citySelect = document.querySelector('select[name="cityId"]');
+                        const nextButtons = document.querySelectorAll('.btn-next');
+                        const tabPanes = Array.from(document.querySelectorAll('.tab-pane'));
+                        const navLinks = Array.from(document.querySelectorAll('.wizard-card ul li a'));
+                        const form = document.querySelector('form');
                 
-                        if (file) {
-                            if (!allowedTypes.includes(file.type)) {
-                                errorMsg.style.display = 'block';
-                                this.value = '';
-                                return;
+                        // Load cities
+                        async function loadCities(stateId) {
+                            try {
+                                const response = await fetch(`/api/cities/${stateId}`);
+                                const cities = await response.json();
+                                citySelect.innerHTML = '<option value="">Select City</option>';
+                                cities.forEach(city => {
+                                    const option = document.createElement('option');
+                                    option.value = city._id;
+                                    option.textContent = city.name;
+                                    if (city._id === selectedCityId) {
+                                        option.selected = true;
+                                    }
+                                    citySelect.appendChild(option);
+                                });
+                            } catch (err) {
+                                console.error('City fetch error:', err);
+                            }
+                        }
+                
+                        if (stateSelect && selectedCityId) {
+                            loadCities(stateSelect.value);
+                        }
+                
+                        if (stateSelect) {
+                            stateSelect.addEventListener("change", function () {
+                                loadCities(this.value);
+                            });
+                        }
+                
+                        // Validate individual step
+                        function validateStep(stepId) {
+                            const currentPane = document.getElementById(stepId);
+                            const inputs = currentPane.querySelectorAll("input:not([type='hidden']):not([type='file']), select, textarea");
+                            let isValid = true;
+                
+                            inputs.forEach(input => input.classList.remove('is-invalid'));
+                
+                            inputs.forEach(input => {
+                                if (input.hasAttribute('required') && !input.value) {
+                                    input.classList.add('is-invalid');
+                                    isValid = false;
+                                }
+                
+                                if (input.type === 'number') {
+                                    const val = Number(input.value);
+                                    const min = Number(input.getAttribute('min'));
+                                    const max = Number(input.getAttribute('max'));
+                
+                                    if (isNaN(val) || val < min || val > max) {
+                                        input.classList.add('is-invalid');
+                                        isValid = false;
+                                    }
+                                }
+                
+                                if (input.name === 'phone' && input.value) {
+                                    const phoneRegex = /^\d{10}$/;
+                                    if (!phoneRegex.test(input.value.replace(/\D/g, ''))) {
+                                        input.classList.add('is-invalid');
+                                        isValid = false;
+                                    }
+                                }
+                            });
+                
+                            // Features (step2)
+                            if (stepId === 'step2') {
+                                const featuresChecked = currentPane.querySelectorAll("input[name='featureIds']:checked");
+                                const featuresError = document.getElementById("featuresError");
+                                if (featuresChecked.length === 0) {
+                                    featuresError.style.display = "block";
+                                    isValid = false;
+                                } else {
+                                    featuresError.style.display = "none";
+                                }
                             }
                 
-                            errorMsg.style.display = 'none';
-                            
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                cropperImage.src = e.target.result;
-                                $(cropperModal).modal('show');
-                                
-                                if (cropper) {
-                                    cropper.destroy();
+                            // Gallery image (step3)
+                            if (stepId === 'step3') {
+                                const newImages = document.querySelector('input[name="galleryImages"]');
+                                const existingImages = document.querySelectorAll('input[name="existingImages[]"]');
+                                if (existingImages.length === 0 && (!newImages || newImages.files.length === 0)) {
+                                    alert('Please upload at least one image.');
+                                    isValid = false;
                                 }
-                                
-                                cropper = new Cropper(cropperImage, {
-                                    aspectRatio: 16 / 9,
-                                    viewMode: 2
-                                });
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
+                            }
                 
-                    document.getElementById('cropButton').addEventListener('click', function() {
-                        const canvas = cropper.getCroppedCanvas({
-                            width: 800,
-                            height: 450
+                            return isValid;
+                        }
+                
+                        // Handle next buttons
+                        nextButtons.forEach(button => {
+                            button.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                const currentPane = tabPanes.find(p => p.classList.contains('active'));
+                
+                                if (validateStep(currentPane.id)) {
+                                    const currentIndex = tabPanes.indexOf(currentPane);
+                                    const nextIndex = currentIndex + 1;
+                                    if (tabPanes[nextIndex]) {
+                                        const nextTabLink = navLinks[nextIndex];
+                                        $(nextTabLink).tab('show');
+                                    }
+                                }
+                            });
                         });
                 
-                        wizardPicturePreview.src = canvas.toDataURL();
-                        
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'croppedImage';
-                        input.value = canvas.toDataURL();
-                        wizardPicture.parentNode.appendChild(input);
-                        
-                        $(cropperModal).modal('hide');
-                    });
+                        // Handle form submit
+                        form.addEventListener('submit', function (e) {
+                            e.preventDefault();
                 
-                    $(cropperModal).on('hidden.bs.modal', function() {
-                        if (cropper) {
-                            cropper.destroy();
-                            cropper = null;
+                            let allValid = true;
+                            ['step1', 'step2', 'step3', 'step4'].forEach(step => {
+                                if (!validateStep(step)) {
+                                    allValid = false;
+                                }
+                            });
+                
+                            const terms = document.querySelector('input[name="termsAndConditions"]');
+                            if (!terms.checked) {
+                                alert('Please accept the terms and conditions.');
+                                allValid = false;
+                            }
+                
+                            if (allValid) {
+                                this.submit();
+                            } else {
+                                for (let i = 0; i < tabPanes.length; i++) {
+                                    if (!validateStep(tabPanes[i].id)) {
+                                        $(navLinks[i]).tab('show');
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                
+                        // Main image validation
+                        const fileInput = document.getElementById('wizard-picture');
+                        if (fileInput) {
+                            fileInput.addEventListener('change', function () {
+                                const file = this.files[0];
+                                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                                const maxSize = 5 * 1024 * 1024;
+                
+                                if (file) {
+                                    if (!allowedTypes.includes(file.type)) {
+                                        alert('Only image files allowed.');
+                                        this.value = '';
+                                    } else if (file.size > maxSize) {
+                                        alert('File must be under 5MB.');
+                                        this.value = '';
+                                    }
+                                }
+                            });
                         }
                     });
-                });
                 </script>
+                
+               
 
                     <%- include('../includes/end.ejs') %>
-
-                        <script>
-
-                            document.querySelectorAll(".btn-next").forEach(function (button) {
-
-                                button.addEventListener("click", function (e) {
-
-                                    const activeTab = document.querySelector('.tab-pane.active');
-
-
-
-                                    console.log("step2");
-
-                                    if (activeTab && activeTab.id === "step2") {
-
-                                        const featureCheckboxes = document.querySelectorAll("input[name='featureIds']:checked");
-
-                                        const featuresError = document.getElementById("featuresError");
-
-
-
-                                        if (featureCheckboxes.length === 0) {
-
-                                            e.preventDefault();
-
-                                            featuresError.style.display = "block";
-
-                                            return false;
-
-                                        } else {
-
-                                            featuresError.style.display = "none";
-
-                                        }
-
-                                    }
-
-
-
-
-
-                                });
-
-                            });
-
-                        </script>
-
-                        <script>
-
-                            // Function to set selected city
-
-                            function setCitySelected(citySelect, selectedCityId) {
-
-                                const options = citySelect.querySelectorAll('option');
-
-                                options.forEach(option => {
-
-                                    if (option.value === selectedCityId) {
-
-                                        option.selected = true;
-
-                                    }
-
-                                });
-
-                            }
-
-
-
-                            // Handle state change
-
-                            document.querySelector('select[name="stateId"]').addEventListener('change', async function () {
-
-                                const stateId = this.value;
-
-                                const citySelect = document.querySelector('select[name="cityId"]');
-
-
-
-                                try {
-
-                                    const response = await fetch(`/api/cities/${stateId}`);
-
-                                    const cities = await response.json();
-
-
-
-                                    citySelect.innerHTML = '<option value="">Select City</option>';
-
-                                    cities.forEach(city => {
-
-                                        const option = document.createElement('option');
-
-                                        option.value = city._id;
-
-                                        option.textContent = city.name;
-
-                                        citySelect.appendChild(option);
-
-                                    });
-
-                                } catch (error) {
-
-                                    console.error('Error loading cities:', error);
-
-                                }
-
-                            });
-
-
-
-                            // Set initial city selection when page loads
-
-                            window.addEventListener('DOMContentLoaded', function () {
-
-                                const citySelect = document.querySelector('select[name="cityId"]');
-
-                                const selectedCityId = '<%= property.cityId?._id %>'; // Get the property's cityId
-
-                                if (selectedCityId) {
-
-                                    setCitySelected(citySelect, selectedCityId);
-
-                                }
-
-                            });
-
-                        </script>
-
-                        <script>
-
-                document.querySelector(".btn-finish").addEventListener("click", function (e) {
-
-                    const termsCheckbox = document.getElementById("termsCheckbox");
-
-                    const termsError = document.getElementById("termsError");
-
-
-
-                    if (!termsCheckbox.checked) {
-
-                        e.preventDefault();
-
-                        termsError.style.display = "block";
-
-                        termsCheckbox.focus();
-
-                    } else {
-
-                        termsError.style.display = "none";
-
-                    }
-
-                });
-
-            </script>
