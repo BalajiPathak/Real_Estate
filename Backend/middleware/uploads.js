@@ -21,11 +21,11 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB file size limit
-        fieldSize: 10 * 1024 * 1024, // 10MB field size limit
-        fields: 20, // Maximum number of non-file fields
-        files: 10, // Maximum number of file fields
-        parts: 30 // Maximum number of parts (fields + files)
+        fileSize: 10 * 1024 * 1024, // 10MB
+        fieldSize: 10 * 1024 * 1024, // 10MB
+        fields: 100, // Increased field limit
+        files: 12,  // For main image + gallery images
+        parts: 112  // Should be greater than fields + files
     }
 });
 

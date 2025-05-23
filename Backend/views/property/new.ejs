@@ -396,27 +396,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle crop button click
-    document.getElementById('cropButton').addEventListener('click', function() {
+    // Replace the existing cropper button click handler with this:
+    document.getElementById('cropButton').addEventListener('click', async function() {
         const croppedCanvas = cropper.getCroppedCanvas();
-        const croppedImageUrl = croppedCanvas.toDataURL();
         
-        // Update preview
-        mainImagePreview.src = croppedImageUrl;
-        
-        // Create a new hidden input for the cropped image data
-        let croppedInput = document.getElementById('croppedImageData');
-        if (!croppedInput) {
-            croppedInput = document.createElement('input');
-            croppedInput.type = 'hidden';
-            croppedInput.name = 'croppedImage';
-            croppedInput.id = 'croppedImageData';
-            mainImageInput.parentNode.appendChild(croppedInput);
-        }
-        croppedInput.value = croppedImageUrl;
-        
-        // Close modal and destroy cropper
-        $(cropperModal).modal('hide');
-        cropper.destroy();
+        // Convert the cropped canvas to a Blob
+        croppedCanvas.toBlob(async (blob) => {
+            // Create a new File object from the Blob
+            const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+            
+            // Create a new FileList-like object
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            
+            // Update the file input with the cropped image
+            mainImageInput.files = dataTransfer.files;
+            
+            // Update preview
+            mainImagePreview.src = croppedCanvas.toDataURL();
+            
+            // Close modal and destroy cropper
+            $(cropperModal).modal('hide');
+            cropper.destroy();
+        }, 'image/jpeg');
     });
 });
 </script>
