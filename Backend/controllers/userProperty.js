@@ -15,7 +15,7 @@ const Blog = require('../models/blog');
 const PropertyImage = require('../models/propertyImage');
 const sharp = require('sharp');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
 
 
 const propertyCategory = require('../models/propertyCategory');
@@ -81,13 +81,22 @@ exports.getEditProperty = async (req, res) => {
     try {
         const propertyId = req.params.id;
 
+        // Add validation for propertyId
+        if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+            console.log("Invalid property ID");
+            return res.redirect('/myproperties');
+        }
+
         const property = await Property.findById(propertyId)
             .populate('stateId')
             .populate('categoryId')
             .populate('statusId')
             .populate('cityId');
 
-        if (!property) return res.redirect('/myproperties');
+        if (!property) {
+            console.log("Property not found");
+            return res.redirect('/myproperties');
+        }
 
         const [cities, states, propertyFeatures, propertyVideos, propertyImages, allFeatures, companyInfo, navbars, categories, statuses, blogs] = await Promise.all([
             City.find({ stateId: property.stateId._id }),
@@ -150,160 +159,141 @@ exports.getCitiesByState = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch cities' });
     }
 };
+async function ensureUploadsDirectory() {
+    const uploadsPath = path.join(__dirname, '../uploads');
+    try {
+        await fs.access(uploadsPath);
+    } catch (error) {
+        await fs.mkdir(uploadsPath, { recursive: true });
+    }
+}
 
-// Add sharp to the imports at the top
 exports.postEditProperty = async (req, res) => {
-  const propertyId = req.params.id;
-  const errors = validationResult(req);
+    try {
+        await ensureUploadsDirectory();
+        const propertyId = req.params.id;
 
-  if (!mongoose.Types.ObjectId.isValid(propertyId)) {
-    console.log("mongodb me error hai ");
-    
-    return res.status(400).redirect(`/property/edit/${propertyId}`);
-  }
-
-  try {
-    const existingProperty = await Property.findById(propertyId);
-    if (!existingProperty) {
-    console.log("existing propertuy nhi mil rhsa hai  ");
-
-      return res.status(404).redirect(`/property/edit/${propertyId}`);
-    }
-
-    if (!errors.isEmpty()) {
-      // Re-fetch data and re-render on validation error
-      const [cities, states, propertyFeatures, propertyVideos, propertyImages, allFeatures, companyInfo, navbars, categories, statuses, blogs] = await Promise.all([
-        City.find({ stateId: existingProperty.stateId }),
-        State.find(),
-        PropertyDataFeature.find({ propertyId }),
-        PropertyVideo.find({ propertyId }),
-        PropertyImage.find({ propertyId }),
-        PropertyFeature.find(),
-        CompanyInfo.findOne(),
-        Navbar.find().sort({ _id: 1 }),
-        Category.find(),
-        Status.find(),
-        Blog.find()
-      ]);
-
-      const selectedFeatureIds = propertyFeatures.map(f => f.featureId.toString());
-      const videoLinks = propertyVideos.map(v => v.video);
-      const galleryImages = propertyImages.length ? propertyImages.map(img => '/uploads/' + img.image) : ['/uploads/nothing'];
-
-      return res.render('property/edit', {
-        pageTitle: 'Edit Property',
-        path: '/myproperties',
-        property: existingProperty,
-        errorMessage: errors.array()[0].msg,
-        galleryImages,
-        videoLinks,
-        selectedFeatureIds,
-        features: allFeatures,
-        states,
-        cities,
-        categories,
-        statuses,
-        companyInfo: companyInfo || {},
-        navbar: navbars || [],
-        blogs: blogs || [],
-        uploadsPath: '/uploads/',
-        user: req.user,
-        isLoggedIn: req.session.isLoggedIn,
-        isAgent: req.session.isAgent
-      });
-    }
-
-    // Update basic fields
-    Object.assign(existingProperty, {
-      name: req.body.name,
-      price: req.body.price,
-      phone: req.body.phone,
-      description: req.body.description,
-      beds: req.body.beds,
-      baths: req.body.baths,
-      area: req.body.area,
-      stateId: req.body.stateId,
-      cityId: req.body.cityId,
-      categoryId: req.body.categoryId,
-      statusId: req.body.statusId
-    });
-
-    // HANDLE CROPPED MAIN IMAGE (Base64)
-    if (req.body.croppedImage) {
-      const base64Data = req.body.croppedImage.replace(/^data:image\/\w+;base64,/, '');
-      const buffer = Buffer.from(base64Data, 'base64');
-      const filename = `cropped-main-${Date.now()}.jpg`;
-      const filepath = path.join(__dirname, '../uploads', filename);
-
-      await sharp(buffer).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
-
-      // Delete old main image if exists
-      if (existingProperty.mainImage) {
-        const oldMainPath = path.join(__dirname, '..', existingProperty.mainImage);
-        try { await fs.unlink(oldMainPath); } catch (e) {}
-      }
-
-      existingProperty.mainImage = `uploads/${filename}`;
-    } else if (req.files?.mainImage?.[0]) {
-      const mainImg = req.files.mainImage[0];
-      const filename = `main-${Date.now()}-${mainImg.originalname}`;
-      const filepath = path.join(__dirname, '../uploads', filename);
-
-      await sharp(mainImg.path).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
-      existingProperty.mainImage = `uploads/${filename}`;
-    }
-
-    // HANDLE NEW GALLERY IMAGES (keep existing + append new)
-    if (req.files?.galleryImages?.length > 0) {
-      for (const file of req.files.galleryImages) {
-        const filename = `gallery-${Date.now()}-${file.originalname}`;
-        const filepath = path.join(__dirname, '../uploads', filename);
-        await sharp(file.path).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
-
-        await PropertyImage.create({ propertyId, image: filename });
-      }
-    }
-
-    // HANDLE EXISTING GALLERY DELETION (if you support it via checkboxes, e.g. req.body.deleteImages)
-    if (req.body.deleteImages) {
-      const deleteList = Array.isArray(req.body.deleteImages) ? req.body.deleteImages : [req.body.deleteImages];
-      for (const imgId of deleteList) {
-        const img = await PropertyImage.findById(imgId);
-        if (img) {
-          const imgPath = path.join(__dirname, '../uploads', img.image);
-          try { await fs.unlink(imgPath); } catch (e) {}
-          await img.remove();
+        if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+            return res.status(400).redirect('/myproperties');
         }
-      }
+
+        const existingProperty = await Property.findById(propertyId);
+        if (!existingProperty) {
+            return res.status(404).redirect('/myproperties');
+        }
+
+        // Update basic property fields
+        Object.assign(existingProperty, {
+            name: req.body.name,
+            price: req.body.price,
+            phone: req.body.phone,
+            description: req.body.description,
+            beds: req.body.beds,
+            baths: req.body.baths,
+            area: req.body.area,
+            stateId: req.body.stateId,
+            cityId: req.body.cityId,
+            categoryId: req.body.categoryId,
+            statusId: req.body.statusId
+        });
+
+        // Handle main image updates
+        if (req.body.croppedImage) {
+            const base64Data = req.body.croppedImage.replace(/^data:image\/\w+;base64,/, '');
+            const buffer = Buffer.from(base64Data, 'base64');
+            const filename = `cropped-main-${Date.now()}.jpg`;
+            const filepath = path.join(__dirname, '../uploads', filename);
+
+            await sharp(buffer).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
+
+            if (existingProperty.mainImage && existingProperty.mainImage !== 'default.jpg') {
+                const oldMainPath = path.join(__dirname, '..', existingProperty.mainImage);
+                try { await fs.unlink(oldMainPath); } catch (e) { }
+            }
+
+            existingProperty.mainImage = `uploads/${filename}`;
+        }
+
+        await existingProperty.save();
+
+        const submittedFeatureIdsRaw = req.body.featureIds; // matches EJS checkbox name="featureIds"
+
+// Normalize into array
+const submittedFeatureIds = Array.isArray(submittedFeatureIdsRaw)
+    ? submittedFeatureIdsRaw
+    : submittedFeatureIdsRaw ? [submittedFeatureIdsRaw] : [];
+
+const existingFeatures = await PropertyDataFeature.find({ propertyId });
+const existingFeatureIds = existingFeatures.map(f => f.featureId.toString());
+
+// Find new features not already saved
+const newFeatureIds = submittedFeatureIds.filter(
+    fId => mongoose.Types.ObjectId.isValid(fId) && !existingFeatureIds.includes(fId)
+);
+
+// Add only the new ones
+for (const featureId of newFeatureIds) {
+    await PropertyDataFeature.create({ propertyId, featureId });
+}
+        // ============================
+        const submittedVideos = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink].filter(Boolean);
+        const existingVideos = await PropertyVideo.find({ propertyId });
+        const existingVideoLinks = existingVideos.map(v => v.video.trim());
+
+        const newVideos = submittedVideos.filter(v => v.trim() && !existingVideoLinks.includes(v.trim()));
+        for (const video of newVideos) {
+            await PropertyVideo.create({ propertyId, video: video.trim() });
+        }
+
+        // ============================
+        // GALLERY IMAGES
+        // ============================
+        if (req.files?.galleryImages?.length > 0) {
+            for (const file of req.files.galleryImages) {
+                const filename = `gallery-${Date.now()}-${file.originalname}`;
+                const filepath = path.join(__dirname, '../uploads', filename);
+                await sharp(file.path).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
+                await PropertyImage.create({ propertyId, image: filename });
+            }
+        }
+
+        // ============================
+        // IMAGE DELETION (OPTIONAL)
+        // ============================
+        if (req.body.deleteImages) {
+            const deleteList = Array.isArray(req.body.deleteImages) ? req.body.deleteImages : [req.body.deleteImages];
+            for (const imgId of deleteList) {
+                const img = await PropertyImage.findById(imgId);
+                if (img) {
+                    const imgPath = path.join(__dirname, '../uploads', img.image);
+                    try { await fs.unlink(imgPath); } catch (e) { }
+                    await img.remove();
+                }
+            }
+        }
+
+        const [companyInfo, navbar, blogs] = await Promise.all([
+            CompanyInfo.findOne(),
+            Navbar.find(),
+            Blog.find()
+        ]);
+
+        res.render('property/welcome', {
+            pageTitle: 'Property Updated',
+            path: '/property/welcome',
+            isLoggedIn: req.session?.isLoggedIn,
+            successMessage: 'Property updated successfully',
+            companyInfo: companyInfo || {},
+            navbar: navbar || [],
+            blogs: blogs || []
+        });
+
+    } catch (error) {
+        console.error('Error in postEditProperty:', error);
+        res.status(500).redirect('/myproperties');
     }
-
-    await existingProperty.save();
-
-    // HANDLE VIDEOS
-    await PropertyVideo.deleteMany({ propertyId });
-    const videoArray = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
-    for (const link of videoArray) {
-      if (link?.trim()) {
-        await PropertyVideo.create({ propertyId, video: link.trim() });
-      }
-    }
-
-    // HANDLE FEATURES
-    await PropertyDataFeature.deleteMany({ propertyId });
-    const featuresArray = Array.isArray(req.body.features) ? req.body.features : [req.body.features];
-    for (const featureId of featuresArray) {
-      if (mongoose.Types.ObjectId.isValid(featureId)) {
-        await PropertyDataFeature.create({ propertyId, featureId });
-      }
-    }
-
-    res.redirect('/myproperties');
-
-  } catch (error) {
-    console.error('Error in postEditProperty:', error);
-    res.status(500).redirect('/myproperties');
-  }
 };
+
 // Delete property
 exports.deleteProperty = async (req, res) => {
     try {

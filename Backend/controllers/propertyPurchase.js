@@ -75,6 +75,10 @@ exports.postPropertyPurchase = async (req, res) => {
     }
 };
 
+// Add PaymentTransaction to imports at the top
+const PaymentTransaction = require('../models/paymentTransaction');
+
+// In getSuccess function, after purchase.save() and before sending email:
 exports.getSuccess = async (req, res) => {
     try {
         const sessionId = req.query.session_id;
@@ -82,7 +86,6 @@ exports.getSuccess = async (req, res) => {
             return res.redirect('/properties');
         }
 
-        // Retrieve PaymentIntent instead of Session
         const paymentIntent = await stripe.paymentIntents.retrieve(sessionId);
         
         const purchase = new UserPurchaseProperty({
@@ -95,11 +98,29 @@ exports.getSuccess = async (req, res) => {
         
         await purchase.save();
 
-        // Update property status
+        // Get property and calculate shares
         const property = await PropertyData.findById(paymentIntent.metadata.propertyId);
         if (property) {
             property.saleStatus = 'sold';
             await property.save();
+
+            // Create payment transaction record
+            const totalAmount = paymentIntent.amount / 100;
+            const agentShare = totalAmount * 0.7; // 70% to agent
+            const ownerShare = totalAmount * 0.3; // 30% to company
+
+            const transaction = new PaymentTransaction({
+                agentId: property.userId, // Agent ID from property
+                userId: req.session.user._id, // Buyer ID
+                propertyId: property._id,
+                transactionId: paymentIntent.id,
+                totalAmount: totalAmount,
+                agentShare: agentShare,
+                ownerShare: ownerShare,
+                status: 'completed'
+            });
+
+            await transaction.save();
         }
 
         // Updated email template to use paymentIntent instead of session
