@@ -115,17 +115,14 @@ router.get('/myproperties', isAuth, userPropertyController.getUserProperties);
 // Edit property form (GET)
 router.get('/property/edit/:id', isAuth, userPropertyController.getEditProperty);
 
-// Handle edit property form (POST)
-router.post(
-    '/user/property/:id',
+// Update the edit property route
+router.post('/property/edit/:id',
     isAuth,
     isAgent,
     upload.fields([
         { name: 'mainImage', maxCount: 1 },
         { name: 'galleryImages', maxCount: 5 }
     ]),
-    validateImages,
-    propertyValidations,
     userPropertyController.postEditProperty
 );
 

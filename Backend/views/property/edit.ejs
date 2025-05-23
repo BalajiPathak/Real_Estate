@@ -21,7 +21,9 @@
                             <div class="wizard-container">
 
                                 <div class="wizard-card ct-wizard-orange" id="wizardProperty">
+
                                     <form action="/property/edit/<%= property._id %>" method="POST"
+                                        <input type="hidden" name="propertyId" value="<%= property._id %>"
                                         enctype="multipart/form-data">
                                         <div class="wizard-header">
                                             <h3>
