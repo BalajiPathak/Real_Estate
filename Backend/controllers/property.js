@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
- 
+
 const PropertyData = require('../models/propertyData');
 const { PropertyCategory } = require('../models/propertyCategory');
- 
+
 // const { StatusCategory } = require('../models/statusCategory');
 const { PropertyFeature } = require('../models/propertyFeature');
 const PropertyImages = require('../models/propertyImage');
 const { PropertyDataFeature } = require('../models/propertyFeature');
 const City = require('../models/city');
-const PropertyVideo = require('../models/propertyVideo');  
+const PropertyVideo = require('../models/propertyVideo');
 const State = require('../models/state');
 const FilterProperty = require('../models/filterProperty');
 const StatusCategory = require('../models/statusCategory');
@@ -17,7 +17,12 @@ const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar')
 const Blog = require('../models/blog');
 const UserType = require('../models/userType');
- 
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs').promises;
+
+
+
 exports.getAllProperties = async (req, res) => {
   try {
     console.log('Features in query:', req.query);
@@ -26,7 +31,7 @@ exports.getAllProperties = async (req, res) => {
     const isAgent = isLoggedIn && req.session.user?.user_type_id
       ? (await UserType.findById(req.session.user.user_type_id))?.user_type_name === 'agent'
       : false;
-    
+
     const page = parseInt(req.query.page) || 1;
     const limit = isLoggedIn || isAgent ? 12 : 8;
     const skip = (page - 1) * limit;
@@ -93,8 +98,8 @@ exports.getAllProperties = async (req, res) => {
         filters.push({ _id: null });
       }
     }
-filters.push({ saleStatus: { $ne: 'sold' } });
- 
+    filters.push({ saleStatus: { $ne: 'sold' } });
+
 
     const finalFilter = filters.length > 0 ? { $and: filters } : {};
 
@@ -181,59 +186,99 @@ filters.push({ saleStatus: { $ne: 'sold' } });
   }
 };
 
- 
+
+async function ensureUploadsDirectory() {
+  const uploadsPath = path.join(__dirname, '../uploads');
+  try {
+    await fs.access(uploadsPath);
+  } catch (error) {
+    await fs.mkdir(uploadsPath, { recursive: true });
+  }
+}
+
+// Modify getPropertyById to use correct path
 exports.getPropertyById = async (req, res) => {
   try {
-    const companyInfo = await CompanyInfo.findOne();
-    const navbar = await Navbar.find();
-    const blogs = await Blog.find();
-   
-const property = await PropertyData.findById(req.params.id)
-.populate([
-  { path: 'categoryId' },
-  { path: 'stateId' },
-  { path: 'statusId' },
-  { path: 'userId' },
- 
-])
-.lean();
- 
+    // Special case for logo.png from CompanyInfo
+    if (req.params.id === 'logo.png') {
+      const companyInfo = await CompanyInfo.findOne();
+      if (companyInfo && companyInfo.Logo) {
+        return res.sendFile(path.join(__dirname, '../uploads', companyInfo.Logo));
+      }
+    }
+
+    // First validate if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).render('pages/404', {
+        pageTitle: 'Not Found',
+        isLoggedIn: req.session?.isLoggedIn || false,
+        isAgent: req.session?.isAgent || false,
+        companyInfo: await CompanyInfo.findOne() || [],
+        navbar: await Navbar.find() || [],
+        blogs: await Blog.find() || []
+      });
+    }
+
+    const [companyInfo, navbar, blogs, property] = await Promise.all([
+      CompanyInfo.findOne(),
+      Navbar.find(),
+      Blog.find(),
+      PropertyData.findById(req.params.id)
+        .populate([
+          { path: 'categoryId' },
+          { path: 'stateId' },
+          { path: 'statusId' },
+          { path: 'userId' }
+        ])
+        .lean()
+    ]);
+
     if (!property) {
-      return res.status(404).send('Property not found');
+      return res.status(404).render('pages/404', {
+        pageTitle: 'Not Found',
+        isLoggedIn: req.session?.isLoggedIn || false,
+        isAgent: req.session?.isAgent || false,
+        error: 'Property not found',
+        companyInfo: companyInfo || [],
+        navbar: navbar || [],
+        blogs: blogs || []
+      });
     }
-   
-   
-    const propertyFeatureMappings = await PropertyDataFeature.find({ propertyId: property._id })
-      .populate('featureId')
-      .lean();
- 
-    const featureNames = propertyFeatureMappings.map(f => f.featureId?.name || 'Unknown');
- 
-   
-    const images = await PropertyImages.find({ propertyId: property._id }).lean();
-    const videos = await PropertyVideo.find({ propertyId: property._id }).lean();
- 
-   
-    const relatedProperties = property.categoryId ? await PropertyData.find({
-      categoryId: property.categoryId,
-      _id: { $ne: property._id }
-    })
-    .limit(4)
-    .populate('categoryId stateId statusId userId cityId')
-    .lean() : [];
-    
-    // If no related properties are found, provide an empty array
-    for (let related of relatedProperties || []) {
-      const relFeatures = await PropertyDataFeature.find({ propertyId: related._id })
+
+    const [propertyFeatureMappings, images, videos] = await Promise.all([
+      PropertyDataFeature.find({ propertyId: property._id })
         .populate('featureId')
+        .lean(),
+      PropertyImages.find({ propertyId: property._id }).lean(),
+      PropertyVideo.find({ propertyId: property._id }).lean()
+    ]);
+
+    const featureNames = propertyFeatureMappings.map(f => f.featureId?.name || 'Unknown');
+
+    // Get related properties
+    let relatedProperties = [];
+    if (property.categoryId) {
+      relatedProperties = await PropertyData.find({
+        categoryId: property.categoryId,
+        _id: { $ne: property._id }
+      })
+        .limit(4)
+        .populate('categoryId stateId statusId userId cityId')
         .lean();
-      related.features = relFeatures.map(f => f.featureId?.name || 'Unknown');
+
+      // Get features for related properties
+      await Promise.all(relatedProperties.map(async (related) => {
+        const relFeatures = await PropertyDataFeature.find({ propertyId: related._id })
+          .populate('featureId')
+          .lean();
+        related.features = relFeatures.map(f => f.featureId?.name || 'Unknown');
+      }));
     }
-  // console.log('featureNamesfeatureNamesfeatureNames',featureNames)
+
     res.render('property/property-details', {
       pageTitle: 'Real Estate',
       isLoggedIn: req.session?.isLoggedIn || false,
-       isAgent: req.session.isAgent || false,
+      isAgent: req.session?.isAgent || false,
       path: '/property/property-details',
       property,
       features: featureNames,
@@ -242,61 +287,65 @@ const property = await PropertyData.findById(req.params.id)
       properties: relatedProperties,
       companyInfo: companyInfo || [],
       navbar: navbar || [],
+      blogs: blogs || []
+    });
+
+  } catch (error) {
+    console.error('Error fetching property details:', error);
+    res.status(500).render('pages/500', {
+      pageTitle: 'Error',
+      isLoggedIn: req.session?.isLoggedIn || false,
+      isAgent: req.session?.isAgent || false,
+      companyInfo: await CompanyInfo.findOne() || [],
+      navbar: await Navbar.find() || [],
+      blogs: await Blog.find() || []
+    });
+  }
+};
+
+exports.renderSubmitForm = async (req, res) => {
+  try {
+    if (!req.session.isLoggedIn || !req.session.isAgent) {
+      return res.redirect('/login');
+    }
+    const PropertyCategory = mongoose.model('PropertyCategory');
+    const State = mongoose.model('State');
+    const StatusCategory = mongoose.model('StatusCategory');
+
+    const categories = await PropertyCategory.find();
+    const states = await State.find();
+    const statuses = await StatusCategory.find();
+    const features = await PropertyFeature.find();
+    const cities = await City.find().populate('stateId');
+    const companyInfo = await CompanyInfo.findOne();
+    const navbar = await Navbar.find();
+    const blogs = await Blog.find();
+
+    res.render('property/new', {
+      pageTitle: 'Real Estate',
+      isLoggedIn: req.session && req.session.isLoggedIn || false,
+      isAgent: req.session.isAgent || false,
+      path: '/property/new',
+      categories,
+      states,
+      statuses,
+      features,
+      cities,
+      companyInfo: companyInfo || [],
+      navbar: navbar || [],
       blogs: blogs || [],
     });
   } catch (error) {
-    console.error('Error fetching property details:', error);
-    res.status(500).send('Server Error');
+    console.warn('Error saving property:', error);
+    res.status(500).json({ error: error.message });
   }
 };
- 
-exports.renderSubmitForm = async (req, res) => {
-  try {
-    if (!req.session.isLoggedIn || !req.session.isAgent ) {
-      return res.redirect('/login');
-  }
-  const PropertyCategory = mongoose.model('PropertyCategory');
-  const State = mongoose.model('State');
-  const StatusCategory = mongoose.model('StatusCategory');
- 
-  const categories = await PropertyCategory.find();
-  const states = await State.find();
-  const statuses = await StatusCategory.find();
-  const features = await PropertyFeature.find();
-  const cities = await City.find().populate('stateId');
-  const companyInfo = await CompanyInfo.findOne();  
-  const navbar = await Navbar.find();  
-  const blogs = await Blog.find();
- 
-  res.render('property/new', {
-    pageTitle: 'Real Estate',
-    isLoggedIn: req.session && req.session.isLoggedIn || false,  
-     isAgent: req.session.isAgent || false,
-    path: '/property/new',
-    categories,
-    states,
-    statuses,
-    features,
-    cities,
-    companyInfo:companyInfo||[],
-navbar:navbar ||[],
-blogs:blogs ||[],
-  });
-} catch (error) {
-  console.warn('Error saving property:', error);
-  res.status(500).json({ error: error.message });
-}
-};
- 
+
 exports.submitProperty = async (req, res, next) => {
-  if (!req.session.isLoggedIn || !req.session.isAgent) {
-    return res.status(403).redirect('/login');
-  }
-  const companyInfo = await CompanyInfo.findOne();
-  const navbar = await Navbar.find();
-  const blogs = await Blog.find();
-  // const userId = req.session.user._id;
   try {
+    // Ensure uploads directory exists
+    await ensureUploadsDirectory();
+
     const {
       name,
       price,
@@ -309,35 +358,73 @@ exports.submitProperty = async (req, res, next) => {
       beds,
       baths,
       area,
-      userId,
       termsAndConditions,
       videoLink,
       featureIds
     } = req.body;
- 
-   
-    const mainImage = req.files['mainImage']?.[0]?.filename || 'default.jpg';
-    const galleryImages = req.files['galleryImages']?.map((file) => file.filename) || [];
- 
-   
-    let videoLinkString = null;
-    if (videoLink && Array.isArray(videoLink)) {
-      videoLinkString = videoLink.find(link => link.trim() !== '') || null;
-    } else {
-      videoLinkString = videoLink?.trim() || null;
+
+    // Validate required fields
+    if (!name || !price || !categoryId || !stateId || !statusId || !cityId) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
- 
-   
-    // Verify if city belongs to selected state
+
+    // Validate city belongs to state
     const cityExists = await City.findOne({
-      _id: req.body.cityId,
-      stateId: req.body.stateId
+      _id: cityId,
+      stateId: stateId
     });
 
     if (!cityExists) {
       return res.status(400).json({ error: 'Selected city does not belong to the selected state' });
     }
 
+    // Process cropped main image
+    let mainImage = 'default.jpg';
+    if (req.body.croppedImage) {
+      const base64Data = req.body.croppedImage.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      const filename = `property_${Date.now()}.jpg`;
+      const filepath = path.join(__dirname, '../uploads', filename);
+
+      await sharp(buffer)
+        .jpeg({ quality: 90 })
+        .toFile(filepath);
+
+      mainImage = filename;
+    } else if (req.files?.['mainImage']?.[0]?.filename) {
+      mainImage = req.files['mainImage'][0].filename;
+    }
+
+    // Process gallery images
+    const galleryImages = [];
+    if (req.files?.['galleryImages']) {
+      for (const file of req.files['galleryImages']) {
+        try {
+          const filename = `gallery_${Date.now()}_${file.originalname}`;
+          const filepath = path.join(__dirname, '../uploads', filename);
+
+          // Check if buffer exists
+          if (!file.buffer) {
+            console.error('No buffer found in file:', file);
+            continue;
+          }
+
+          await sharp(file.buffer)
+            .resize(800, 600, { fit: 'inside' })
+            .toFormat('jpeg')
+            .jpeg({ quality: 85 })
+            .toFile(filepath);
+
+          galleryImages.push(filename);
+        } catch (err) {
+          console.error('Error processing gallery image:', err);
+          continue;
+        }
+      }
+    }
+
+    // Create new property
     const newProperty = new PropertyData({
       name,
       price,
@@ -353,71 +440,82 @@ exports.submitProperty = async (req, res, next) => {
       userId: req.session.userId,
       termsAndConditions: termsAndConditions === 'on',
       image: mainImage,
-      galleryImages,
-      videoLink: videoLinkString,
+      saleStatus: 'available'
     });
- 
-   
+
     await newProperty.save();
-    console.log('Property saved:', newProperty);
- 
-   
-    const propertyId = newProperty._id;
- 
-   
-    const mainImageDoc = new PropertyImages({
-      propertyId,
-      image: mainImage,
-      isMainImage: true,
-    });
-    await mainImageDoc.save();
- 
-    for (let image of galleryImages) {
-      const galleryImageDoc = new PropertyImages({
-        propertyId,
-        image,
-        isMainImage: false,
-      });
-      await galleryImageDoc.save();
+
+    // Save operations array
+    const saveOperations = [
+      // Save main image
+      new PropertyImages({
+        propertyId: newProperty._id,
+        image: mainImage,
+        isMainImage: true
+      }).save(),
+
+      // Save gallery images
+      ...galleryImages.map(image =>
+        new PropertyImages({
+          propertyId: newProperty._id,
+          image,
+          isMainImage: false
+        }).save())
+    ];
+
+    // Add video link if valid
+    if (videoLink && typeof videoLink === 'string') {
+      saveOperations.push(
+        new PropertyVideo({
+          propertyId: newProperty._id,
+          video: videoLink.trim()
+        }).save()
+      );
     }
- 
-    console.log('Images saved to PropertyImages');
- 
-   
-    if (videoLinkString) {
-      const videoDoc = new PropertyVideo({
-        propertyId,
-        video: videoLinkString,
-      });
-      await videoDoc.save();
-      console.log('Video saved to PropertyVideos');
+
+    // Add features
+    if (Array.isArray(featureIds) && featureIds.length > 0) {
+      saveOperations.push(
+        ...featureIds.map(featureId =>
+          new PropertyDataFeature({
+            propertyId: newProperty._id,
+            featureId
+          }).save()
+        )
+      );
     }
- 
-   
-    if (featureIds && featureIds.length > 0) {
-      for (let featureId of featureIds) {
-        const propertyFeature = new PropertyDataFeature({
-          propertyId,
-          featureId,
-        });
-        await propertyFeature.save();
-      }
-      console.log('Features saved to PropertyDataFeature');
-    }
- 
-   
-    res.render('property/welcome', {
+
+    // Wait for all operations
+    await Promise.all(saveOperations);
+
+    // Redirect to success page
+    const companyInfo = await CompanyInfo.findOne() || {};
+    const navbar = await Navbar.find() || [];
+    const blogs = await Blog.find() || [];
+
+    return res.render('property/welcome', {
       pageTitle: 'Real Estate',
-      isLoggedIn: req.session && req.session.isLoggedIn || false,  
-      isAgent: req.session.isAgent || false,
+      isLoggedIn: req.session?.isLoggedIn || false,
       path: '/property/welcome',
-      successMessage:'You have successfully submitted the Property',
-      companyInfo:companyInfo||[],
-      navbar:navbar ||[],
-      blogs:blogs ||[],      
+      successMessage: 'You have successfully submitted the Property',
+      companyInfo,
+      navbar,
+      blogs
     });
+
+
   } catch (error) {
     console.error('Error saving property:', error);
-    res.status(500).send('Error saving property');
+
+    return res.status(500).render('pages/500', {
+      pageTitle: 'Error',
+      isLoggedIn: req.session?.isLoggedIn || false,
+      isAgent: req.session?.isAgent || false,
+      error: 'Failed to submit property',
+      companyInfo: await CompanyInfo.findOne() || {},
+      navbar: await Navbar.find() || [],
+      blogs: await Blog.find() || []
+    });
   }
 };
+

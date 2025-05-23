@@ -13,65 +13,68 @@ const Status = require('../models/statusCategory');
 const statusCategory = require('../models/statusCategory');
 const Blog = require('../models/blog');
 const PropertyImage = require('../models/propertyImage');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
 
 
 const propertyCategory = require('../models/propertyCategory');
 const FilterProperty = require('../models/filterProperty'); // Add FilterProperty import
 
 exports.getUserProperties = async (req, res) => {
-  try {
-    if (!req.session.isLoggedIn) {
-      return res.redirect('/login');
+    try {
+        if (!req.session.isLoggedIn) {
+            return res.redirect('/login');
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const searchQuery = req.query.search || '';
+
+        const user = req.session.user;
+        const userData = {
+            First_Name: user.First_Name || user.firstName || user.given_name || 'User',
+        };
+
+        // Filter object
+        const finalFilter = {
+            userId: user._id,
+            name: { $regex: searchQuery, $options: 'i' }, // Search by name
+        };
+
+        const totalPropertie = await Property.countDocuments(finalFilter);
+        const totalPages = Math.ceil(totalPropertie / limit);
+
+        const propertie = await Property.find(finalFilter)
+            .populate('categoryId stateId statusId cityId') // Add cityId to populate
+            .skip(skip)
+            .limit(limit);
+
+        const companyInfo = await CompanyInfo.findOne();
+        const navbar = await Navbar.find();
+        const blogs = await Blog.find();
+
+        res.render('userProperty/userProperty', {
+            pageTitle: 'My Properties',
+            path: '/myproperties',
+            properties: propertie,
+            user: userData,
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent,
+            currentPage: page,
+            totalPages,
+            searchQuery, // pass to view
+            companyInfo: companyInfo || [],
+            navbar: navbar || [],
+            blogs: blogs || [],
+        });
+    } catch (error) {
+        console.error('Error in getUserProperties:', error);
+        res.status(500).redirect('/home');
     }
- 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 5;
-    const skip = (page - 1) * limit;
-    const searchQuery = req.query.search || '';
- 
-    const user = req.session.user;
-    const userData = {
-      First_Name: user.First_Name || user.firstName || user.given_name || 'User',
-    };
- 
-    // Filter object
-    const finalFilter = {
-      userId: user._id,
-      name: { $regex: searchQuery, $options: 'i' }, // Search by name
-    };
- 
-    const totalPropertie = await Property.countDocuments(finalFilter);
-    const totalPages = Math.ceil(totalPropertie / limit);
- 
-    const propertie = await Property.find(finalFilter)
-      .populate('categoryId stateId statusId cityId') // Add cityId to populate
-      .skip(skip)
-      .limit(limit);
- 
-    const companyInfo = await CompanyInfo.findOne();
-    const navbar = await Navbar.find();
-    const blogs = await Blog.find();
- 
-    res.render('userProperty/userProperty', {
-      pageTitle: 'My Properties',
-      path: '/myproperties',
-      properties: propertie,
-      user: userData,
-      isLoggedIn: req.session.isLoggedIn,
-      isAgent: req.session.isAgent,
-      currentPage: page,
-      totalPages,
-      searchQuery, // pass to view
-      companyInfo: companyInfo || [],
-      navbar: navbar || [],
-      blogs: blogs || [],
-    });
-  } catch (error) {
-    console.error('Error in getUserProperties:', error);
-    res.status(500).redirect('/home');
-  }
 };
- 
+
 
 
 exports.getEditProperty = async (req, res) => {
@@ -84,26 +87,11 @@ exports.getEditProperty = async (req, res) => {
             .populate('statusId')
             .populate('cityId');
 
-        if (!property) {
-            return res.status(404).redirect('/myproperties');
-        }
+        if (!property) return res.redirect('/myproperties');
 
-        const [cities, states] = await Promise.all([
+        const [cities, states, propertyFeatures, propertyVideos, propertyImages, allFeatures, companyInfo, navbars, categories, statuses, blogs] = await Promise.all([
             City.find({ stateId: property.stateId._id }),
-            State.find()
-        ]);
-
-        const [
-            propertyFeatures,
-            propertyVideos,
-            propertyImages,
-            allFeatures,
-            companyInfo, 
-            navbars,
-            categories,
-            statuses,
-            blogs
-        ] = await Promise.all([
+            State.find(),
             PropertyDataFeature.find({ propertyId }),
             PropertyVideo.find({ propertyId }),
             PropertyImage.find({ propertyId }),
@@ -115,49 +103,39 @@ exports.getEditProperty = async (req, res) => {
             Blog.find()
         ]);
 
-        const selectedFeatureIds = propertyFeatures.map(pf => pf.featureId.toString());
-        const videoLinks = propertyVideos.map(v => v.video);  // Extract just video URLs
+        const selectedFeatureIds = propertyFeatures.map(f => f.featureId.toString());
+        const videoLinks = propertyVideos.map(v => v.video); // For prefill in form
 
-        // Construct full image URLs by prepending '/uploads/' to the image filename
-        let galleryImages = propertyImages.map(i => {
-            if (i.image) {
-                return '/uploads/' + i.image;  // Add /uploads/ if the image exists
-            } else {
-                return '/uploads/nothing';  // Default image if no image is found
-            }
-        });
-
-        // If there are no images, set a default "no image" path
-        if (galleryImages.length === 0) {
-            galleryImages = ['/uploads/nothing'];  // Ensure at least one placeholder image is shown
-        }
+        const galleryImages = propertyImages.length
+            ? propertyImages.map(img => '/uploads/' + img.image)
+            : ['/uploads/nothing'];
 
         res.render('property/edit', {
             pageTitle: 'Edit Property',
             path: '/myproperties',
             property,
-            cities,
+            galleryImages,
+            videoLinks,
+            selectedFeatureIds,
+            features: allFeatures,
             states,
+            cities,
             categories,
             statuses,
-            features: allFeatures,
-            selectedFeatureIds,
-            blogs: blogs || [],
             companyInfo: companyInfo || {},
             navbar: navbars || [],
-            user: req.user || req.session.user,
-            isLoggedIn: req.session.isLoggedIn || false,
-            isAgent: req.session.isAgent || false,
+            blogs: blogs || [],
             uploadsPath: '/uploads/',
-            videoLinks,
-            galleryImages
+            user: req.user,
+            isLoggedIn: req.session.isLoggedIn,
+            isAgent: req.session.isAgent
         });
-
-    } catch (error) {
-        console.error('Error in getEditProperty:', error);
-        res.status(500).redirect('/myproperties');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/myproperties');
     }
 };
+
 
 
 
@@ -173,136 +151,159 @@ exports.getCitiesByState = async (req, res) => {
     }
 };
 
+// Add sharp to the imports at the top
 exports.postEditProperty = async (req, res) => {
-    const errors = validationResult(req);
-if (!errors.isEmpty()) {
-  console.log("Validation errors:", errors.array());
-    try {
-        const propertyId = req.params.id;
-        
-        // Check if the property ID is valid
-        if (!mongoose.Types.ObjectId.isValid(propertyId)) {
-            return res.status(400).redirect('/myproperties');
-        }
+  const propertyId = req.params.id;
+  const errors = validationResult(req);
 
-        const property = await Property.findById(propertyId);
-        if (!property) return res.status(404).redirect('/myproperties');
+  if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+    console.log("mongodb me error hai ");
+    
+    return res.status(400).redirect(`/property/edit/${propertyId}`);
+  }
 
-        // Ensure the user owns this property
-        const userId = req.user?._id || req.session.user?._id;
-        if (property.userId.toString() !== userId.toString()) {
-            return res.status(403).redirect('/myproperties');
-        }
+  try {
+    const existingProperty = await Property.findById(propertyId);
+    if (!existingProperty) {
+    console.log("existing propertuy nhi mil rhsa hai  ");
 
-        // Verify city-state relationship
-        if (!mongoose.Types.ObjectId.isValid(req.body.cityId) || !mongoose.Types.ObjectId.isValid(req.body.stateId)) {
-            return res.status(400).redirect('/myproperties');
-        }
-
-        const cityExists = await City.findOne({
-            _id: req.body.cityId,
-            stateId: req.body.stateId
-        });
-
-        if (!cityExists) {
-            console.error('Selected city does not belong to the selected state');
-            return res.status(400).redirect('/myproperties');
-        }
-
-        // Prepare the property update data
-        const updateData = {
-            name: req.body.name,
-            price: req.body.price,
-            saleStatus: "available",
-            phone: req.body.phone,
-            description: req.body.description,
-            stateId: req.body.stateId,
-            cityId: req.body.cityId,
-            categoryId: req.body.categoryId,
-            statusId: req.body.statusId,
-            beds: req.body.beds,
-            baths: req.body.baths,
-            area: req.body.area,
-            termsAndConditions: req.body.termsAndConditions === 'true'
-        };
-
-        // Handle main image upload
-        if (req.files && req.files.mainImage && req.files.mainImage[0]) {
-            updateData.image = req.files.mainImage[0].filename;
-        }
-
-        await Property.findByIdAndUpdate(propertyId, updateData);
-
-        // Handle features
-        if (req.body.featureIds) {
-            await PropertyDataFeature.deleteMany({ propertyId });
-            const featureIds = Array.isArray(req.body.featureIds) ? req.body.featureIds : [req.body.featureIds];
-            await Promise.all(featureIds.map(featureId => {
-                if (mongoose.Types.ObjectId.isValid(featureId)) {
-                    return PropertyDataFeature.create({ propertyId, featureId });
-                }
-            }));
-        }
-
-        // Handle existing images first
-        if (req.body.existingImages && req.body.imageIds) {
-            const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
-            const imageIds = Array.isArray(req.body.imageIds) ? req.body.imageIds : [req.body.imageIds];
-
-            await Promise.all(imageIds.map((id, index) => {
-                if (mongoose.Types.ObjectId.isValid(id)) {
-                    return PropertyImage.findByIdAndUpdate(id, {
-                        imagePath: existingImages[index].replace('/uploads/', '')
-                    });
-                }
-            }));
-        }
-
-        // Handle new gallery images
-        if (req.files && req.files.galleryImages) {
-            const newImages = req.files.galleryImages.map(file => ({
-                propertyId,
-                imagePath: file.filename
-            }));
-            await PropertyImage.insertMany(newImages);
-        }
-
-        // Handle existing videos first
-        if (req.body.existingVideos && req.body.videoIds) {
-            const existingVideos = Array.isArray(req.body.existingVideos) ? req.body.existingVideos : [req.body.existingVideos];
-            const videoIds = Array.isArray(req.body.videoIds) ? req.body.videoIds : [req.body.videoIds];
-
-            await Promise.all(videoIds.map((id, index) => {
-                if (mongoose.Types.ObjectId.isValid(id)) {
-                    return PropertyVideo.findByIdAndUpdate(id, {
-                        video: existingVideos[index]
-                    });
-                }
-            }));
-        }
-
-        // Handle new video links
-        if (req.body.videoLink) {
-            const newVideoLinks = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
-            const validNewLinks = newVideoLinks.filter(link => link && link.trim());
-            
-            if (validNewLinks.length > 0) {
-                const newVideos = validNewLinks.map(video => ({
-                    propertyId,
-                    video: video.trim()
-                }));
-                await PropertyVideo.insertMany(newVideos);
-            }
-        }
-
-        res.redirect('/myproperties');
-    } catch (error) {
-        console.error('Error in postEditProperty:', error);
-        res.status(500).redirect('/myproperties');
+      return res.status(404).redirect(`/property/edit/${propertyId}`);
     }
+
+    if (!errors.isEmpty()) {
+      // Re-fetch data and re-render on validation error
+      const [cities, states, propertyFeatures, propertyVideos, propertyImages, allFeatures, companyInfo, navbars, categories, statuses, blogs] = await Promise.all([
+        City.find({ stateId: existingProperty.stateId }),
+        State.find(),
+        PropertyDataFeature.find({ propertyId }),
+        PropertyVideo.find({ propertyId }),
+        PropertyImage.find({ propertyId }),
+        PropertyFeature.find(),
+        CompanyInfo.findOne(),
+        Navbar.find().sort({ _id: 1 }),
+        Category.find(),
+        Status.find(),
+        Blog.find()
+      ]);
+
+      const selectedFeatureIds = propertyFeatures.map(f => f.featureId.toString());
+      const videoLinks = propertyVideos.map(v => v.video);
+      const galleryImages = propertyImages.length ? propertyImages.map(img => '/uploads/' + img.image) : ['/uploads/nothing'];
+
+      return res.render('property/edit', {
+        pageTitle: 'Edit Property',
+        path: '/myproperties',
+        property: existingProperty,
+        errorMessage: errors.array()[0].msg,
+        galleryImages,
+        videoLinks,
+        selectedFeatureIds,
+        features: allFeatures,
+        states,
+        cities,
+        categories,
+        statuses,
+        companyInfo: companyInfo || {},
+        navbar: navbars || [],
+        blogs: blogs || [],
+        uploadsPath: '/uploads/',
+        user: req.user,
+        isLoggedIn: req.session.isLoggedIn,
+        isAgent: req.session.isAgent
+      });
+    }
+
+    // Update basic fields
+    Object.assign(existingProperty, {
+      name: req.body.name,
+      price: req.body.price,
+      phone: req.body.phone,
+      description: req.body.description,
+      beds: req.body.beds,
+      baths: req.body.baths,
+      area: req.body.area,
+      stateId: req.body.stateId,
+      cityId: req.body.cityId,
+      categoryId: req.body.categoryId,
+      statusId: req.body.statusId
+    });
+
+    // HANDLE CROPPED MAIN IMAGE (Base64)
+    if (req.body.croppedImage) {
+      const base64Data = req.body.croppedImage.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+      const filename = `cropped-main-${Date.now()}.jpg`;
+      const filepath = path.join(__dirname, '../uploads', filename);
+
+      await sharp(buffer).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
+
+      // Delete old main image if exists
+      if (existingProperty.mainImage) {
+        const oldMainPath = path.join(__dirname, '..', existingProperty.mainImage);
+        try { await fs.unlink(oldMainPath); } catch (e) {}
+      }
+
+      existingProperty.mainImage = `uploads/${filename}`;
+    } else if (req.files?.mainImage?.[0]) {
+      const mainImg = req.files.mainImage[0];
+      const filename = `main-${Date.now()}-${mainImg.originalname}`;
+      const filepath = path.join(__dirname, '../uploads', filename);
+
+      await sharp(mainImg.path).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
+      existingProperty.mainImage = `uploads/${filename}`;
+    }
+
+    // HANDLE NEW GALLERY IMAGES (keep existing + append new)
+    if (req.files?.galleryImages?.length > 0) {
+      for (const file of req.files.galleryImages) {
+        const filename = `gallery-${Date.now()}-${file.originalname}`;
+        const filepath = path.join(__dirname, '../uploads', filename);
+        await sharp(file.path).resize(800, 600).jpeg({ quality: 90 }).toFile(filepath);
+
+        await PropertyImage.create({ propertyId, image: filename });
+      }
+    }
+
+    // HANDLE EXISTING GALLERY DELETION (if you support it via checkboxes, e.g. req.body.deleteImages)
+    if (req.body.deleteImages) {
+      const deleteList = Array.isArray(req.body.deleteImages) ? req.body.deleteImages : [req.body.deleteImages];
+      for (const imgId of deleteList) {
+        const img = await PropertyImage.findById(imgId);
+        if (img) {
+          const imgPath = path.join(__dirname, '../uploads', img.image);
+          try { await fs.unlink(imgPath); } catch (e) {}
+          await img.remove();
+        }
+      }
+    }
+
+    await existingProperty.save();
+
+    // HANDLE VIDEOS
+    await PropertyVideo.deleteMany({ propertyId });
+    const videoArray = Array.isArray(req.body.videoLink) ? req.body.videoLink : [req.body.videoLink];
+    for (const link of videoArray) {
+      if (link?.trim()) {
+        await PropertyVideo.create({ propertyId, video: link.trim() });
+      }
+    }
+
+    // HANDLE FEATURES
+    await PropertyDataFeature.deleteMany({ propertyId });
+    const featuresArray = Array.isArray(req.body.features) ? req.body.features : [req.body.features];
+    for (const featureId of featuresArray) {
+      if (mongoose.Types.ObjectId.isValid(featureId)) {
+        await PropertyDataFeature.create({ propertyId, featureId });
+      }
+    }
+
+    res.redirect('/myproperties');
+
+  } catch (error) {
+    console.error('Error in postEditProperty:', error);
+    res.status(500).redirect('/myproperties');
+  }
 };
-
-
 // Delete property
 exports.deleteProperty = async (req, res) => {
     try {
@@ -326,4 +327,3 @@ exports.deleteProperty = async (req, res) => {
     }
 };
 
-}

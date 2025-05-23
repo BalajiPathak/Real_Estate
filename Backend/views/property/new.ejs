@@ -1,18 +1,7 @@
 <%- include('../includes/head.ejs') %>
     <%- include('../includes/header.ejs') %>
         <%- include('../includes/navbar.ejs') %>
-
             <body>
-
-
-                <!-- Body content -->
-
-
-                <!--End top header -->
-
-
-                <!-- End of nav bar -->
-
                 <div class="page-head">
                     <div class="container">
                         <div class="row">
@@ -66,6 +55,7 @@
                                                                     (jpeg, jpg, png, gif, webp) are allowed.</span>
                                                             </div>
                                                         </div>
+                                                        
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
@@ -338,6 +328,98 @@
 
 
                 <%- include('../includes/footer.ejs') %>
+                <div class="modal fade" id="cropperModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Crop Image</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="img-container">
+                                    <img id="cropperImage" src="" style="max-width: 100%;">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
+    const mainImageInput = document.getElementById('mainImageInput');
+    const mainImagePreview = document.getElementById('mainImagePreview');
+    const cropperModal = document.getElementById('cropperModal');
+    const cropperImage = document.getElementById('cropperImage');
+    const errorMsg = document.getElementById('mainImageError');
+    let cropper;
+
+    // Handle main image selection
+    mainImageInput.addEventListener('change', function(e) {
+        const file = this.files[0];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (file) {
+            if (!allowedTypes.includes(file.type)) {
+                errorMsg.style.display = 'block';
+                this.value = '';
+                mainImagePreview.src = '/assets/img/default.jpg';
+                return;
+            }
+
+            errorMsg.style.display = 'none';
+            
+            // Read the file and show cropper modal
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cropperImage.src = e.target.result;
+                $(cropperModal).modal('show');
+                
+                // Destroy existing cropper if any
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                // Initialize cropper
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 16 / 9,
+                    viewMode: 2,
+                    minCropBoxWidth: 100,
+                    minCropBoxHeight: 100
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Handle crop button click
+    document.getElementById('cropButton').addEventListener('click', function() {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedImageUrl = croppedCanvas.toDataURL();
+        
+        // Update preview
+        mainImagePreview.src = croppedImageUrl;
+        
+        // Create a new hidden input for the cropped image data
+        let croppedInput = document.getElementById('croppedImageData');
+        if (!croppedInput) {
+            croppedInput = document.createElement('input');
+            croppedInput.type = 'hidden';
+            croppedInput.name = 'croppedImage';
+            croppedInput.id = 'croppedImageData';
+            mainImageInput.parentNode.appendChild(croppedInput);
+        }
+        croppedInput.value = croppedImageUrl;
+        
+        // Close modal and destroy cropper
+        $(cropperModal).modal('hide');
+        cropper.destroy();
+    });
+});
+</script>
             </body>
             <script>
                 document.getElementById('mainImageInput').addEventListener('change', function (e) {
@@ -379,29 +461,36 @@
             </script>
 
             <script>
-                const allCities = <% - JSON.stringify(cities) %>;
+               document.querySelector('select[name="stateId"]').addEventListener('change', async function () {
+    const stateId = this.value;
+    const citySelect = document.querySelector('select[name="cityId"]');
 
+    try {
+        const response = await fetch(`/api/cities/${stateId}`);
+        const cities = await response.json();
 
-                const stateDropdown = document.getElementById('stateDropdown');
-                const cityDropdown = document.getElementById('cityDropdown');
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city._id;
+            option.textContent = city.name;
+            citySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading cities:', error);
+    }
+});
 
-                stateDropdown.addEventListener('change', () => {
-                    const selectedStateId = stateDropdown.value;
-
-
-                    cityDropdown.innerHTML = '<option value="">-- Select City --</option>';
-
-
-                    const filteredCities = allCities.filter(city => city.stateId && city.stateId._id === selectedStateId);
-
-
-                    filteredCities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city._id;
-                        option.textContent = city.name;
-                        cityDropdown.appendChild(option);
-                    });
-                });
+// Set initial city selection when page loads
+window.addEventListener('DOMContentLoaded', function () {
+    const citySelect = document.querySelector('select[name="cityId"]');
+    const stateSelect = document.querySelector('select[name="stateId"]');
+    
+    if (stateSelect.value) {
+        // Trigger change event to load cities for the selected state
+        stateSelect.dispatchEvent(new Event('change'));
+    }
+});
             </script>
             <script>
                 document.querySelectorAll(".btn-next").forEach(function (button) {

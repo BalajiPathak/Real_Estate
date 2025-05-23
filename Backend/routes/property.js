@@ -21,13 +21,15 @@ router.get('/properties', propertyController.getAllProperties);
 router.get('/property/new',isAgent,
     
  propertyController.renderSubmitForm);
+// Update the post route configuration
 router.post('/property', upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'galleryImages', maxCount: 10 }
-]),[ check('phone')
-    .isLength({ min: 10, max: 10 })
-    .withMessage('Mobile number should contains 10 digits')
-   ],isAgent, propertyController.submitProperty);
+]), [
+    check('phone')
+        .isLength({ min: 10, max: 10 })
+        .withMessage('Mobile number should contains 10 digits')
+], isAgent, propertyController.submitProperty);
 router.get('/property/:id', propertyController.getPropertyById);
 router.get('/welcome',propertyController.submitProperty);
 module.exports = router;

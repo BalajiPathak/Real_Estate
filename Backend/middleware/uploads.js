@@ -1,31 +1,32 @@
 const multer = require('multer');
 const path = require('path');
- 
-// Storage config
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsPath = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+    destination: function (req, file, cb) {
+        cb(null, uploadsPath);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
 });
- 
-// File filter to allow only images
-const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
- 
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files (jpeg, png, gif, webp) are allowed!'), false);
-  }
-};
- 
-// Final multer config
+
 const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB file size limit
+        fieldSize: 10 * 1024 * 1024, // 10MB field size limit
+        fields: 20, // Maximum number of non-file fields
+        files: 10, // Maximum number of file fields
+        parts: 30 // Maximum number of parts (fields + files)
+    }
 });
- 
+
 module.exports = upload;
