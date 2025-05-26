@@ -9,6 +9,7 @@ const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar');
 const { validationResult } = require('express-validator');  
 const Blog = require('../models/blog');
+const Plan = require('../models/plans');
 // Update this section
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
@@ -161,6 +162,9 @@ exports.postSignup = async (req, res) => {
             throw new Error('Local user type not found');
         }
 
+        const freePlan = await Plan.findOne({ price: 0 }); // Assuming free plan has price 0
+ 
+
         // Create new user
         const user = new User({
             First_Name,
@@ -168,7 +172,8 @@ exports.postSignup = async (req, res) => {
             Email,
             Password: hashedPassword,
             user_type_id: localType._id,
-            is_verified: false
+            is_verified: false,
+             is_subscribed: freePlan ? freePlan._id : null,
         });
  
         await user.save();

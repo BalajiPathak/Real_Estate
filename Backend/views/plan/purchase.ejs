@@ -1,0 +1,222 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') %>
+
+<style>
+    .purchase-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+    }
+    .purchase-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .purchase-card {
+        width: 600px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+    .purchase-header {
+        text-align: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #d3a033;
+        border-radius: 8px 8px 0 0;
+    }
+    .purchase-title {
+        color: #2c3e50;
+        margin: 0;
+        font-size: 24px;
+    }
+    .purchase-body {
+        padding: 30px;
+    }
+    .plan-name {
+        color: #34495e;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+    .summary-total {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #eee;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .payment-section {
+        margin-top: 30px;
+    }
+    .payment-row {
+        margin-bottom: 20px;
+    }
+    .payment-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+    .payment-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    #card-element {
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background: white;
+    }
+    #card-errors {
+        color: #dc3545;
+        margin-top: 8px;
+        font-size: 14px;
+    }
+    .checkout-button {
+        background-color: #d3a033;
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .checkout-button:hover {
+        background-color: #b88928;
+    }
+    .payment-processing {
+        display: none;
+        text-align: center;
+        margin-top: 15px;
+    }
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #d3a033;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="purchase-container">
+    <div class="purchase-wrapper">
+        <div class="purchase-card">
+            <div class="purchase-header">
+                <h3 class="purchase-title">Plan Purchase</h3>
+            </div>
+            <div class="purchase-body">
+                <h4 class="plan-name"><%= plan.name %></h4>
+                
+                <div class="summary-row">
+                    <span>Duration:</span>
+                    <span><%= plan.duration %> days</span>
+                </div>
+                <div class="summary-row">
+                    <span>Property Submission Limit:</span>
+                    <span><%= plan.propertySubmissionLimit %></span>
+                </div>
+                <div class="summary-row">
+                    <span>Features:</span>
+                    <span><%= plan.features %></span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total Amount:</span>
+                    <span>$<%= plan.price.toLocaleString() %></span>
+                </div>
+
+                <form id="payment-form" class="payment-section">
+                    <div class="payment-row">
+                        <label class="payment-label">Email</label>
+                        <input type="email" class="payment-input" value="<%= user.Email %>" readonly>
+                    </div>
+                    
+                    <div class="payment-row">
+                        <label class="payment-label">Card Information</label>
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert"></div>
+                    </div>
+
+                    <button type="submit" id="checkout-button" class="checkout-button">
+                        Pay $<%= plan.price.toLocaleString() %>
+                    </button>
+
+                    <div class="payment-processing">
+                        <div class="spinner"></div>
+                        <p>Processing your payment...</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("<%= stripePublicKey %>");
+  const elements = stripe.elements();
+  const card = elements.create("card", {
+  hidePostalCode: true
+});
+card.mount("#card-element");
+ 
+  const form = document.getElementById("payment-form");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    document.querySelector(".payment-processing").style.display = "block";
+ 
+    const response = await fetch(`/plans/purchase/<%= plan._id %>`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    const data = await response.json();
+ 
+    const result = await stripe.confirmCardPayment(data.clientSecret, {
+      payment_method: {
+        card: card,
+        billing_details: {
+          name: "<%= user.First_Name %> <%= user.Last_Name %>",
+          email: "<%= user.Email %>"
+        }
+      }
+    });
+ 
+    if (result.error) {
+      document.querySelector("#card-errors").textContent = result.error.message;
+      document.querySelector(".payment-processing").style.display = "none";
+    } else {
+      if (result.paymentIntent.status === "succeeded") {
+        window.location.href = `/plans/purchase/success/<%= plan._id %>`;
+      }
+    }
+  });
+</script>
+
+<%- include('../includes/footer.ejs') %>

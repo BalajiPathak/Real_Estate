@@ -79,6 +79,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+     is_subscribed: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Plan',
+        default: null
+    },
     resetToken: String,
     resetTokenExpiration: Date
 }, {

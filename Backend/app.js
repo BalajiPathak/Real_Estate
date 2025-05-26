@@ -29,7 +29,7 @@ const propertyPurchaseRoutes = require('./routes/propertyPurchase');
 const blogRoutes = require('./routes/blog');
 const faqsRoutes = require('./routes/faqs');
 const legalRoutes = require('./routes/legal');
-
+const planRoutes= require('./routes/plans');
 const { graphqlHTTP } = require('express-graphql');
 const { schema } = require('./graphql/schema');
 const resolvers = require('./graphql/resolvers');
@@ -39,6 +39,7 @@ const morgan = require('morgan');
 const compression =require('compression');
 const bodyParser=require('body-parser');
 const AgentMessage = require('./models/agentMessage'); 
+
 const cors =require('cors');
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
@@ -319,7 +320,7 @@ app.use(userPropertyRoutes);
 app.use(changePasswword);
 app.use(legalRoutes);
 app.use(propertyPurchaseRoutes);
-
+app.use(planRoutes);
 app.use(errorHandler.handle404);
 
 app.use(errorHandler.handle500);
