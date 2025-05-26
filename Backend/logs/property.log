@@ -544,3 +544,5 @@
 ::1 - - [26/May/2025:12:11:12 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [26/May/2025:12:11:12 +0000] "GET /property/logo.png HTTP/1.1" 304 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [26/May/2025:12:11:54 +0000] "POST /property HTTP/1.1" 302 35 "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [26/May/2025:12:39:23 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/plans" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [26/May/2025:12:39:23 +0000] "GET /property/logo.png HTTP/1.1" 304 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
