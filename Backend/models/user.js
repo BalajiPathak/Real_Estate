@@ -79,10 +79,32 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-     is_subscribed: {
+    is_subscribed: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Plan',
         default: null
+    },
+    subscription: {
+        planId: { type: mongoose.Schema.Types.ObjectId, ref: 'Plan' },
+        planName: String,
+        startDate: Date,
+        endDate: Date,
+        status: {
+            type: String,
+            enum: ['active', 'expired', 'cancelled'],
+            default: 'active'
+        }
+    },
+    pendingSubscription: {
+        planId: { type: mongoose.Schema.Types.ObjectId, ref: 'Plan' },
+        planName: String,
+        startDate: Date,
+        endDate: Date,
+        status: {
+            type: String,
+            enum: ['pending', 'active', 'cancelled'],
+            default: 'pending'
+        }
     },
     resetToken: String,
     resetTokenExpiration: Date

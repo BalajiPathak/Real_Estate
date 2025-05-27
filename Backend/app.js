@@ -39,7 +39,7 @@ const morgan = require('morgan');
 const compression =require('compression');
 const bodyParser=require('body-parser');
 const AgentMessage = require('./models/agentMessage'); 
-
+require('./subscriptionManager');
 const cors =require('cors');
 
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
