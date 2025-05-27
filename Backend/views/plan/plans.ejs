@@ -46,19 +46,18 @@
                                 <div style="margin-bottom: 15px; color: #666;">
                                     <%= plan.description %>
                                 </div>
-                                
+
                                 <% if (isLoggedIn) { %>
-                                    <% if (user.is_subscribed && user.is_subscribed.toString() === plan._id.toString()) { %>
-  <button class="btn" style="background-color: #808080; color: white; width: 100%; padding: 10px; border-radius: 4px;"  disabled> Current Plan </button>
+  <% if (user.is_subscribed && user.is_subscribed.toString() === plan._id.toString()) { %>
+    <button class="btn" style="background-color: #808080; color: white; width: 100%; padding: 10px; border-radius: 4px;" disabled>Current Plan</button>
+  <% } else { %>
+    <a href="/plans/purchase/<%= plan._id %>" class="btn" style="background-color: #d3a033; color: white; width: 100%; padding: 10px; border-radius: 4px; text-decoration: none;">Purchase Plan</a>
+  <% } %>
 <% } else { %>
-  <a href="/plans/purchase/<%= plan._id %>" class="btn" style="background-color: #d3a033; color: white; width: 100%; padding: 10px; border-radius: 4px; text-decoration: none;">Purchase Plan</a>
+  <a href="/login" class="btn" style="background-color: #d3a033; color: white; width: 100%; padding: 10px; border-radius: 4px; text-decoration: none;">Login to Purchase</a>
 <% } %>
-                                   
-                                <% } else { %>
-                                    <a href="/login" class="btn" style="background-color: #d3a033; color: white; width: 100%; padding: 10px; border-radius: 4px; text-decoration: none;">
-                                        Login to Purchase
-                                    </a>
-                                <% } %>
+                                
+                                
                             </div>
                         </div>
                     </div>
