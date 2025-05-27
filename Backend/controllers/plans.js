@@ -87,16 +87,15 @@ exports.purchasePlan = async (req, res) => {
 
 exports.purchaseSuccess = async (req, res) => {
   try {
-    // Get planId from route parameters instead of request body
+   
     const planId = req.params.id;
 
-    // Fetch the selected plan
+    
     const plan = await Plan.findById(planId);
     if (!plan) {
       return res.status(404).render('error', { message: 'Plan not found' });
     }
 
-    // Fetch the logged-in user using session user ID
     const user = await User.findById(req.session.user._id);
     if (!user) {
       return res.status(404).render('error', { message: 'User not found' });
@@ -117,7 +116,6 @@ exports.purchaseSuccess = async (req, res) => {
 
     await user.save();
 
-    // Send confirmation email
     await transporter.sendMail({
       to: user.Email,
       from: 'balajipathak@startbitsolutions.com',
@@ -142,15 +140,15 @@ exports.purchaseSuccess = async (req, res) => {
       `
     });
 
-    // Optionally refresh session user data
+    
     req.session.user = user;
 
-    // Fetch other required data for rendering
+    
     const companyInfo = await CompanyInfo.findOne();
     const navbar = await Navbar.find();
     const blogs = await Blog.find();
 
-    // Render success page
+    
     res.render('plan/success', {
       pageTitle: 'Subscription Activated',
       plan,
