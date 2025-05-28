@@ -24,12 +24,14 @@
       Valid until:
       <strong><%= user.subscription.endDateFormatted %></strong>.
     <% } %>
-    <br>
-    You will be subscribe to the new
-    <strong><%= user.pendingSubscription.planName %></strong> plan.
-    <% if (user.pendingSubscription?.endDateFormatted) { %>
-      Valid until:
-      <strong><%= user.pendingSubscription.endDateFormatted %></strong>.
+    <% if (user.pendingSubscription?.planName) { %>
+      <br>
+      You will be subscribe to the new
+      <strong><%= user.pendingSubscription.planName %></strong> plan.
+      <% if (user.pendingSubscription?.endDateFormatted) { %>
+        Valid until:
+        <strong><%= user.pendingSubscription.endDateFormatted %></strong>.
+      <% } %>
     <% } %>
   </div>
 <% } %>

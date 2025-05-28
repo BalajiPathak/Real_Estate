@@ -209,7 +209,6 @@ exports.purchaseSuccess = async (req, res) => {
 };
 
 
-// Add this new route handler for POST requests to handle free plan activation
 exports.activateFreePlan = async (req, res) => {
     try {
         const planId = req.params.id;
@@ -229,37 +228,67 @@ exports.activateFreePlan = async (req, res) => {
             return res.status(404).render('error', { message: 'User not found' });
         }
 
-        // Update user's subscription
-        const startDate = new Date();
-        const endDate = new Date(Date.now() + plan.duration * 24 * 60 * 60 * 1000);
+        // Check if user has an active subscription
+        const now = new Date();
+        const hasActiveSubscription = user.subscription && 
+            user.subscription.status === 'active' && 
+            new Date(user.subscription.endDate) > now;
 
-        user.subscription = {
-            planId: plan._id,
-            planName: plan.name,
-            startDate,
-            endDate,
-            status: 'active'
-        };
-        user.is_subscribed = plan._id;
+        let startDate, endDate;
+
+        if (hasActiveSubscription) {
+            // If there's an active subscription, set the free plan to start after current plan ends
+            startDate = new Date(user.subscription.endDate);
+            endDate = new Date(startDate.getTime() + plan.duration * 24 * 60 * 60 * 1000);
+            
+            // Store as pending subscription
+            user.pendingSubscription = {
+                planId: plan._id,
+                planName: plan.name,
+                startDate,
+                endDate,
+                status: 'pending'
+            };
+        } else {
+            // If no active subscription, start the free plan immediately
+            startDate = new Date();
+            endDate = new Date(Date.now() + plan.duration * 24 * 60 * 60 * 1000);
+            
+            user.subscription = {
+                planId: plan._id,
+                planName: plan.name,
+                startDate,
+                endDate,
+                status: 'active'
+            };
+            user.is_subscribed = plan._id;
+        }
 
         await user.save();
 
-        // Send email notification
+        // Send email notification with appropriate message
         await transporter.sendMail({
             to: user.Email,
             from: 'balajipathak@startbitsolutions.com',
-            subject: 'Free Plan Activation Confirmation',
+            subject: hasActiveSubscription ? 'Free Plan Activation Scheduled' : 'Free Plan Activated',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #d3a033;">Plan Activation Confirmation</h2>
+                    <h2 style="color: #d3a033;">Plan ${hasActiveSubscription ? 'Schedule' : 'Activation'} Confirmation</h2>
                     <p>Dear ${user.First_Name},</p>
-                    <p>Your free plan has been successfully activated!</p>
+                    ${hasActiveSubscription ?
+                        `<p>Your free plan has been scheduled to activate after your current subscription ends.</p>` :
+                        `<p>Your free plan has been successfully activated!</p>`
+                    }
                     <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #333;">Plan Details:</h3>
                         <p><strong>Plan Name:</strong> ${plan.name}</p>
                         <p><strong>Duration:</strong> ${plan.duration} days</p>
                         <p><strong>Start Date:</strong> ${startDate.toLocaleDateString()}</p>
                         <p><strong>Valid Until:</strong> ${endDate.toLocaleDateString()}</p>
+                        ${hasActiveSubscription ?
+                            `<p><strong>Note:</strong> This plan will automatically activate after your current subscription ends on ${user.subscription.endDate.toLocaleDateString()}.</p>` :
+                            ''
+                        }
                     </div>
                     <p>If you have any questions about your plan, please don't hesitate to contact us.</p>
                 </div>
@@ -269,6 +298,12 @@ exports.activateFreePlan = async (req, res) => {
         // Update session
         req.session.user = user;
 
+        // Redirect based on subscription status
+        if (hasActiveSubscription) {
+            req.flash('success', 'Free plan will be activated after your current subscription ends');
+        } else {
+            req.flash('success', 'Free plan activated successfully');
+        }
         res.redirect('/plans');
 
     } catch (err) {
