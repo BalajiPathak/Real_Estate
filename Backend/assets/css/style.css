@@ -721,7 +721,7 @@ label small{
     width: 100%;
 }
 .navbar-default .navbar-nav > li > a::after {
-    background-color: #FDC600;
+    background-color: #d3a033;
     bottom: -24px;
     content: "";
     height: 5px;
@@ -763,7 +763,7 @@ label small{
     margin-right: 5px;
 }
 .nav-button:hover{
-    background-color: #FDC600;
+    background-color: #d3a033;
 
 }
 .navbar{

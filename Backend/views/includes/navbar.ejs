@@ -18,11 +18,11 @@
             <div class="button navbar-right">
                 <% if (!isLoggedIn) { %>
                     <a href="/agent/login">
-                        <button class="navbar-btn nav-button wow bounceInRight login" data-wow-delay="0.42s">Agent
+                        <button class="navbar-btn nav-button wow bounceInRight login" style="background-image: linear-gradient(to bottom, #d3a033 0, #d3a033 100%); color:white; font-weight:bold;" data-wow-delay="0.42s">Agent
                             Login</button>
                     </a>
                     <a href="/login">
-                        <button class="navbar-btn nav-button wow bounceInRight login"
+                        <button class="navbar-btn nav-button wow bounceInRight login" style="background-image: linear-gradient(to bottom, #d3a033 0, #d3a033 100%); color:white; font-weight:bold;"
                             data-wow-delay="0.45s">Login</button>
                     </a>
                     <a href="/signup">
@@ -31,7 +31,7 @@
                     <% } else { %>
                         <form action="/logout" method="post" style="display: inline;">
                             <button type="submit" class="navbar-btn nav-button wow bounceInRight login"
-                                data-wow-delay="0.45s">Logout</button>
+                                data-wow-delay="0.45s" style="background-image: linear-gradient(to bottom, #d3a033 0, #d3a033 100%); color:white; font-weight:bold;">Logout</button>
                         </form>
                         <% if (!isAgent) { %>
                             <a href="/purchase-history">
@@ -64,7 +64,7 @@
                                                 <div class="col-sm-3">
                                                     <h5>Home pages</h5>
                                                     <ul>
-                                                        <li><a href="/home">Home Style 1</a></li>
+                                                        <li><a href="/home">Home</a></li>
                                                     </ul>
                                                 </div>
                                                 <div class="col-sm-3">
@@ -89,6 +89,7 @@
                                                             <li><a href="/myproperties">Your properties</a></li>
                                                             <li><a href="/property/new">Submit property</a></li>
                                                             <li><a href="/agent/accountdetails">Account Details</a></li>
+                                                            <li><a href="/plans">Subscription Plans</a></li>
                                                             <% } %>
                                                                 <li><a href="/changePassword">Change Password</a></li>
                                                                 <li><a href="/userprofile">Your profile</a></li>

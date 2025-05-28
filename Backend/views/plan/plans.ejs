@@ -1,0 +1,90 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/header.ejs') %>
+<%- include('../includes/navbar.ejs') , { isLoggedIn: isLoggedIn }%>
+
+<div class="page-head">
+    <div class="container">
+        <div class="row">
+            <div class="page-head-content">
+                <h1 class="page-title">Subscription Plans</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="properties-area recent-property" style="background-color: #FFF;">
+    <div class="container">
+        <div class="row padding-top-40">
+            <div class="col-md-12">
+                     <% if (isLoggedIn && user?.is_subscribed) { %>
+  <div class="alert alert-warning" style="margin: 30px 0; text-align: center;">
+    You are currently subscribed to the
+    <strong><%= user.is_subscribed.name %></strong> plan.
+    <% if (user.subscription?.endDateFormatted) { %>
+      Valid until:
+      <strong><%= user.subscription.endDateFormatted %></strong>.
+    <% } %>
+    <% if (user.pendingSubscription?.planName) { %>
+      <br>
+      You will be subscribe to the new
+      <strong><%= user.pendingSubscription.planName %></strong> plan.
+      <% if (user.pendingSubscription?.endDateFormatted) { %>
+        Valid until:
+        <strong><%= user.pendingSubscription.endDateFormatted %></strong>.
+      <% } %>
+    <% } %>
+  </div>
+<% } %>
+                <div class="row">
+                    
+                    <% plans.forEach(plan => { %>
+                    <div class="col-sm-4">
+                        <div class="box-two proerty-item" style="text-align: center; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div class="item-entry overflow">
+                                <h4 style="color: #333; margin-bottom: 20px;"><%= plan.name %></h4>
+                                <div style="font-size: 24px; color: #d3a033; margin-bottom: 15px;">
+                                    $<%= plan.price %>
+                                </div>
+                                <div style="margin-bottom: 20px; color: #666;">
+                                    Duration: <%= plan.duration %> days
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <strong>Property Submission Limit:</strong>
+                                    <div style="color: #333;"><%= plan.propertySubmissionLimit %></div>
+                                </div>
+                                <div style="margin-bottom: 20px;">
+                                    <strong>Features:</strong>
+                                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                                        <% plan.features.forEach(feature => { %>
+                                        <li style="margin-bottom: 5px; color: #666;">
+                                            <i class="fa fa-check" style="color: #d3a033;"></i> <%= feature %>
+                                        </li>
+                                        <% }) %>
+                                    </ul>
+                                </div>
+                                <div style="margin-bottom: 15px; color: #666;">
+                                    <%= plan.description %>
+                                </div>
+
+                                <% if (isLoggedIn) { %>
+  <% if (user.is_subscribed && user.is_subscribed.toString() === plan._id.toString()) { %>
+    <button class="btn" style="background-color: #808080; color: white; width: 100%; padding: 10px; border-radius: 4px;" disabled>Current Plan</button>
+  <% } else { %>
+    <a href="/plans/purchase/<%= plan._id %>" class="btn" style="background-color: #d3a033; color: white; width: 100%; padding: 10px; border-radius: 4px; text-decoration: none;">Purchase Plan</a>
+  <% } %>
+<% } else { %>
+  <a href="/login" class="btn" style="background-color: #d3a033; color: white; width: 100%; padding: 10px; border-radius: 4px; text-decoration: none;">Login to Purchase</a>
+<% } %>
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../includes/footer.ejs') %>

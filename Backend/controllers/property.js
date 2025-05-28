@@ -16,6 +16,8 @@ const crypto = require('crypto');
 const CompanyInfo = require('../models/companyInfo');
 const Navbar = require('../models/navbar')
 const Blog = require('../models/blog');
+const Plan = require('../models/plans');
+const User= require('../models/user');
 const UserType = require('../models/userType');
 const sharp = require('sharp');
 const path = require('path');
@@ -363,12 +365,33 @@ exports.submitProperty = async (req, res, next) => {
       featureIds
     } = req.body;
 
-    // Validate required fields
+
+    const user = await User.findById(req.session.user._id).populate('is_subscribed');
+ 
+    if (!user || !user.is_subscribed) {
+      return res.status(403).json({ success: false, message: 'No active subscription found.' });
+    }
+ const plan = user.is_subscribed;
+  
+
+ console.log('Populated plan:', plan);
+console.log('Submission Limit:', plan.propertySubmissionLimit);
+
+const submittedCount = await PropertyData.countDocuments({ userId: req.session.user._id });
+if (submittedCount >= plan.propertySubmissionLimit) {
+   return res.redirect('/plans');
+}
+console.log('Already Submitted Properties:', submittedCount);
+    
+
+
+
+   
     if (!name || !price || !categoryId || !stateId || !statusId || !cityId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Validate city belongs to state
+  
     const cityExists = await City.findOne({
       _id: cityId,
       stateId: stateId
@@ -438,6 +461,7 @@ exports.submitProperty = async (req, res, next) => {
       baths,
       area,
       userId: req.session.userId,
+       createdBy: user._id,
       termsAndConditions: termsAndConditions === 'on',
       image: mainImage,
       saleStatus: 'available'

@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const AgentMessage = require('../models/agentMessage');
 const agentAccount = require('../models/agentAccount');
-
+const Plan = require('../models/plans');
 exports.getAgentLogin = async (req, res) => {
     try {
         const companyInfo = await CompanyInfo.findOne();
@@ -236,14 +236,15 @@ exports.postAgentSignup = async (req, res) => {
         if (!agentType) {
             throw new Error('Agent user type not found');
         }
-
+const freePlan = await Plan.findOne({ price: 0 });
         const user = new User({
             First_Name,
             Last_Name,
             Email,
             Password: hashedPassword,
             user_type_id: agentType._id, // Use the correct agent type ID
-            is_verified: false
+            is_verified: false,
+              is_subscribed: freePlan ? freePlan._id : null,
         });
 
         await user.save();
