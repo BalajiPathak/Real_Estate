@@ -127,7 +127,7 @@ exports.purchaseSuccess = async (req, res) => {
     let startDate, endDate;
     
     if (hasActiveSubscription) {
-      // If there's an active subscription, set the new plan to start after current plan ends
+      // the new plan to start after current plan ends
       startDate = new Date(user.subscription.endDate);
       endDate = new Date(startDate.getTime() + plan.duration * 24 * 60 * 60 * 1000);
       
@@ -140,7 +140,7 @@ exports.purchaseSuccess = async (req, res) => {
         status: 'pending'
       };
     } else {
-      // If no active subscription, start the plan immediately
+      // If no active subscription, start the plan 
       startDate = new Date();
       endDate = new Date(Date.now() + plan.duration * 24 * 60 * 60 * 1000);
       
@@ -156,7 +156,6 @@ exports.purchaseSuccess = async (req, res) => {
 
     await user.save();
 
-    // Send email notification
     await transporter.sendMail({
       to: user.Email,
       from: 'balajipathak@startbitsolutions.com',
@@ -185,12 +184,11 @@ exports.purchaseSuccess = async (req, res) => {
 
     req.session.user = user;
 
-    // Fetch other required data for rendering
     const companyInfo = await CompanyInfo.findOne();
     const navbar = await Navbar.find();
     const blogs = await Blog.find();
 
-    // Render success page
+   
     res.render('plan/success', {
       pageTitle: 'Subscription Activated',
       plan,
@@ -218,7 +216,7 @@ exports.activateFreePlan = async (req, res) => {
             return res.status(404).render('error', { message: 'Plan not found' });
         }
 
-        // Verify this is actually a free plan
+      
         if (plan.price !== 0) {
             return res.status(400).render('error', { message: 'Invalid plan activation attempt' });
         }
@@ -237,11 +235,11 @@ exports.activateFreePlan = async (req, res) => {
         let startDate, endDate;
 
         if (hasActiveSubscription) {
-            // If there's an active subscription, set the free plan to start after current plan ends
+            // free plan to start after current plan ends
             startDate = new Date(user.subscription.endDate);
             endDate = new Date(startDate.getTime() + plan.duration * 24 * 60 * 60 * 1000);
             
-            // Store as pending subscription
+           
             user.pendingSubscription = {
                 planId: plan._id,
                 planName: plan.name,
@@ -266,7 +264,6 @@ exports.activateFreePlan = async (req, res) => {
 
         await user.save();
 
-        // Send email notification with appropriate message
         await transporter.sendMail({
             to: user.Email,
             from: 'balajipathak@startbitsolutions.com',
