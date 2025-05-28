@@ -5291,3 +5291,8 @@
 ::1 - - [28/May/2025:05:38:30 +0000] "GET /logo.png HTTP/1.1" 404 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [28/May/2025:05:38:30 +0000] "GET /uploads/1747983432627-blog3.jpg HTTP/1.1" 404 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [28/May/2025:06:13:59 +0000] "GET /assets/favicon.ico HTTP/1.1" 404 - "http://localhost:3006/contact" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [28/May/2025:10:14:48 +0000] "GET /properties HTTP/1.1" 200 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+::1 - - [28/May/2025:10:15:04 +0000] "GET /login HTTP/1.1" 200 - "http://localhost:3006/properties" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+::1 - - [28/May/2025:10:15:12 +0000] "POST /login HTTP/1.1" 302 34 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+::ffff:127.0.0.1 - - [28/May/2025:10:16:33 +0000] "GET /login HTTP/1.1" 200 - "http://localhost:3006/contact" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+::1 - - [28/May/2025:10:16:46 +0000] "POST /login HTTP/1.1" 302 34 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
