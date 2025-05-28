@@ -1,170 +1,307 @@
 <%- include('includes/head.ejs') %>
-        <%- include('includes/header.ejs') %>
-            <%- include('includes/navbar.ejs') %>
+    <%- include('includes/header.ejs') %>
+        <%- include('includes/navbar.ejs') %>
 
-                <body class="bg-gray-100">
-                    <div class="page-head">
-                        <div class="container">
-                            <div class="row">
-                                <div class="page-head-content">
-                                    <h1 class="page-title">Contact Us</h1>
-                                </div>
+            <body class="bg-gray-100">
+                <div class="page-head">
+                    <div class="container">
+                        <div class="row">
+                            <div class="page-head-content">
+                                <h1 class="page-title">Contact Us</h1>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="content-area recent-property padding-top-40" style="background-color: #FFF;">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-8 col-md-offset-2">
-                                    <div class="" id="contact1">
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <h3><i class="fa fa-map-marker"></i> Address</h3>
-                                                <p>
-                                                    <%= companyInfo.Address %>
-                                                </p>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <h3><i class="fa fa-phone"></i> Call center</h3>
-                                                <p class="text-muted">This number is toll free if calling from
-                                                    Great Britain otherwise we advise you to use the electronic
-                                                    form of communication.</p>
-                                                <p><strong>
-                                                        <%= companyInfo.Phone_No %>
-                                                    </strong></p>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <h3><i class="fa fa-envelope"></i> Electronic support</h3>
-                                                <p class="text-muted">Please feel free to write an email to us or to use our
-                                                    electronic ticketing system.</p>
-                                                <ul>
-                                                    <li><strong><a href="mailto:<%= companyInfo.Email %>">
-                                                                <%= companyInfo.Email %>
-                                                            </a></strong></li>
-                                                    <li><strong><a href="#">Ticketio</a></strong> - our ticketing support
-                                                        platform</li>
-                                                </ul>
-                                            </div>
+                <div class="content-area recent-property padding-top-40" style="background-color: #FFF;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2">
+                                <div class="" id="contact1">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <h3><i class="fa fa-map-marker"></i> Address</h3>
+                                            <p>
+                                                <%= companyInfo.Address %>
+                                            </p>
                                         </div>
-                                        <h2>Contact form</h2>
-                                        <% if (errorMessage) { %>
-                                            <div class="alert alert-danger">
-                                                <%= errorMessage %>
-                                            </div>
-                                            <% } %>
+                                        <div class="col-sm-4">
+                                            <h3><i class="fa fa-phone"></i> Call center</h3>
+                                            <p class="text-muted">This number is toll free if calling from
+                                                Great Britain otherwise we advise you to use the electronic
+                                                form of communication.</p>
+                                            <p><strong>
+                                                    <%= companyInfo.Phone_No %>
+                                                </strong></p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <h3><i class="fa fa-envelope"></i> Electronic support</h3>
+                                            <p class="text-muted">Please feel free to write an email to us or to use our
+                                                electronic ticketing system.</p>
+                                            <ul>
+                                                <li><strong><a href="mailto:<%= companyInfo.Email %>">
+                                                            <%= companyInfo.Email %>
+                                                        </a></strong></li>
+                                                <li><strong><a href="#">Ticketio</a></strong> - our ticketing support
+                                                    platform</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <h2>Contact form</h2>
+                                    <% if (errorMessage) { %>
+                                        <div class="alert alert-danger">
+                                            <%= errorMessage %>
+                                        </div>
+                                        <% } %>
 
-                                        <% if (locals.successMessage) { %>
-                                            <div class="alert alert-success">
-                                                <%= successMessage %>
-                                            </div>
-                                            <% } %>
+                                            <% if (locals.successMessage) { %>
+                                                <div class="alert alert-success">
+                                                    <%= successMessage %>
+                                                </div>
+                                                <% } %>
 
-                                        <form action="/contact" method="POST" >
-                                            <div class="row">
-                                                <style>
-                                                    .required-field::after {
-                                                        content: "*";
-                                                        color: #ff0000;
-                                                        margin-left: 4px;
-                                                    }
-                                                </style>
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="firstname" class="required-field">First Name</label>
-                                                        <input type="text"
-                                                            class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
-                                                            id="firstname" name="firstname"
-                                                            value="<%= oldInput.First_Name %>" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="lastname" class="required-field">Last Name</label>
-                                                        <input type="text"
-                                                            class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
-                                                            id="lastname" name="lastname"
-                                                            value="<%= oldInput.Last_Name %>" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="email" class="required-field">Email</label>
-                                                        <input type="email"
-                                                            class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
-                                                            id="email" name="email"
-                                                            value="<%= oldInput.Email %>" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <label for="subject" class="required-field">Subject</label>
-                                                        <input type="text"
-                                                            class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
-                                                            id="subject" name="subject"
-                                                            value="<%= oldInput.Subject %>" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="message" class="required-field">Message</label>
-                                                        <textarea
-                                                            class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
-                                                            id="message" name="message" rows="5"
-                                                            required><%= oldInput.Message %></textarea>
-                                                    </div>
-                                                </div>
-                                                <!-- Replace the existing reCAPTCHA div with this -->
-                                                <div class="col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="captcha" class="required-field">Enter CAPTCHA</label>
+                                                    <form action="/contact" method="POST">
                                                         <div class="row">
+                                                            <style>
+                                                                .required-field::after {
+                                                                    content: "*";
+                                                                    color: #ff0000;
+                                                                    margin-left: 4px;
+                                                                }
+                                                            </style>
                                                             <div class="col-sm-6">
-                                                                <canvas id="captcha" style="border:1px solid #ccc; margin-bottom:10px;"></canvas>
-                                                                <button type="button" class="btn btn-sm" onclick="generateCaptcha()" style="margin-bottom:10px;">
-                                                                    <i class="fa fa-refresh"></i> Refresh CAPTCHA
+                                                                <div class="form-group">
+                                                                    <label for="firstname" class="required-field">First
+                                                                        Name</label>
+                                                                    <input type="text"
+                                                                        class="form-control <%= validationErrors?.find(e => e.param === 'firstname') ? 'is-invalid' : '' %>"
+                                                                        id="firstname" name="firstname"
+                                                                        value="<%= oldInput.First_Name %>" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label for="lastname" class="required-field">Last
+                                                                        Name</label>
+                                                                    <input type="text"
+                                                                        class="form-control <%= validationErrors?.find(e => e.param === 'lastname') ? 'is-invalid' : '' %>"
+                                                                        id="lastname" name="lastname"
+                                                                        value="<%= oldInput.Last_Name %>" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label for="email"
+                                                                        class="required-field">Email</label>
+                                                                    <input type="email"
+                                                                        class="form-control <%= validationErrors?.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
+                                                                        id="email" name="email"
+                                                                        value="<%= oldInput.Email %>" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label for="subject"
+                                                                        class="required-field">Subject</label>
+                                                                    <input type="text"
+                                                                        class="form-control <%= validationErrors?.find(e => e.param === 'subject') ? 'is-invalid' : '' %>"
+                                                                        id="subject" name="subject"
+                                                                        value="<%= oldInput.Subject %>" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-12">
+                                                                <div class="form-group">
+                                                                    <label for="message"
+                                                                        class="required-field">Message</label>
+                                                                    <textarea
+                                                                        class="form-control <%= validationErrors?.find(e => e.param === 'message') ? 'is-invalid' : '' %>"
+                                                                        id="message" name="message" rows="5"
+                                                                        required><%= oldInput.Message %></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Replace the existing reCAPTCHA div with this -->
+                                                            <div class="col-sm-12">
+                                                                <div class="form-group">
+                                                                    <label for="captcha" class="required-field">Enter
+                                                                        CAPTCHA</label>
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <canvas id="captcha"
+                                                                                style="border:1px solid #ccc; margin-bottom:10px;"></canvas>
+                                                                            <button type="button" class="btn btn-sm"
+                                                                                onclick="generateCaptcha()"
+                                                                                style="margin-bottom:10px;">
+                                                                                <i class="fa fa-refresh"></i> Refresh
+                                                                                CAPTCHA
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <input type="text" class="form-control"
+                                                                                id="captchaInput" name="captchaInput"
+                                                                                placeholder="Enter the code shown above"
+                                                                                required>
+                                                                            <input type="hidden" name="captchaText"
+                                                                                id="captchaText">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-12 text-center">
+                                                                <button type="submit" class="btn "
+                                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
+                                                                    <i class="fa fa-envelope-o"></i> Send
+                                                                    message
                                                                 </button>
                                                             </div>
-                                                            <div class="col-sm-6">
-                                                                <input type="text" 
-                                                                    class="form-control" 
-                                                                    id="captchaInput" 
-                                                                    name="captchaInput" 
-                                                                    placeholder="Enter the code shown above" 
-                                                                    required>
-                                                                <input type="hidden" name="captchaText" id="captchaText">
-                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 text-center">
-                                                    <button type="submit" class="btn "
-                                                    style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
-                                                        <i class="fa fa-envelope-o"></i> Send
-                                                        message
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
+                                                    </form>
                                 </div>
+                                <% if (locals.isLoggedIn) { %>
+                                    <div class="message-section" data-is-logged-in="<%= locals.isLoggedIn %>"
+                                        data-is-agent="<%= locals.isAgent %>"
+                                        data-user-name="<%= locals.user ? user.First_Name + ' ' + user.Last_Name : '' %>"
+                                        data-user-id="<%= locals.user ? user._id : '' %>">
+
+                                        <% if (locals.isAgent) { %>
+                                            <h3><i class="fa fa-comments"></i> User Messages</h3>
+                                            <% if (groupedMessages && Object.keys(groupedMessages).length> 0) { %>
+                                                <% Object.keys(groupedMessages).forEach(propertyId=> { %>
+                                                    <div class="property-message-group"
+                                                        data-property-id="<%= propertyId %>">
+                                                        <h4>Property: <%= groupedMessages[propertyId].propertyName %>
+                                                        </h4>
+                                                        <div class="messages-list" data-property-id="<%= propertyId %>">
+                                                            <% groupedMessages[propertyId].messages.forEach(message=> {
+                                                                %>
+                                                                <div class="message-item">
+                                                                    <strong>
+                                                                        <%= message.userName %>
+                                                                    </strong>
+                                                                    <span style="color: #999;"> - <%= new
+                                                                            Date(message.timestamp).toLocaleString() %>
+                                                                            </span>
+                                                                    <p>
+                                                                        <%= message.content %>
+                                                                    </p>
+                                                                </div>
+                                                                <% }) %>
+                                                        </div>
+                                                        <!-- Reply Form -->
+                                                        <form class="reply-form"
+                                                            data-user-id="<%= groupedMessages[propertyId].messages[0].userId._id %>">
+                                                            <textarea class="form-control" rows="2"
+                                                                placeholder="Reply to user..." required></textarea>
+                                                            <button type="submit"
+                                                                class="btn btn-primary btn-sm mt-2">Reply</button>
+                                                        </form>
+                                                        <hr>
+                                                    </div>
+                                                    <% }); %>
+                                                        <% } else { %>
+                                                            <p>No messages from users yet.</p>
+                                                            <% } %>
+                                                                <% } else { %>
+                                                                    <h3><i class="fa fa-paper-plane"></i> Send Message
+                                                                        to Agent</h3>
+                                                                    <form id="userMessageForm">
+                                                                        <div class="form-group">
+                                                                            <label for="propertySelect">Select
+                                                                                Property</label>
+                                                                            <select id="propertySelect"
+                                                                                class="form-control" required>
+                                                                                <% properties.forEach(property=> { %>
+                                                                                    <option value="<%= property._id %>">
+                                                                                        <%= property.name %>
+                                                                                    </option>
+                                                                                    <% }) %>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <textarea id="userMessageContent"
+                                                                                class="form-control" rows="4"
+                                                                                placeholder="Type your message..."
+                                                                                required></textarea>
+                                                                        </div>
+                                                                        <button type="submit"
+                                                                            class="btn btn-warning">Send</button>
+                                                                    </form>
+
+                                                                    <h4 class="mt-4">Your Messages History</h4>
+                                                                    <!-- Replace the messages display section -->
+                                                                    <div class="user-messages" style="border:1px solid #ccc; padding:10px; max-height:400px; overflow-y:auto; background:#f5f5f5; display: flex; flex-direction: column;">
+                                                                        <% if (messages && messages.length > 0) { %>
+                                                                            <%const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                                                                            %>
+                                                                            <% sortedMessages.forEach(message => { %>
+                                                                                <div class="message-item <%= message.isAgentReply ? 'agent-message' : 'user-message' %>" 
+                                                                                     data-property-id="<%= message.propertyId ? message.propertyId._id : '' %>"
+                                                                                     style="margin: 10px 0; padding: 10px; border-radius: 10px; max-width: 70%;
+                                                                                            <%= message.isAgentReply ? 'background-color: #dcf8c6; margin-left: auto;' : 'background-color: white; margin-right: auto;' %>">
+                                                                                        <div class="message-header" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                                                            <strong>
+                                                                                                <% if (message.isAgentReply) { %>
+                                                                                                    <%= message.agentId && message.agentId.First_Name ? 
+                                                                                                        message.agentId.First_Name + ' ' + message.agentId.Last_Name : 
+                                                                                                        message.userName %>
+                                                                                                <% } else { %>
+                                                                                                    <%= message.userName %>
+                                                                                                <% } %>
+                                                                                            </strong>
+                                                                                            <span style="color: #666; font-size: 0.8em;"><%= new Date(message.timestamp).toLocaleString() %></span>
+                                                                                        </div>
+                                                                                        <div class="message-content" style="word-wrap: break-word;">
+                                                                                            <%= message.content %>
+                                                                                        </div>
+                                                                                        <% if (message.propertyId && message.propertyId.name) { %>
+                                                                                            <div class="property-info" style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                                                                                                Re: <%= message.propertyId.name %>
+                                                                                            </div>
+                                                                                        <% } %>
+                                                                                    </div>
+                                                                                <% }) %>
+                                                                            <% } else { %>
+                                                                                <p class="text-center">No messages yet.</p>
+                                                                            <% } %>
+                                                                        </div>
+                                                                    
+                                                                    <style>
+                                                                    .user-messages {
+                                                                        display: flex;
+                                                                        flex-direction: column;
+                                                                        gap: 10px;
+                                                                    }
+                                                                    .message-item {
+                                                                        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                                                                    }
+                                                                    .agent-message {
+                                                                        align-self: flex-end;
+                                                                    }
+                                                                    .user-message {
+                                                                        align-self: flex-start;
+                                                                    }
+                                                                    </style>
+                                                                    </div>
+                                                                    <% } %>
+                                    </div>
+                                    <% } %>
                             </div>
                         </div>
                     </div>
+                </div>
                 <script>
                     function generateCaptcha() {
                         const canvas = document.getElementById('captcha');
                         const ctx = canvas.getContext('2d');
                         const captchaText = generateRandomString(6);
-                        
+
                         canvas.width = 150;
                         canvas.height = 50;
                         ctx.fillStyle = '#f0f0f0';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        
+
                         // Add noise
-                        for(let i = 0; i < 50; i++) {
-                            ctx.strokeStyle = '#' + Math.floor(Math.random()*16777215).toString(16);
+                        for (let i = 0; i < 50; i++) {
+                            ctx.strokeStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
                             ctx.beginPath();
                             ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
                             ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
@@ -174,10 +311,10 @@
                         ctx.fillStyle = '#333';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
-                        ctx.fillText(captchaText, canvas.width/2, canvas.height/2);
+                        ctx.fillText(captchaText, canvas.width / 2, canvas.height / 2);
                         document.getElementById('captchaText').value = captchaText;
                     }
-                
+
                     function generateRandomString(length) {
                         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                         let result = '';
@@ -190,117 +327,171 @@
                 </script>
 
 
-    <!-- Message Section -->
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <% if (locals.isLoggedIn) { %>
-                    <div class="message-section" 
-                        data-is-logged-in="<%= locals.isLoggedIn %>"
-                        data-is-agent="<%= locals.isAgent %>"
-                        data-user-name="<%= locals.user ? user.First_Name + ' ' + user.Last_Name : '' %>"
-                        data-user-id="<%= locals.user ? user._id : '' %>">
-                        
-                        <% if (locals.isAgent) { %>
-                            <!-- Agent Message Interface -->
-                            <div class="agent-message-section">
-                                <h3><i class="fa fa-paper-plane"></i> Send Message to Users</h3>
-                                <form id="agentMessageForm" class="mb-4">
-                                    <div class="form-group">
-                                        <textarea id="messageContent" name="content" class="form-control" 
-                                            rows="4" placeholder="Type your message to all users" required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn"
-                                        style="background-image: linear-gradient(to bottom, #fad609 0, #fad609 100%); color:white; font-weight:bold;">
-                                        <i class="fa fa-send"></i> Send Message
-                                    </button>
-                                    <div id="messageStatus" class="alert mt-3" style="display: none;"></div>
-                                </form>
-                            </div>
-                        <% } else { %>
-                            <!-- Regular User Message Interface -->
-                            <div class="incoming-messages-section">
-                                <h3><i class="fa fa-inbox"></i> Messages from Agents</h3>
-                                <div id="messagesList" class="messages-container" 
-                                    style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
-                                    <% if (locals.messages && messages.length > 0) { %>
-                                        <% messages.forEach(function(message) { %>
-                                            <div class="message-item" style="margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;">
-                                                <strong><%= message.agentName %></strong>
-                                                <span style="color: #666; font-size: 0.9em;"> - <%= new Date(message.timestamp).toLocaleString() %></span>
-                                                <p style="margin-top: 5px;"><%= message.content %></p>
-                                            </div>
-                                        <% }); %>
-                                    <% } %>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                <% } %>
-            </div>
-        </div>
-    </div>
+                <!-- Message Section -->
 
-    <!-- Socket.IO script -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const socket = io();
-            const messagesList = document.getElementById('messagesList');
-            const messageForm = document.getElementById('agentMessageForm');
-            
-            // Handle existing messages
-            socket.on('existingMessages', function(messages) {
-                if (messagesList) {
-                    // Clear existing messages first
-                    messagesList.innerHTML = '';
-                    // Add all messages in reverse order (newest first)
-                    messages.forEach(message => {
-                        appendMessage(message);
+
+                <!-- Add this before closing body tag -->
+                <script src="/socket.io/socket.io.js"></script>
+                <script>
+                const socket = io();
+
+                // Handle user message form
+                const userMessageForm = document.getElementById('userMessageForm');
+                if (userMessageForm) {
+                    userMessageForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const content = document.getElementById('userMessageContent').value.trim();
+                        const propertyId = document.getElementById('propertySelect').value;
+                        const propertyName = document.getElementById('propertySelect').options[document.getElementById('propertySelect').selectedIndex].text;
+
+                        if (!content || !propertyId) return;
+
+                        try {
+                            const response = await fetch('/messages/user/message', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ content, propertyId })
+                            });
+
+                          if (response.ok) {
+                            document.getElementById('userMessageContent').value = '';
+                            const result = await response.json();
+                            // Add all required fields
+                            socket.emit('userMessage', {
+                                content: content,
+                                propertyId: propertyId,
+                                userName: '<%= locals.user ? user.First_Name + " " + user.Last_Name : "" %>',
+                                userId: '<%= locals.user ? user._id : "" %>',
+                                propertyName: propertyName,
+                                timestamp: new Date()
+                            });
+                        }
+                        } catch (error) {
+                            console.error('Error sending message:', error);
+                        }
                     });
                 }
-            });
 
-            // Handle new incoming messages
-            socket.on('newMessage', function(message) {
-                if (messagesList) {
-                    appendMessage(message);
-                }
-            });
+                // Handle agent replies
+                document.addEventListener('DOMContentLoaded', function () {
+                    const isAgent = '<%= locals.isAgent %>';
 
-            function appendMessage(message) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message-item';
-                messageDiv.style = 'margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;';
-                
-                const timestamp = new Date(message.timestamp).toLocaleString();
-                
-                messageDiv.innerHTML = `
-                    <strong>${message.agentName}</strong>
-                    <span style="color: #666; font-size: 0.9em;"> - ${timestamp}</span>
-                    <p style="margin-top: 5px;">${message.content}</p>
-                `;
-                
-                messagesList.insertBefore(messageDiv, messagesList.firstChild);
-            }
+                    if (isAgent === 'true') {
+                        document.querySelectorAll('.reply-form').forEach(form => {
+                            form.addEventListener('submit', async function (e) {
+                                e.preventDefault();
 
-            // Handle agent message form
-            if (messageForm) {
-                messageForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const content = document.getElementById('messageContent').value.trim();
-                    
-                    if (content) {
-                        socket.emit('sendMessage', { content });
-                        document.getElementById('messageContent').value = '';
+                                const textarea = form.querySelector('textarea');
+                                const content = textarea.value.trim();
+                                const propertyId = form.closest('.property-message-group').dataset.propertyId;
+                                const userId = form.dataset.userId;
+                                const propertyName = form.closest('.property-message-group').querySelector('h4').textContent.replace('Property: ', '').trim();
+
+                                if (!content || !propertyId || !userId) {
+                                    return alert('Missing required information.');
+                                }
+
+                                try {
+                                    const response = await fetch('/messages/agent/reply', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ content, userId, propertyId })
+                                    });
+
+                                    if (response.ok) {
+                                        textarea.value = '';
+                                        const result = await response.json();
+                                        socket.emit('agentReply', {
+                                            content: content,
+                                            propertyId: propertyId,
+                                            userId: userId,
+                                            agentId: '<%= locals.user ? user._id : "" %>',
+                                            agentName: '<%= locals.user ? user.First_Name + " " + user.Last_Name : "" %>',
+                                            propertyName: propertyName,
+                                            isAgentReply: true,
+                                            timestamp: new Date()
+                                        });
+                                    }}
+                                    catch (err) {
+                                    console.error('Error sending agent reply:', err);
+                                    alert('Failed to send reply. Please try again.');
+                                }
+                            });
+                        });
                     }
                 });
-            }
-        });
-    </script>
 
-    <!-- Remove this line -->
-    <!-- <script src="/js/contact-socket.js"></script> -->
-    
-    <%- include('includes/footer.ejs') %>
-    <%- include('includes/end.ejs') %>
+                // Handle incoming messages for both users and agents
+                socket.on('newMessage', function(message) {
+                    const isAgent = '<%= locals.isAgent %>' === 'true';
+                    
+                    if (isAgent) {
+                        // Handle display for agent view
+                        const messagesContainer = document.querySelector(`.messages-list[data-property-id="${message.propertyId._id || message.propertyId}"]`);
+                        if (messagesContainer) {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'message-item';
+                            messageDiv.style.margin = '10px 0';
+                            messageDiv.style.padding = '10px';
+                            messageDiv.style.borderRadius = '10px';
+                            messageDiv.style.backgroundColor = message.isAgentReply ? '#dcf8c6' : 'white';
+                            messageDiv.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+                            
+                            messageDiv.innerHTML = `
+                                <div class="message-header" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <strong>${message.userName}</strong>
+                                    <span style="color: #666; font-size: 0.8em;">${new Date(message.timestamp).toLocaleString()}</span>
+                                </div>
+                                <div class="message-content" style="word-wrap: break-word;">
+                                    ${message.content}
+                                </div>
+                            `;
+                            messagesContainer.appendChild(messageDiv); // This is already correct for agent view
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to bottom
+                        }
+                    } else {
+                        // Handle display for user view
+                        const messagesContainer = document.querySelector('.user-messages');
+                        if (messagesContainer) {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = `message-item ${message.isAgentReply ? 'agent-message' : 'user-message'}`;
+                            messageDiv.style.margin = '10px 0';
+                            messageDiv.style.padding = '10px';
+                            messageDiv.style.borderRadius = '10px';
+                            messageDiv.style.maxWidth = '70%';
+                            messageDiv.style.backgroundColor = message.isAgentReply ? '#dcf8c6' : 'white';
+                            messageDiv.style.alignSelf = message.isAgentReply ? 'flex-end' : 'flex-start';
+                            
+                            messageDiv.innerHTML = `
+                                <div class="message-header" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <strong>${message.userName}</strong>
+                                    <span style="color: #666; font-size: 0.8em;">${new Date(message.timestamp).toLocaleString()}</span>
+                                </div>
+                                <div class="message-content" style="word-wrap: break-word;">
+                                    ${message.content}
+                                </div>
+                                ${message.propertyName ? `
+                                    <div class="property-info" style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                                        Re: ${message.propertyName}
+                                    </div>
+                                ` : ''}
+                            `;
+                            
+                            // Always append to bottom
+                            messagesContainer.appendChild(messageDiv);
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }
+                }); 
+                document.addEventListener('DOMContentLoaded', function() {
+                    const messagesContainers = document.querySelectorAll('.messages-list, .user-messages');
+                    messagesContainers.forEach(container => {
+                        container.scrollTop = container.scrollHeight;
+                    });
+                });
+                </script>
+               

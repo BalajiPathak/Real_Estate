@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 
-const agentMessageSchema = new mongoose.Schema({
+const userMessageSchema = new mongoose.Schema({
     content: {
         type: String,
         required: true
     },
-    agentName: {
+    userName: {
         type: String,
+        required: true
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     agentId: {
@@ -19,15 +24,14 @@ const agentMessageSchema = new mongoose.Schema({
         ref: 'PropertyData',
         required: true
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-        // Removed required: true since it's optional for agent messages
-    },
     timestamp: {
         type: Date,
         default: Date.now
+    },
+    isAgentReply: {
+        type: Boolean,
+        default: false
     }
 });
 
-module.exports = mongoose.model('AgentMessage', agentMessageSchema);
+module.exports = mongoose.model('UserMessage', userMessageSchema);

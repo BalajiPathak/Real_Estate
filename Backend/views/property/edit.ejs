@@ -372,7 +372,92 @@
 
                 <%- include('../includes/footer.ejs') %>
 
-
+<div class="modal fade" id="cropperModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Crop Image</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="img-container">
+                                    <img id="cropperImage" src="" style="max-width: 100%;">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add this script before closing body tag -->
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const wizardPicture = document.getElementById('wizard-picture');
+                    const wizardPicturePreview = document.getElementById('wizardPicturePreview');
+                    const cropperModal = document.getElementById('cropperModal');
+                    const cropperImage = document.getElementById('cropperImage');
+                    const errorMsg = document.getElementById('mainImageError');
+                    let cropper;
+                
+                    wizardPicture.addEventListener('change', function(e) {
+                        const file = this.files[0];
+                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                
+                        if (file) {
+                            if (!allowedTypes.includes(file.type)) {
+                                errorMsg.style.display = 'block';
+                                this.value = '';
+                                return;
+                            }
+                
+                            errorMsg.style.display = 'none';
+                            
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                cropperImage.src = e.target.result;
+                                $(cropperModal).modal('show');
+                                
+                                if (cropper) {
+                                    cropper.destroy();
+                                }
+                                
+                                cropper = new Cropper(cropperImage, {
+                                    aspectRatio: 16 / 9,
+                                    viewMode: 2
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                
+                    document.getElementById('cropButton').addEventListener('click', function() {
+                        const canvas = cropper.getCroppedCanvas({
+                            width: 800,
+                            height: 450
+                        });
+                
+                        wizardPicturePreview.src = canvas.toDataURL();
+                        
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'croppedImage';
+                        input.value = canvas.toDataURL();
+                        wizardPicture.parentNode.appendChild(input);
+                        
+                        $(cropperModal).modal('hide');
+                    });
+                
+                    $(cropperModal).on('hidden.bs.modal', function() {
+                        if (cropper) {
+                            cropper.destroy();
+                            cropper = null;
+                        }
+                    });
+                });
+                </script>
 
                     <script>
                         // Set city if preloaded

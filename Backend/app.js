@@ -29,6 +29,7 @@ const propertyPurchaseRoutes = require('./routes/propertyPurchase');
 const blogRoutes = require('./routes/blog');
 const faqsRoutes = require('./routes/faqs');
 const legalRoutes = require('./routes/legal');
+const PropertyData = require('./models/propertyData'); // Add this at the top with other imports
 
 const { graphqlHTTP } = require('express-graphql');
 const { schema } = require('./graphql/schema');
@@ -39,14 +40,15 @@ const morgan = require('morgan');
 const compression =require('compression');
 const bodyParser=require('body-parser');
 const AgentMessage = require('./models/agentMessage'); 
+const messagesRoutes = require('./routes/messages');
 const cors =require('cors');
-
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));
 }
 //socketio
 const http = require('http');
 const socketIO = require('socket.io');
+const UserMessage = require('./models/userMessage');
 
 
 const app = express();
@@ -67,44 +69,48 @@ app.use(sessionMiddleware);
 io.use((socket, next) => {
     sessionMiddleware(socket.request, socket.request.res || {}, next);
 });
+// Socket.IO connection handler
 io.on('connection', (socket) => {
-     console.log('New user connected');
+    console.log('New user connected');
 
-    AgentMessage.find()
-        .sort({ timestamp: -1 })
-        .limit(50)
-        .then(messages => {
-            socket.emit('existingMessages', messages);
-        })
-        .catch(err => console.error('Error fetching messages:', err));
+    if (socket.request.session?.user) {
+        const userId = socket.request.session.user._id;
+        const isAgent = socket.request.session.user.isAgent;
 
-    // Handle new messages
-    socket.on('sendMessage', async (data) => {
-        try {
-            const user = socket.request.session.user;
-            if (!user) return;
-
-            const message = new AgentMessage({
-                content: data.content,
-                agentName: `${user.First_Name} ${user.Last_Name}`,
-                agentId: user._id,
-                timestamp: new Date()
-            });
-
-            await message.save();
-            
-            // Broadcast to all clients
-            io.emit('newMessage', {
-                content: message.content,
-                agentName: message.agentName,
-                timestamp: message.timestamp,
-                _id: message._id
-            });
-        } catch (error) {
-            console.error('Message error:', error);
+        // Join appropriate room
+        if (isAgent) {
+            socket.join(`agent_${userId}`);
+        } else {
+            socket.join(`user_${userId}`);
         }
-    });
+
+        // Load initial messages
+        // In socket.io connection handler
+        UserMessage.find({
+            $or: [
+                { userId: userId },
+                { agentId: userId }
+            ]
+        })
+        .populate({
+            path: 'propertyId',
+            model: 'PropertyData',
+            select: 'name'
+        })
+        .populate('userId', 'First_Name Last_Name')
+        .populate('agentId', 'First_Name Last_Name')
+        .sort({ timestamp: 1 }) // Changed to 1 for consistent sorting
+        .then(messages => {
+            socket.emit('loadMessages', messages);
+        });
+    }
 });
+
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
 
 app.use((req, res, next) => {
     req.io = io;
@@ -242,6 +248,7 @@ app.use((req, res, next) => {
 // Routes should come after all middleware
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 const crypto = require('crypto');
+const { log } = require('console');
 // Add Facebook Strategy import
 const FacebookStrategy = require('passport-facebook').Strategy;
 
@@ -319,6 +326,7 @@ app.use(userPropertyRoutes);
 app.use(changePasswword);
 app.use(legalRoutes);
 app.use(propertyPurchaseRoutes);
+app.use('/messages', messagesRoutes);
 
 app.use(errorHandler.handle404);
 

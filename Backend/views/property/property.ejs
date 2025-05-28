@@ -60,9 +60,12 @@
                                         </div>
                                     <% } else if (isLoggedIn && !isAgent) { %>
                                         <div class="text-center" style="clear: both; padding-top: 10px;">
-                                            <a href="/property/buy/<%= property._id %>" class="btn" style="background-color: #d3a033; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; display: block;">
+                                            <a href="/property/buy/<%= property._id %>" class="btn" style="background-color: #d3a033; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; display: block; margin-bottom: 5px;">
                                                 Buy Now
                                             </a>
+                                            <button onclick="window.location.href='/messages/property/<%= property._id %>/chat'" class="btn" style="background-color: #4CAF50; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%;">
+                                                Message Agent
+                                            </button>
                                         </div>
                                     <% } %>
                                     
@@ -146,4 +149,121 @@ popup.id = 'login-popup';
 </script>
 <% } %>
 </body>
+
+<!-- Add this at the bottom of the body -->
+<!-- Replace the existing message modal with this -->
+<div id="messageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Message to Agent</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="messageForm">
+                    <input type="hidden" id="propertyId" name="propertyId">
+                    <input type="hidden" id="agentId" name="agentId">
+                    <div class="form-group">
+                        <label>Property: <span id="propertyName"></span></label>
+                    </div>
+                    <div class="messages-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
+                        <div id="messageHistory"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageContent">Your Message:</label>
+                        <textarea class="form-control" id="messageContent" name="content" rows="4" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="sendMessage()">Send Message</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openMessageModal(propertyId, propertyName, agentId) {
+    document.getElementById('propertyId').value = propertyId;
+    document.getElementById('agentId').value = agentId;
+    document.getElementById('propertyName').textContent = propertyName;
+    
+    // Fetch message history for this property
+    socket.emit('getPropertyMessages', { propertyId });
+    
+    $('#messageModal').modal('show');
+}
+
+function sendMessage() {
+    const content = document.getElementById('messageContent').value;
+    const propertyId = document.getElementById('propertyId').value;
+    const agentId = document.getElementById('agentId').value;
+
+    if (!content.trim()) {
+        alert('Please enter a message');
+        return;
+    }
+
+    socket.emit('userMessage', {
+        content,
+        propertyId,
+        agentId
+    });
+
+    document.getElementById('messageContent').value = '';
+    
+    // Append message locally
+    appendMessage({
+        content,
+        sender: 'You',
+        timestamp: new Date(),
+        isUser: true
+    });
+}
+
+function appendMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${message.isUser ? 'user-message' : 'agent-message'}`;
+    messageDiv.style = `
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        ${message.isUser ? 
+            'background-color: #e3f2fd; margin-left: 20%;' : 
+            'background-color: #f5f5f5; margin-right: 20%;'}
+    `;
+    
+    const timestamp = new Date(message.timestamp).toLocaleString();
+    
+    messageDiv.innerHTML = `
+        <strong>${message.sender}</strong>
+        <span style="color: #666; font-size: 0.8em;"> - ${timestamp}</span>
+        <p style="margin: 5px 0 0 0;">${message.content}</p>
+    `;
+    
+    document.getElementById('messageHistory').appendChild(messageDiv);
+}
+
+// Socket.IO event listeners
+socket.on('propertyMessages', function(messages) {
+    const messageHistory = document.getElementById('messageHistory');
+    messageHistory.innerHTML = '';
+    messages.forEach(message => {
+        appendMessage({
+            ...message,
+            isUser: message.sender === 'You'
+        });
+    });
+});
+
+socket.on('newMessage', function(message) {
+    appendMessage({
+        ...message,
+        isUser: false
+    });
+});
+</script>
 
