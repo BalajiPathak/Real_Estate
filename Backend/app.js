@@ -41,6 +41,9 @@ const compression =require('compression');
 const bodyParser=require('body-parser');
 const AgentMessage = require('./models/agentMessage'); 
 const messagesRoutes = require('./routes/messages');
+const planRoutes= require('./routes/plans');
+require('./subscriptionManager');
+
 const cors =require('cors');
 if (!fs.existsSync(path.join(__dirname, 'logs'))) {
     fs.mkdirSync(path.join(__dirname, 'logs'));
@@ -326,6 +329,7 @@ app.use(userPropertyRoutes);
 app.use(changePasswword);
 app.use(legalRoutes);
 app.use(propertyPurchaseRoutes);
+app.use(planRoutes);
 app.use('/messages', messagesRoutes);
 
 app.use(errorHandler.handle404);

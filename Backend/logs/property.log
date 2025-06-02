@@ -411,3 +411,4 @@
 ::1 - - [26/May/2025:10:08:49 +0000] "GET /property/edit/logo.png HTTP/1.1" 302 35 "http://localhost:3006/property/edit/683042111ba98ca91507ecef" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [28/May/2025:05:33:13 +0000] "GET /property/new HTTP/1.1" 304 - "http://localhost:3006/contact" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [28/May/2025:05:33:14 +0000] "GET /property/logo.png HTTP/1.1" 304 - "http://localhost:3006/property/new" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [02/Jun/2025:03:54:10 +0000] "GET /property/new HTTP/1.1" 200 - "http://localhost:3006/home" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
